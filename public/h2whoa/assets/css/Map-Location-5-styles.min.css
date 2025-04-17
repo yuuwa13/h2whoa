@@ -14,8 +14,10 @@
   outline: 0;
   overflow: hidden;
   -ms-touch-action: none;
+  touch-action: none;
   cursor: -webkit-grab;
   cursor: -moz-grab;
+  cursor: grab;
 }
 
 .leaflet-container *, .leaflet-container :after, .leaflet-container :before {
@@ -82,7 +84,13 @@
 .leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-tile {
   -webkit-user-drag: none;
   -webkit-user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-select: none;
   -moz-user-select: none;
+  user-select: none;
+  user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
   user-select: none;
 }
 
@@ -207,6 +215,7 @@
 .leaflet-dragging, .leaflet-dragging .leaflet-clickable, .leaflet-dragging .leaflet-container, .leaflet-dragging .map-clickable {
   cursor: move;
   cursor: -webkit-grabbing;
+  cursor: grabbing;
   cursor: -moz-grabbing;
 }
 
@@ -931,9 +940,9 @@ button, hr, input {
   max-width: 100%;
 }
 
-.leaflet-overlay-pane svg {
+/* .leaflet-overlay-pane svg {
   -moz-user-select: none;
-}
+} */
 
 .leaflet-oldie .mapbox-modal .mapbox-modal-content {
   display: none;
@@ -966,6 +975,7 @@ audio, canvas, progress, video {
 html {
   line-height: 1.15;
   -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
 

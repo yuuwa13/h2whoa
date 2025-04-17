@@ -5,19 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Login - H2WHOA</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
-    <link rel="stylesheet" href="assets/css/baguetteBox.min.css">
-    <link rel="stylesheet" href="assets/css/Banner-Heading-Image-images.css">
-    <link rel="stylesheet" href="assets/css/Bootstrap-Payment-Form-.css">
-    <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
-    <link rel="stylesheet" href="assets/css/Company-Invoice.css">
-    <link rel="stylesheet" href="assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css">
-    <link rel="stylesheet" href="assets/css/dh-row-titile-text-image-right-1.css">
-    <link rel="stylesheet" href="assets/css/Features-Image-icons.css">
-    <link rel="stylesheet" href="assets/css/Map-Location-5-styles.min.css">
-    <link rel="stylesheet" href="assets/css/vanilla-zoom.min.css">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/baguetteBox.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Banner-Heading-Image-images.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Bootstrap-Payment-Form-.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/bs-theme-overrides.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Company-Invoice.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/dh-row-titile-text-image-right-1.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Features-Image-icons.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa//assets/css/Map-Location-5-styles.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/vanilla-zoom.min.css')}}">
 </head>
 
 <body>
@@ -25,7 +25,7 @@
         <section class="clean-block clean-form dark">
             <div class="container">
                 <div class="block-heading">
-                    <h2 class="text-info"><img src="assets/img/assets/h2whoa_logo.png">H2WHOA</h2>
+                    <h2 class="text-info"><img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</h2>
                     <p style="font-size: 36px;"><strong>LOG IN</strong></p>
                 </div>
                 <form>
@@ -79,12 +79,12 @@
             <p>© 2025 Copyright Text</p>
         </div>
     </footer>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/baguetteBox.min.js"></script>
-    <script src="assets/js/vanilla-zoom.js"></script>
-    <script src="assets/js/theme.js"></script>
-    <script src="assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js"></script>
-    <script src="assets/js/Map-Location-5-script.min.js"></script>
+    <script src="{{asset ('h2whoa/assets/bootstrap/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('h2whoa/assets/js/baguetteBox.min.js')}}"></script>
+    <script src="{{asset('h2whoa/assets/js/vanilla-zoom.js')}}"></script>
+    <script src="{{asset('h2whoa/assets/js/theme.js')}}"></script>
+    <script src="{{asset('h2whoa/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js')}}"></script>
+    <script src="{{asset('h2whoa/assets/js/Map-Location-5-script.min.js')}}"></script>
 </body>
 
 </html>
