@@ -28,14 +28,31 @@
                     <h2 class="text-info"><img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</h2>
                     <p style="font-size: 36px;"><strong>CREATE ACCOUNT</strong></p>
                 </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="email">Full Name</label><input class="form-control item" type="email" id="email" data-bs-theme="light" style="border-style: solid;"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Email Address</label><input class="form-control item" type="email" id="email-1" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Phone Number</label><input class="form-control item" type="email" id="email-2" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" type="password" id="password" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Confirm Password</label><input class="form-control" type="password" id="password-1" data-bs-theme="light"></div>
-                    <div class="mb-3"></div><button class="btn btn-primary" type="submit" style="background: #4ac9b0;width: 413.2812px;">SIGN UP</button>
-                </form>
+                <!-- Edited to connect to backend -->
+                <form method="POST" action="{{ route('users.store') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input class="form-control item" type="text" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input class="form-control item" type="email" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">Phone Number</label>
+                        <input class="form-control item" type="text" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input class="form-control" type="password" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password_confirmation">Confirm Password</label>
+                        <input class="form-control" type="password" id="password_confirmation" name="password_confirmation" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="background: #4ac9b0;width: 413.2812px;">SIGN UP</button>
+                </form>                
             </div>
         </section>
     </main>
@@ -86,6 +103,22 @@
     <script src="{{asset('h2whoa/assets/js/theme.js')}}"></script>
     <script src="{{asset('h2whoa/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js')}}"></script>
     <script src="{{asset('h2whoa/assets/js/Map-Location-5-script.min.js')}}"></script>
+
+    <!-- Success/Error Message -->
+    @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 </body>
 
 </html>
