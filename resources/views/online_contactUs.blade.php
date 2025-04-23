@@ -22,20 +22,35 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light" style="width: 1335px;height: 163px;margin-left: 32px;margin-top: 30px;border-radius: 42px;">
-        <div class="container"><a class="navbar-brand logo" href="contact-us"><img width="100" height="80" src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</a><button data-bs-toggle="collapse" data-bs-target="#navcol-1" class="navbar-toggler"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse text-start" id="navcol-1" style="margin-left: 242px;margin-right: 318px;">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item text-center" style="padding-right: 33px;"><a class="nav-link text-end" href="orders" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">ORDERS</a></li>
-                    <li class="nav-item"><a class="nav-link" href="history" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">HISTORY</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="contact-us" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">contacts</a></li>
-                    <li class="nav-item" style="margin-left: 128px;"><i class="far fa-user" style="font-size: 31px;"></i></li>
-                </ul><a style="font-size: 22px;"><strong>KRISTOFFE</strong><br>Customer</a>
-                <div class="collapse navbar-collapse text-start" id="navcol-2" style="margin-left: 119px;margin-right: 316px;">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"></li>
-                    </ul>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top py-3 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="contact-us">
+                <img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}" alt="H2WHOA Logo" width="80" height="60" class="me-2">
+                <strong class="fs-4">H2WHOA</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" title="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item px-2">
+                        <a class="nav-link" href="orders" style="font-size: 22px;">ORDERS</a>
+                    </li>
+                    <li class="nav-item px-2">
+                        <a class="nav-link" href="history" style="font-size: 22px;">HISTORY</a>
+                    </li>
+                    <li class="nav-item px-2">
+                        <a class="nav-link active" href="contact-us" style="font-size: 22px;">CONTACTS</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center px-3">
+                        <i class="far fa-user me-2" style="font-size: 31px;"></i>
+                    </li>
+                        <div>
+                            <strong>KRISTOFFE</strong><br>
+                            <small>Customer</small>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
