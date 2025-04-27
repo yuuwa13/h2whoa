@@ -28,16 +28,100 @@
                     <h2 class="text-info"><img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</h2>
                     <p style="font-size: 36px;"><strong>LOG IN</strong></p>
                 </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="email">Email Address</label><input class="form-control item" type="email" id="email-1" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" type="password" id="password" data-bs-theme="light"></div>
+                <form action="{{ route('login.submit') }}" method="POST" id="loginForm">
+                    @csrf
+            
+                    {{-- Email --}}
+                    <div class="mb-3">
+                      <label class="form-label" for="email">Email Address</label>
+                      <input
+                        name="email"
+                        type="email"
+                        id="email"
+                        value="{{ old('email') }}"
+                        class="form-control item @error('email') is-invalid @enderror"
+                      >
+                      @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                      @enderror
+                    </div>
+            
+                    {{-- Password --}}
+                    <div class="mb-3">
+                      <label class="form-label" for="password">Password</label>
+                      <input
+                        name="password"
+                        type="password"
+                        id="password"
+                        class="form-control @error('password') is-invalid @enderror"
+                      >
+                      @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                      @enderror
+                    </div>
+
                     <div class="mb-3">
                         <div class="form-check"><input class="form-check-input" type="checkbox" id="checkbox" data-bs-theme="light"><label class="form-check-label" for="checkbox">Remember me</label></div>
-                    </div><button class="btn btn-primary" type="submit" style="background: #4ac9b0;width: 413.2812px;">SIGN UP</button>
-                </form>
+            
+                    {{-- Are you human? --}}
+                    <div class="mb-3">
+                      <div class="form-check">
+                        <input
+                          name="human"
+                          type="checkbox"
+                          id="humanCheckbox"
+                          class="form-check-input @error('human') is-invalid @enderror"
+                        >
+                        <label class="form-check-label" for="humanCheckbox">
+                          Are you human?
+                        </label>
+                        @error('human')
+                          <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                      </div>
+                    </div>
+            
+                    {{-- Submit --}}
+                    <button
+                      id="loginBtn"
+                      type="submit"
+                      class="btn btn-primary"
+                      style="background: #4ac9b0; width: 413px;"
+                      disabled
+                    >
+                      LOG IN
+                    </button>
+            
+                    {{-- Forgot password --}}
+                    <div class="mt-2">
+                      <a href="{{ route('password.request') }}">Forgot Password?</a>
+                    </div>
+            
+                    {{-- Admin login stub --}}
+                    <div class="mt-3">
+                      <a href="{{ route('admin.login') }}">Admin Login</a>
+                    </div>
+                  </form>
             </div>
         </section>
     </main>
+
+    {{-- Small JS to enable/disable the button --}}
+    <script>
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const human = document.getElementById('humanCheckbox');
+        const btn = document.getElementById('loginBtn');
+      
+        function toggleButton() {
+          btn.disabled = !(email.value.trim() && password.value.trim() && human.checked);
+        }
+      
+        [email, password, human].forEach(el =>
+          el.addEventListener('input', toggleButton)
+        );
+    </script>
+
     <footer class="page-footer dark">
         <div class="container">
             <div class="row">

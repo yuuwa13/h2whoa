@@ -28,17 +28,151 @@
                     <h2 class="text-info"><img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</h2>
                     <p style="font-size: 36px;"><strong>CREATE ACCOUNT</strong></p>
                 </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="email">Full Name</label><input class="form-control item" type="email" id="email" data-bs-theme="light" style="border-style: solid;"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Email Address</label><input class="form-control item" type="email" id="email-1" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Phone Number</label><input class="form-control item" type="email" id="email-2" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" type="password" id="password" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="password">Confirm Password</label><input class="form-control" type="password" id="password-1" data-bs-theme="light"></div>
-                    <div class="mb-3"></div><button class="btn btn-primary" type="submit" style="background: #4ac9b0;width: 413.2812px;">SIGN UP</button>
+                <form method="POST" action="{{ route('signup.store') }}" id="signup-form">
+                    @csrf
+    
+                    {{-- Full Name --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input name="name" value="{{ old('name') }}" class="form-control item @error('name') is-invalid @enderror" type="text" id="name">
+                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+    
+                    {{-- Address --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="address">Address</label>
+                        <input
+                          class="form-control item @error('address') is-invalid @enderror"
+                          type="text"
+                          name="address"
+                          id="address"
+                          value="{{ old('address') }}"
+                          required
+                        >
+                        @error('address')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                      
+                    {{-- Email --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input name="email" value="{{ old('email') }}" class="form-control item @error('email') is-invalid @enderror" type="email" id="email-1">
+                        @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+    
+                    {{-- Phone --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">Phone Number</label>
+                        <input name="phone" value="{{ old('phone') }}" 
+                        class="form-control item @error('phone') is-invalid @enderror" 
+                        type="text" id="phone" 
+                        maxlength="11" pattern="^\d{11}$"
+                        title="Phone number must be exactly 11 numeric digits!"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        >
+                        @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+    
+                    {{-- Password --}}
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input name="password" class="form-control @error('password') is-invalid @enderror" type="password" id="password">
+                        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password_confirmation">Confirm Password</label>
+                        <input name="password_confirmation" class="form-control" type="password" id="password-1">
+                    </div>
+    
+                    {{-- Checkboxes --}}
+                    <div class="form-check mb-2">
+                        <input name="terms" class="form-check-input" type="checkbox" id="terms">
+                        <label class="form-check-label" for="terms">I have read the Terms and Conditions</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input name="confirm_info" class="form-check-input" type="checkbox" id="confirm_info">
+                        <label class="form-check-label" for="confirm_info">I confirm that the information provided is accurate</label>
+                    </div>
+    
+                    {{-- Sign Up Button --}}
+                    <div class="position-relative">
+                        <button id="signup-btn" class="btn btn-primary" type="button" disabled style="background: #4ac9b0; width: 100%;">SIGN UP</button>
+                        <div id="hover-tooltip" class="position-absolute bg-white border px-2 py-1" style="bottom: -40px; left: 0; display: none;">You are required to fill all forms and check all boxes</div>
+                    </div>
+    
+                    {{-- Human Check Modal --}}
+                    <div class="modal fade" id="humanModal" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Are you human?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="form-check">
+                              <input name="human" class="form-check-input" type="checkbox" id="human">
+                              <label class="form-check-label" for="human">Check if you are human</label>
+                            </div>
+                            <p id="confidence-text" class="mt-2" style="display:none;">Please make sure you are confident with your details.</p>
+                          </div>
+                          <div class="modal-footer">
+                            <button id="modal-signup-btn" class="btn btn-primary" type="button" disabled>SIGN UP</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+    
                 </form>
             </div>
         </section>
     </main>
+    {{-- Practically a placeholder "Are you Human?" thingy plus those tick boxes --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const inputs = document.querySelectorAll('#signup-form .item, #password, #password-1');
+          const terms = document.getElementById('terms');
+          const confirmInfo = document.getElementById('confirm_info');
+          const signupBtn = document.getElementById('signup-btn');
+          const tooltip = document.getElementById('hover-tooltip');
+          const humanModal = new bootstrap.Modal(document.getElementById('humanModal'));
+          const humanCheckbox = document.getElementById('human');
+          const confidenceText = document.getElementById('confidence-text');
+          const modalSignupBtn = document.getElementById('modal-signup-btn');
+      
+          function checkFormValid() {
+            const allFilled = Array.from(inputs).every(i => i.value.trim() !== '');
+            const boxes = terms.checked && confirmInfo.checked;
+            return allFilled && boxes;
+          }
+      
+          // Enable/disable signup button
+          [...inputs, terms, confirmInfo].forEach(el => el.addEventListener('input', () => {
+            signupBtn.disabled = !checkFormValid();
+          }));
+      
+          // Tooltip on hover if disabled
+          signupBtn.addEventListener('mouseenter', () => {
+            if (signupBtn.disabled) tooltip.style.display = 'block';
+          });
+          signupBtn.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+      
+          // Open human check modal on click
+          signupBtn.addEventListener('click', () => humanModal.show());
+      
+          // In-modal logic
+          humanCheckbox.addEventListener('change', () => {
+            modalSignupBtn.disabled = !humanCheckbox.checked;
+            confidenceText.style.display = humanCheckbox.checked ? 'block' : 'none';
+          });
+      
+          // Final submission
+          modalSignupBtn.addEventListener('click', () => {
+            document.getElementById('signup-form').submit();
+          });
+        });
+      </script>
+
     <footer class="page-footer dark">
         <div class="container">
             <div class="row">

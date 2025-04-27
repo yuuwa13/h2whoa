@@ -2,25 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Customer extends Model
+class Customer extends Authenticatable
 {
-    use HasFactory;
+    use Notifiable;
 
-    protected $table = 'customers'; // Specify the table name
+    protected $table = 'customers';
+    protected $primaryKey = 'customer_id';
+    public $timestamps = true;
 
-    protected $primaryKey = 'customer_id'; // Specify the primary key
-
+    // include password here so Auth can fill it
     protected $fillable = [
         'name',
         'email',
+        'address',
         'phone',
-        'is_deleted', // Soft delete flag
+        'password',
+        'is_deleted',
     ];
 
-    // Relationship with Orders
+    // hide password & remember_token if we add one later
+    protected $hidden = [
+        'password',
+    ];
+
+    public function editLogs()
+    {
+        return $this->hasMany(CustomerEditLog::class, 'customer_id', 'customer_id')
+                    ->orderByDesc('changed_at');
+    }
+
+
     public function orders()
     {
         return $this->hasMany(Order::class, 'customer_id', 'customer_id');
