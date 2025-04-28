@@ -1,0 +1,7 @@
+:root, [data-bs-theme=light] {
+  --bs-body-font-family: Poppins, sans-serif;
+  --bs-body-font-size: 22;
+  --bs-body-font-weight: normal;
+  --bs-body-line-height: 1.5;
+}
+
