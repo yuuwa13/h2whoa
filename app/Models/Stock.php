@@ -13,7 +13,7 @@ class Stock extends Model
 
     protected $primaryKey = 'stock_id'; // Specify the primary key
 
-    public $timestamps = false; // Disable timestamps
+    public $timestamps = true;
 
     protected $fillable = [
         'product_name',

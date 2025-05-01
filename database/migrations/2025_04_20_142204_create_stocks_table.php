@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->integer('quantity');
             $table->decimal('price_per_unit', 10, 2);
+            $table->timestamps();
         });
         
     }

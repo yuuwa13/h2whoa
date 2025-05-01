@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\StockController;
+
+use App\Models\Stock;
 
 //For Customers
 Route::get('/signup', [CustomerController::class, 'create'])->name('signup.form');
@@ -20,6 +23,16 @@ Route::put('/profile', [CustomerController::class, 'update'])
 Route::delete('/profile', [CustomerController::class, 'destroy'])
      ->name('profile.destroy')
      ->middleware('auth:customer');
+
+//For Stocks
+Route::resource('stocks', StockController::class)
+     ->only(['index','create','store','edit','update','destroy']);
+
+Route::get('/admin/stocks', function () {
+     // pull stocks in paginated form
+     $stocks = Stock::paginate(10);
+     return view('admin.admin_stocks', compact('stocks'));
+})->name('admin.stocks');
 
 //For Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])
