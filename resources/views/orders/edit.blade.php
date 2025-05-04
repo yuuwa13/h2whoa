@@ -18,9 +18,9 @@
                 </option>
                 @endforeach
             </select>
-        </div>
+        </div> 
 
-        <h3>Items</h3>
+        <h3>Items</h3> 
         <div id="items">
             @foreach($order->orderDetails as $index => $detail)
             <div class="item mb-3">

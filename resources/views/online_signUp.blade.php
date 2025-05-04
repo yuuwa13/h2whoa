@@ -4,20 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Login - H2WHOA</title>
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/bootstrap/css/bootstrap.min.css') }}">
+    <title>Sign Up - H2WHOA</title>
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/baguetteBox.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Banner-Heading-Image-images.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Bootstrap-Payment-Form-.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/bs-theme-overrides.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Company-Invoice.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/dh-row-titile-text-image-right-1.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Features-Image-icons.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa//assets/css/Map-Location-5-styles.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/vanilla-zoom.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/dh-row-titile-text-image-right-1.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
 </head>
 
 <body>
@@ -25,19 +25,22 @@
         <section class="clean-block clean-form dark">
             <div class="container">
                 <div class="block-heading">
-                    <h2 class="text-info"><img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}">H2WHOA</h2>
+                    <h2 class="text-info">
+                        <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2WHOA Logo">
+                        H2WHOA
+                    </h2>
                     <p style="font-size: 36px;"><strong>CREATE ACCOUNT</strong></p>
                 </div>
                 <form method="POST" action="{{ route('signup.store') }}" id="signup-form">
                     @csrf
-    
+
                     {{-- Full Name --}}
                     <div class="mb-3">
                         <label class="form-label" for="name">Full Name</label>
                         <input name="name" value="{{ old('name') }}" class="form-control item @error('name') is-invalid @enderror" type="text" id="name">
                         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-    
+
                     {{-- Address --}}
                     <div class="mb-3">
                         <label class="form-label" for="address">Address</label>
@@ -60,7 +63,7 @@
                         <input name="email" value="{{ old('email') }}" class="form-control item @error('email') is-invalid @enderror" type="email" id="email-1">
                         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-    
+
                     {{-- Phone --}}
                     <div class="mb-3">
                         <label class="form-label" for="phone">Phone Number</label>
@@ -73,7 +76,7 @@
                         >
                         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-    
+
                     {{-- Password --}}
                     <div class="mb-3">
                         <label class="form-label" for="password">Password</label>
@@ -84,7 +87,7 @@
                         <label class="form-label" for="password_confirmation">Confirm Password</label>
                         <input name="password_confirmation" class="form-control" type="password" id="password-1">
                     </div>
-    
+
                     {{-- Checkboxes --}}
                     <div class="form-check mb-2">
                         <input name="terms" class="form-check-input" type="checkbox" id="terms">
@@ -94,13 +97,13 @@
                         <input name="confirm_info" class="form-check-input" type="checkbox" id="confirm_info">
                         <label class="form-check-label" for="confirm_info">I confirm that the information provided is accurate</label>
                     </div>
-    
+
                     {{-- Sign Up Button --}}
                     <div class="position-relative">
                         <button id="signup-btn" class="btn btn-primary" type="button" disabled style="background: #4ac9b0; width: 100%;">SIGN UP</button>
                         <div id="hover-tooltip" class="position-absolute bg-white border px-2 py-1" style="bottom: -40px; left: 0; display: none;">You are required to fill all forms and check all boxes</div>
                     </div>
-    
+
                     {{-- Human Check Modal --}}
                     <div class="modal fade" id="humanModal" tabindex="-1" aria-hidden="true">
                       <div class="modal-dialog">
@@ -122,56 +125,11 @@
                         </div>
                       </div>
                     </div>
-    
+
                 </form>
             </div>
         </section>
     </main>
-    {{-- Practically a placeholder "Are you Human?" thingy plus those tick boxes --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const inputs = document.querySelectorAll('#signup-form .item, #password, #password-1');
-          const terms = document.getElementById('terms');
-          const confirmInfo = document.getElementById('confirm_info');
-          const signupBtn = document.getElementById('signup-btn');
-          const tooltip = document.getElementById('hover-tooltip');
-          const humanModal = new bootstrap.Modal(document.getElementById('humanModal'));
-          const humanCheckbox = document.getElementById('human');
-          const confidenceText = document.getElementById('confidence-text');
-          const modalSignupBtn = document.getElementById('modal-signup-btn');
-      
-          function checkFormValid() {
-            const allFilled = Array.from(inputs).every(i => i.value.trim() !== '');
-            const boxes = terms.checked && confirmInfo.checked;
-            return allFilled && boxes;
-          }
-      
-          // Enable/disable signup button
-          [...inputs, terms, confirmInfo].forEach(el => el.addEventListener('input', () => {
-            signupBtn.disabled = !checkFormValid();
-          }));
-      
-          // Tooltip on hover if disabled
-          signupBtn.addEventListener('mouseenter', () => {
-            if (signupBtn.disabled) tooltip.style.display = 'block';
-          });
-          signupBtn.addEventListener('mouseleave', () => tooltip.style.display = 'none');
-      
-          // Open human check modal on click
-          signupBtn.addEventListener('click', () => humanModal.show());
-      
-          // In-modal logic
-          humanCheckbox.addEventListener('change', () => {
-            modalSignupBtn.disabled = !humanCheckbox.checked;
-            confidenceText.style.display = humanCheckbox.checked ? 'block' : 'none';
-          });
-      
-          // Final submission
-          modalSignupBtn.addEventListener('click', () => {
-            document.getElementById('signup-form').submit();
-          });
-        });
-      </script>
 
     <footer class="page-footer dark">
         <div class="container">
@@ -214,12 +172,12 @@
             <p>© 2025 Copyright Text</p>
         </div>
     </footer>
-    <script src="{{asset('h2whoa/assets/bootstrap/js/bootstrap.min.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/baguetteBox.min.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/vanilla-zoom.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/theme.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/Map-Location-5-script.min.js')}}"></script>
+    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
 </body>
 
 </html>

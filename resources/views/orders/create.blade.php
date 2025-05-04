@@ -12,7 +12,7 @@
                 @foreach($customers as $customer)
                 <option value="{{ $customer->customer_id }}">{{ $customer->name }}</option>
                 @endforeach
-            </select>
+            </select>  
         </div>
 
         <h3>Items</h3>

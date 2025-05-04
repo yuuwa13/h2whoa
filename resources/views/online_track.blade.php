@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>History</title>
+    <title>Track</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
@@ -28,51 +28,13 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
-        <div class="container">
-            <a class="navbar-brand logo" href="{{ route('orders.history') }}"><img width="100" height="80" src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}">H2WHOA</a>
-            <div class="collapse navbar-collapse text-start" id="navcol-1" style="margin-left: 242px;margin-right: 318px;">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item text-center" style="padding-right: 33px;">
-                        <a class="nav-link text-end" href="{{ route('orders.index') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">ORDERS</a>
-                    </li>
-                    <li class="nav-item text-center" style="padding-right: 33px;">
-                        <a class="nav-link text-end" href="{{ route('track.orders') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">Track</a>
-                    </li>
-                    <li class="nav-item" style="padding-right: 33px;">
-                        <a class="nav-link active" href="{{ route('orders.history') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">HISTORY</a>
-                    </li>
-                    <li class="nav-item" style="padding-right: 33px;">
-                        <a class="nav-link" href="{{ route('contact.us') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">CONTACT</a>
-                    </li>
-                    @auth('customer')
-                <li class="nav-item px-3" style="margin-left: 128px;">
-                <a href="{{ route('profile.show') }}"
-                    class="d-flex align-items-center text-decoration-none">
-                    <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
-                    <div style="max-width:10rem;
-                                font-size:calc(1rem + 0.5vw);
-                                white-space:nowrap;
-                                overflow:hidden;
-                                text-overflow:ellipsis;">
-                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
-                    <small>Customer</small>
-                    </div>
-                            </a>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
-            <button data-bs-target="#navcol-1" data-bs-toggle="collapse" class="navbar-toggler">
-                <span class="visually-hidden">Toggle navigation</span>
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-    <main class="page faq-page">
-        <section class="clean-block clean-faq dark">
-            <div class="container">
-                <div class="block-heading"></div>
+    <main class="page service-page">
+        <section class="clean-block clean-services dark">
+            <div class="container" style="margin-top: 115px;">
+                <div class="block-heading">
+                    <h2 class="text-info">Delivery Status</h2>
+                    <p><strong>Note:</strong> Once your order status is marked as <strong>"Out for Delivery,"</strong> any changes or modifications to your order will no longer be accepted.</p>
+                </div>
                 <div class="row">
                     @foreach($orders as $order)
                     <div class="col-md-6 col-lg-4">
@@ -81,7 +43,7 @@
                                 <h4 class="card-title">Order Number: {{ $order->order_id }}</h4>
                                 <p class="card-text" style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;">
                                     Order Status: 
-                                    <span style="color: #007bff;">{{ $order->order_status }}</span>
+                                    <span style="color: #4ac9b0;">{{ $order->order_status }}</span>
                                 </p>
                                 <p class="card-text">
                                     <strong>Customer Name:</strong> {{ $order->customer->name }}<br>
@@ -152,6 +114,50 @@
             <p>© 2025 Copyright Text</p>
         </div>
     </footer>
+    <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
+        <div class="container">
+            <a class="navbar-brand logo" href="{{ route('track.orders') }}">
+                <img width="100" height="80" src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}">H2WHOA
+            </a>
+            <div class="collapse navbar-collapse text-start" id="navcol-3" style="margin-left: 242px;margin-right: 318px;">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item text-center" style="padding-right: 33px;">
+                        <a class="nav-link text-end" href="{{ route('orders.index') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">Order&nbsp;</a>
+                    </li>
+                    <li class="nav-item text-center" style="padding-right: 33px;">
+                        <a class="nav-link text-end active" href="{{ route('track.orders') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">Track</a>
+                    </li>
+                    <li class="nav-item" style="padding-right: 33px;">
+                        <a class="nav-link" href="{{ route('orders.history') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">History</a>
+                    </li>
+                    <li class="nav-item" style="padding-right: 33px;">
+                        <a class="nav-link" href="{{ route('contact.us') }}" style="width: 99px;height: 32px;text-align: center;font-size: 22px;">Contact</a>
+                    </li>
+                    @auth('customer')
+                <li class="nav-item px-3" style="margin-left: 128px;">
+                <a href="{{ route('profile.show') }}"
+                    class="d-flex align-items-center text-decoration-none">
+                    <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
+                    <div style="max-width:10rem;
+                                font-size:calc(1rem + 0.5vw); 
+                                white-space:nowrap;
+                                overflow:hidden;
+                                text-overflow:ellipsis;">
+                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                    <small>Customer</small>
+                    </div>
+                            </a>
+                        </li>
+                    @endauth
+                </ul>
+            </div>
+            <button data-bs-target="#navcol-1" data-bs-toggle="collapse" class="navbar-toggler">
+                <span class="visually-hidden">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
@@ -162,7 +168,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
 </body>
 

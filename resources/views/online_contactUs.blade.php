@@ -4,76 +4,112 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Contact Us - H2WHOA</title>
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/bootstrap/css/bootstrap.min.css') }}">
+    <title>Contact</title>
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/baguetteBox.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Banner-Heading-Image-images.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Bootstrap-Payment-Form-.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/bs-theme-overrides.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Company-Invoice.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/dh-row-titile-text-image-right-1.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/Features-Image-icons.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa//assets/css/Map-Location-5-styles.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/css/vanilla-zoom.min.css')}}">
-    <link rel="stylesheet" href="{{ asset('h2whoa/assets/fonts/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Billing-Table-with-Add-Row--Fixed-Header-Feature.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/dh-row-titile-text-image-right-1.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top py-3 shadow-sm">
+    <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="contact-us">
-                <img src="{{ asset('h2whoa/assets/img/assets/h2whoa_logo.png')}}" alt="H2WHOA Logo" width="80" height="60" class="me-2">
-                <strong class="fs-4">H2WHOA</strong>
+            <a class="navbar-brand logo" href="{{ route('contact.us') }}">
+                <img width="100" height="80" src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}">H2WHOA
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" title="Toggle navigation">
+            <button data-bs-target="#navcol-1" data-bs-toggle="collapse" class="navbar-toggler">
+                <span class="visually-hidden">Toggle navigation</span>
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item px-2">
-                        <a class="nav-link" href="orders" style="font-size: 22px;">ORDERS</a>
+            <div class="collapse navbar-collapse text-start" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="{{ route('orders.index') }}" style="font-size: 22px;">ORDERS</a>
                     </li>
-                    <li class="nav-item px-2">
-                        <a class="nav-link" href="history" style="font-size: 22px;">HISTORY</a>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="{{ route('track.orders') }}" style="font-size: 22px;">TRACK</a>
                     </li>
-                    <li class="nav-item px-2">
-                        <a class="nav-link active" href="contact-us" style="font-size: 22px;">CONTACTS</a>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="{{ route('orders.history') }}" style="font-size: 22px;">HISTORY</a>
                     </li>
-                    <li class="nav-item d-flex align-items-center px-3">
-                        <i class="far fa-user me-2" style="font-size: 31px;"></i>
+                    <li class="nav-item text-center">
+                        <a class="nav-link active" href="{{ route('contact.us') }}" style="font-size: 22px;">CONTACT</a>
                     </li>
-                        <div>
-                            <strong>KRISTOFFE</strong><br>
-                            <small>Customer</small>
-                        </div>
-                    </li>
+                    @auth('customer')
+                        <li class="nav-item px-3">
+                            <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
+                                <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
+                                <div style="max-width:10rem; font-size:calc(1rem + 0.5vw); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                                    <small>Customer</small>
+                                </div>
+                            </a>
+                        </li>
+                    @endauth
                 </ul>
             </div>
         </div>
     </nav>
+
     <main class="page">
         <section class="clean-block features">
             <div class="container">
-                <div class="block-heading">
-                    <h2 class="text-info">Features</h2>
-                </div>
-                <div class="card" style="width: 530px;">
-                    <div class="card-body" style="width: 1281px;">
-                        <h4 class="card-title" style="width: 530px;">Contact Information</h4>
-                        <p class="card-text" style="width: 530px;"><br>Poblacion Malita Davao Occidental, <br>Roxas ST., Philippines<br><br></p>
-                        <h6 class="text-muted card-subtitle mb-2" style="width: 530px;">Contact Number:</h6>
-                        <p class="card-text" style="width: 530px;">+93 323 444 555<br>+96 444 555 323</p>
-                    </div>
-                </div>
+                <div class="block-heading"></div>
                 <div class="row justify-content-center">
-                    <div class="col"><iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="400"></iframe></div>
+                    <div class="col" style="width: 1300px;">
+                        <section class="position-relative py-5">
+                            <div class="d-md-none">
+                                <iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="100%"></iframe>
+                            </div>
+                            <div class="d-none d-md-block position-absolute top-0 start-0 w-100 h-100">
+                                <iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="100%"></iframe>
+                            </div>
+                            <div class="position-relative mx-2 my-5 m-md-5">
+                                <div class="container position-relative">
+                                    <div class="row">
+                                        <div class="col-md-6 col-xl-5 col-xxl-4 offset-md-6 offset-xl-7 offset-xxl-8">
+                                            <form class="border rounded shadow p-3 p-md-4 p-lg-5" method="post" style="background: var(--bs-body-bg);">
+                                                <h3 class="text-center mb-3">Contact us</h3>
+                                                <div class="mb-3">
+                                                    <input class="form-control" type="text" name="name" placeholder="Name">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input class="form-control" type="email" name="email" placeholder="Email">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <textarea class="form-control" name="message" placeholder="Message" rows="6"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <button class="btn btn-primary" type="submit">Send</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
+
     <footer class="page-footer dark">
         <div class="container">
             <div class="row">
@@ -115,12 +151,19 @@
             <p>© 2025 Copyright Text</p>
         </div>
     </footer>
-    <script src="{{asset ('h2whoa/assets/bootstrap/js/bootstrap.min.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/baguetteBox.min.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/vanilla-zoom.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/theme.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js')}}"></script>
-    <script src="{{asset('h2whoa/assets/js/Map-Location-5-script.min.js')}}"></script>
+
+    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
 </body>
 
 </html>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LoginController;
+use Illuminate\Support\Facades\Auth;
 
 //For Customers
 Route::get('/signup', [CustomerController::class, 'create'])->name('signup.form');
@@ -36,18 +37,16 @@ Route::get('/admin-login', fn() => 'Admin Login — Coming Soon')
 
 
 Route::get('/', function () {
-    return view('homepage');
+     return view('homepage');
 });
 Route::get('/invoice', function () {
-    return view('invoice');
+     return view('invoice');
 });
 Route::get('/contact-us', function () {
-    return view('online_contactUs');
+     return view('online_contactUs');
 })->name('contact.us');
 
-Route::get('/history', function () {
-    return view('online_history');
-});
+Route::get('/order-history', [OrderController::class, 'historyOrders'])->name('orders.history');
 
 
 Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -56,16 +55,48 @@ Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 Route::get('/orders/{id}/edit', [OrderController::class, 'edit'])->name('orders.edit');
 Route::put('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
+Route::post('/orders/update-quantities', [OrderController::class, 'updateQuantities'])->name('orders.updateQuantities');
+Route::post('/orders/save-changes', [OrderController::class, 'saveChanges'])->name('orders.saveChanges');
+Route::post('/orders/save', [OrderController::class, 'save'])->name('orders.save');
 
-Route::get('/online-payment', function () {
-    return view('payment2');
-});
-Route::get('/admin-history', function () {
-    return view('admin_history');
-});
-Route::get('/admin-inventory', function () {
-    return view('admin_inventory');
-});
+Route::post('/orders/confirm', [OrderController::class, 'confirmOrder'])->name('orders.confirm');
+Route::post('/orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+
+
+Route::get('/track-orders', [OrderController::class, 'trackOrders'])->name('track.orders');
+
+
+Route::get('/locate-address', function () {
+     return view('locate_address');
+})->name('locate.address');
+
+Route::get('/mode-payment', [OrderController::class, 'modePayment'])->name('mode.payment');
+
+Route::get('/payment/cod', function () {
+     $customer = Auth::guard('customer')->user(); // Get the authenticated customer
+     return view('cod', compact('customer'));
+})->name('cod.payment');
+
+Route::get('/payment/gcash', function () {
+     return view('gcash');
+})->name('gcash.payment');
+
+
+Route::get('/admin/history', function () {
+     return view('admin_history');
+})->name('admin.history');
+Route::get('/admin/stocks', function () {
+     return view('admin_stocks');
+ })->name('admin.stocks');
+
+Route::get('/admin', function () {
+     return view('admin_index');
+})->name('admin.dashboard');
+
+Route::get('/admin/orders', function () {
+     return view('admin_orders');
+})->name('admin.orders');
+
 
 //Placeholder routes for some of those footer navigation stuff
 

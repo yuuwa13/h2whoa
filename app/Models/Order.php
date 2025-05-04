@@ -17,8 +17,10 @@ class Order extends Model
 
     protected $fillable = [
         'customer_id',
+        'payment_method_id',
         'amount_paid',
         'order_datetime',
+        'order_status', // Add this
     ];
 
     // Relationship with Customer

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Mode of Payment</title>
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+</head>
+
+<body>
+    <main class="page payment-page">
+        <section class="clean-block payment-form dark">
+            <div class="container" style="margin-top: 82px;">
+                <div class="block-heading">
+                    <h3 class="text-center">Order Summary</h3>
+                </div>
+                <div class="products">
+                    <div class="card" style="position: relative;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title">Your Order</h4>
+                                <form action="{{ route('orders.cancel') }}" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 1;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm" style="background: #dc3545;">
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            </div>
+                            <ul class="list-group" id="order-items">
+                                @foreach($cart as $index => $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $item['name'] }}</strong><br>
+                                            <label for="quantity-{{ $index }}">Quantity:</label>
+                                            <input type="number" id="quantity-{{ $index }}"
+                                                class="form-control quantity-input" value="{{ $item['quantity'] }}" min="0"
+                                                data-index="{{ $index }}"
+                                                data-price="{{ $item['total_price'] / $item['quantity'] }}"
+                                                style="width: 80px; display: inline-block;" disabled>
+                                        </div>
+                                        <div>
+                                            <span id="item-total-{{ $index }}">₱{{ number_format($item['total_price'], 2) }}</span>
+                                            <button type="button" class="btn btn-danger btn-sm remove-item"
+                                                data-index="{{ $index }}" disabled>Remove</button>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Subtotal</strong></span>
+                                <span id="subtotal-price">₱{{ number_format($subtotal, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Tax (20%)</strong></span>
+                                <span id="tax-price">₱{{ number_format($tax, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Delivery Fee</strong></span>
+                                <span>₱{{ number_format($deliveryFee, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Total</strong></span>
+                                <span id="total-price">₱{{ number_format($total, 2) }}</span>
+                            </div>
+                            <button type="button" id="edit-order" class="btn btn-secondary mt-3">Edit Order</button>
+                            <button type="button" id="save-changes" class="btn btn-primary mt-3" disabled>Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block-heading mt-4">
+                    <h3 class="text-center">Mode of Payment</h3>
+                </div>
+                <div class="products">
+                    <a class="btn btn-primary d-block w-100" role="button" href="{{ route('cod.payment') }}"
+                        style="margin-top: 19px;background: #4ac9b0;">
+                        Cash on Delivery (COD)
+                    </a>
+                    <a class="btn btn-primary d-block w-100" role="button" href="{{ route('gcash.payment') }}"
+                        style="margin-top: 19px;background: #4ac9b0;">
+                        Online Payment (GCash)
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+</body>
+
+</html>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const orderItems = document.getElementById('order-items');
+        const subtotalElement = document.getElementById('subtotal-price');
+        const taxElement = document.getElementById('tax-price');
+        const totalPriceElement = document.getElementById('total-price');
+        const editOrderButton = document.getElementById('edit-order');
+        const saveChangesButton = document.getElementById('save-changes');
+
+        let cart = @json($cart);
+
+        // Initially disable editing
+        function toggleEditing(enable) {
+            const quantityInputs = document.querySelectorAll('.quantity-input');
+            const removeButtons = document.querySelectorAll('.remove-item');
+
+            quantityInputs.forEach(input => input.disabled = !enable);
+            removeButtons.forEach(button => button.disabled = !enable);
+            saveChangesButton.disabled = !enable;
+        }
+
+        // Enable editing when "Edit Order" is clicked
+        editOrderButton.addEventListener('click', function () {
+            toggleEditing(true);
+        });
+
+        // Update totals dynamically
+        function updateTotals() {
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const quantityInput = document.getElementById(`quantity-${index}`);
+                const quantity = parseInt(quantityInput.value) || 0;
+                const pricePerUnit = parseFloat(quantityInput.dataset.price);
+
+                // Update item total
+                const itemTotal = quantity * pricePerUnit;
+                document.getElementById(`item-total-${index}`).textContent = `₱${itemTotal.toFixed(2)}`;
+
+                // Update cart data
+                cart[index].price = pricePerUnit; // Add the price key to the cart
+                cart[index].quantity = quantity;
+                cart[index].total_price = itemTotal;
+
+                // Add to subtotal
+                subtotal += itemTotal;
+            });
+
+            // Update subtotal, tax, and total
+            subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+            const tax = subtotal * 0.20;
+            taxElement.textContent = `₱${tax.toFixed(2)}`;
+            const deliveryFee = {{ $deliveryFee }};
+            const total = subtotal + tax + deliveryFee;
+            totalPriceElement.textContent = `₱${total.toFixed(2)}`;
+        }
+
+        // Handle quantity changes
+        orderItems.addEventListener('input', function (event) {
+            if (event.target.classList.contains('quantity-input')) {
+                updateTotals();
+            }
+        });
+
+        // Handle item removal
+        orderItems.addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-item')) {
+                const index = event.target.dataset.index;
+
+                // Remove item from cart
+                cart.splice(index, 1);
+
+                // Remove item from DOM
+                const itemElement = document.getElementById(`quantity-${index}`).closest('li');
+                itemElement.remove();
+
+                // Update totals
+                updateTotals();
+            }
+        });
+
+        // Save changes to the session
+        saveChangesButton.addEventListener('click', function () {
+            fetch('{{ route('orders.saveChanges') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ products: cart }) // Ensure cart includes the 'price' key
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('Changes saved successfully!');
+                        location.reload(); // Optionally reload the page
+                    } else {
+                        alert(`Failed to save changes: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving changes. Please try again.');
+                });
+        });
+        // Disable editing by default
+        toggleEditing(false);
+    }); 
+</script>

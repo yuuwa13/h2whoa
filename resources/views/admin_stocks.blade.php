@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>History</title>
+    <title>Stocks</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
@@ -19,7 +19,7 @@
     <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark" style="background: rgba(255, 255, 255, 0.04);font-size: 22px;color: rgba(133,135,150,0.04);">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.history') }}">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.stocks') }}">
                     <picture>
                         <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}">
                     </picture>
@@ -29,9 +29,9 @@
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -64,41 +64,74 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">History</h3>
+                    <h3 class="text-dark mb-4">Stocks</h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
+                            <div class="row">
+                                <div class="col-md-6 text-nowrap">
+                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-md-end dataTables_filter" id="dataTable_filter">
+                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;">
+                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Stocks</strong>
+                                        </button>
+                                        <label class="form-label">
+                                            <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Delivery Details</th>
-                                            <th>Order Summary</th>
-                                            <th>Payment Information</th>
-                                            <th>Status</th>
+                                            <th>Image</th>
+                                            <th>Item</th>
+                                            <th>Price</th>
+                                            <th>Stock Quantity</th>
+                                            <th>Update</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <!-- Dummy Data -->
                                         <tr>
-                                            <td>0001<br>April 24, 2025<br>2:15 PM</td>
-                                            <td>Angelica Ramos<br>09388690077<br>Malita, Davao City</td>
-                                            <td>Door-to-door</td>
-                                            <td>2 x Purified Water (5 Gallon)<br>1 x Gallon Cap<br><strong>Subtotal:</strong> ₱70.00<br><strong>Delivery Fee:</strong> ₱10.00<br><strong>Total:</strong> ₱80.00</td>
-                                            <td><strong>Payment Method:</strong> Cash on Delivery<br><strong>Transaction Ref:</strong> COD-042425-001</td>
-                                            <td><strong>Delivered</strong></td>
+                                            <td><img class="rounded-circle me-2" width="30" height="30" src="{{ asset('h2whoa_admin/assets/img/elements/Water.png') }}"></td>
+                                            <td>Purified Water</td>
+                                            <td>₱ 30.00</td>
+                                            <td>50</td>
+                                            <td>
+                                                <i class="far fa-edit"></i>
+                                                <i class="far fa-trash-alt" style="margin-left: 15px;"></i>
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td>0002<br>April 24, 2025<br>3:00 PM</td>
-                                            <td>John Doe<br>09123456789<br>Davao City</td>
-                                            <td>Pick-Up</td>
-                                            <td>1 x Alkaline Water (5 Gallon)<br><strong>Subtotal:</strong> ₱40.00<br><strong>Total:</strong> ₱40.00</td>
-                                            <td><strong>Payment Method:</strong> GCash<br><strong>Transaction Ref:</strong> GCASH-042425-002</td>
-                                            <td><strong>Cancelled</strong></td>
+                                            <td><img class="rounded-circle me-2" width="30" height="30" src="{{ asset('h2whoa_admin/assets/img/elements/Caps.png') }}"></td>
+                                            <td>Gallon Caps</td>
+                                            <td>₱ 5.00</td>
+                                            <td>100</td>
+                                            <td>
+                                                <i class="far fa-edit"></i>
+                                                <i class="far fa-trash-alt" style="margin-left: 15px;"></i>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 align-self-center">
+                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 2 of 2</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination">
+                                            <li class="page-item disabled"><a class="page-link" aria-label="Previous" href="#"><span aria-hidden="true">«</span></a></li>
+                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                            <li class="page-item"><a class="page-link" aria-label="Next" href="#"><span aria-hidden="true">»</span></a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
