@@ -25,9 +25,28 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
 <body>
+    @if(session('delivery_confirmed'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Delivery Confirmed',
+                    text: '{{ session('delivery_confirmed') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
+
     <main class="page service-page">
         <section class="clean-block clean-services dark">
             <div class="container" style="margin-top: 115px;">
@@ -143,7 +162,7 @@
                                 white-space:nowrap;
                                 overflow:hidden;
                                 text-overflow:ellipsis;">
-                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
                     <small>Customer</small>
                     </div>
                             </a>
@@ -169,6 +188,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

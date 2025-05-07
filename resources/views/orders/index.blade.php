@@ -56,8 +56,8 @@
                                                                 <input type="number"
                                                                     name="products[{{ $product->stock_id }}][quantity]"
                                                                     id="quantity-{{ $product->stock_id }}"
-                                                                    class="form-control quantity-input" value="" min="0" placeholder="0"
-                                                                    max="{{ $product->quantity }}" 
+                                                                    class="form-control quantity-input" value="" min="0"
+                                                                    placeholder="0" max="{{ $product->quantity }}"
                                                                     data-id="{{ $product->stock_id }}"
                                                                     data-name="{{ $product->product_name }}"
                                                                     data-price="{{ $product->price_per_unit }}">
@@ -124,6 +124,23 @@
         </section>
     </main>
 
+    <!-- SweetAlert2 Toast Notification -->
+    @if(session('order_canceled'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Canceled',
+                    text: '{{ session('order_canceled') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const quantityInputs = document.querySelectorAll('.quantity-input');
@@ -136,69 +153,69 @@
             let subtotal = 0;
 
             quantityInputs.forEach(input => {
-        input.addEventListener('input', function () {
-            const id = this.dataset.id;
-            const price = parseFloat(this.dataset.price);
-            const quantity = parseInt(this.value) || 0;
+                input.addEventListener('input', function () {
+                    const id = this.dataset.id;
+                    const price = parseFloat(this.dataset.price);
+                    const quantity = parseInt(this.value) || 0;
 
-            // Update the total price for the product
-            const totalPrice = quantity * price;
-            document.getElementById(`total-price-${id}`).textContent = `₱${totalPrice.toFixed(2)}`;
+                    // Update the total price for the product
+                    const totalPrice = quantity * price;
+                    document.getElementById(`total-price-${id}`).textContent = `₱${totalPrice.toFixed(2)}`;
 
-            // Update the subtotal
-            updateSubtotal();
-        });
-    });
+                    // Update the subtotal
+                    updateSubtotal();
+                });
+            });
 
-    function updateSubtotal() {
-        subtotal = 0;
-        summaryItemsContainer.innerHTML = ''; // Clear the summary items container
+            function updateSubtotal() {
+                subtotal = 0;
+                summaryItemsContainer.innerHTML = ''; // Clear the summary items container
 
-        let hasItems = false; // Track if there are items in the summary
+                let hasItems = false; // Track if there are items in the summary
 
-        // Calculate the subtotal from the total prices and update the summary
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            const price = parseFloat(input.dataset.price);
-            const quantity = parseInt(input.value) || 0;
+                // Calculate the subtotal from the total prices and update the summary
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    const price = parseFloat(input.dataset.price);
+                    const quantity = parseInt(input.value) || 0;
 
-            if (quantity > 0) {
-                hasItems = true; // Mark that there are items in the summary
+                    if (quantity > 0) {
+                        hasItems = true; // Mark that there are items in the summary
 
-                // Add the item to the summary
-                const itemName = input.dataset.name;
-                const itemTotal = price * quantity;
+                        // Add the item to the summary
+                        const itemName = input.dataset.name;
+                        const itemTotal = price * quantity;
 
-                const summaryItem = document.createElement('div');
-                summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
-                summaryItem.innerHTML = `
-                    <span>
-                        <strong>${itemName}</strong><br>
-                        Quantity: ${quantity}
-                    </span>
-                    <span>₱${itemTotal.toFixed(2)}</span>
-                `;
-                summaryItemsContainer.appendChild(summaryItem);
+                        const summaryItem = document.createElement('div');
+                        summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+                        summaryItem.innerHTML = `
+                        <span>
+                            <strong>${itemName}</strong><br>
+                            Quantity: ${quantity}
+                        </span>
+                        <span>₱${itemTotal.toFixed(2)}</span>
+                    `;
+                        summaryItemsContainer.appendChild(summaryItem);
 
-                // Add to the subtotal
-                subtotal += itemTotal;
+                        // Add to the subtotal
+                        subtotal += itemTotal;
+                    }
+                });
+
+                // Update the subtotal element
+                subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+
+                // Update the tax (20% of subtotal)
+                const tax = subtotal * 0.20;
+                taxElement.textContent = `₱${tax.toFixed(2)}`;
+
+                // Update the total price (subtotal + tax + delivery fee)
+                const deliveryFee = 50;
+                const total = subtotal + tax + deliveryFee;
+                totalPriceElement.textContent = `₱${total.toFixed(2)}`;
+
+                // Enable or disable the proceed button based on whether there are items
+                proceedButton.disabled = !hasItems;
             }
         });
-
-        // Update the subtotal element
-        subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
-
-        // Update the tax (20% of subtotal)
-        const tax = subtotal * 0.20;
-        taxElement.textContent = `₱${tax.toFixed(2)}`;
-
-        // Update the total price (subtotal + tax + delivery fee)
-        const deliveryFee = 50;
-        const total = subtotal + tax + deliveryFee;
-        totalPriceElement.textContent = `₱${total.toFixed(2)}`;
-
-        // Enable or disable the proceed button based on whether there are items
-        proceedButton.disabled = !hasItems;
-    }
-});
     </script>
 @endsection

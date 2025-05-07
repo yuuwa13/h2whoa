@@ -5,6 +5,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\GcashController;
 
 //For Customers
 Route::get('/signup', [CustomerController::class, 'create'])->name('signup.form');
@@ -72,22 +73,28 @@ Route::get('/locate-address', function () {
 
 Route::get('/mode-payment', [OrderController::class, 'modePayment'])->name('mode.payment');
 
-Route::get('/payment/cod', function () {
-     $customer = Auth::guard('customer')->user(); // Get the authenticated customer
-     return view('cod', compact('customer'));
-})->name('cod.payment');
+Route::get('/delivery-details', function () {
+    $customer = Auth::guard('customer')->user(); // Get the authenticated customer
+    return view('delivery_details', compact('customer'));
+})->name('delivery.details');
 
 Route::get('/payment/gcash', function () {
-     return view('gcash');
+     $subtotal = session('subtotal', 0);
+     $deliveryFee = session('deliveryFee', 50);
+     $total = session('total', $subtotal + $deliveryFee);
+
+     return view('gcash', compact('subtotal', 'deliveryFee', 'total'));
 })->name('gcash.payment');
 
+Route::post('/gcash/store', [GcashController::class, 'store'])->name('gcash.store');
+Route::put('/customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
 
 Route::get('/admin/history', function () {
      return view('admin_history');
 })->name('admin.history');
 Route::get('/admin/stocks', function () {
      return view('admin_stocks');
- })->name('admin.stocks');
+})->name('admin.stocks');
 
 Route::get('/admin', function () {
      return view('admin_index');
