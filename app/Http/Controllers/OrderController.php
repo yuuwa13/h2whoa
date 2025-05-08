@@ -312,7 +312,7 @@ class OrderController extends Controller
             }
 
             // Get the payment method from the request
-            $paymentMethodId = $request->input('payment_method_id', 1); // Default to COD (1)
+            $paymentMethodId = $request->input('payment_method_id'); // 1 for COD, 2 for GCash
 
             // Create the order
             $order = Order::create([
@@ -349,8 +349,10 @@ class OrderController extends Controller
             // Clear the session cart
             $request->session()->forget(['cart', 'subtotal', 'tax', 'deliveryFee', 'total']);
 
+            session()->flash('delivery_confirmed', 'Your delivery details have been confirmed successfully!');
+
             // Redirect to the track orders page
-            return redirect()->route('track.orders')->with('success', 'Your order has been placed successfully!');
+            return redirect()->route('track.orders');
         } catch (\Exception $e) {
             Log::error('Error confirming order: ' . $e->getMessage());
             return redirect()->route('mode.payment')->withErrors(['error' => 'An error occurred while placing your order.']);
@@ -361,6 +363,9 @@ class OrderController extends Controller
     {
         // Clear the session data related to the order
         $request->session()->forget(['cart', 'subtotal', 'tax', 'deliveryFee', 'total']);
+
+        // Add a flash message to the session
+        session()->flash('order_canceled', 'The order has been successfully canceled.');
 
         // Redirect back to the orders page
         return redirect()->route('orders.index')->with('success', 'Your order has been canceled.');

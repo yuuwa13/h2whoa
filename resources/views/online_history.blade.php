@@ -55,7 +55,7 @@
                                 white-space:nowrap;
                                 overflow:hidden;
                                 text-overflow:ellipsis;">
-                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
                     <small>Customer</small>
                     </div>
                             </a>

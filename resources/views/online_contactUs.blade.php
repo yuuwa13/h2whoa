@@ -6,21 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Contact</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/fonts/fontawesome-all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Billing-Table-with-Add-Row--Fixed-Header-Feature.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('h2whoa_user/assets/css/Billing-Table-with-Add-Row--Fixed-Header-Feature.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/dh-row-titile-text-image-right-1.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('h2whoa_user/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
@@ -52,11 +56,15 @@
                         <a class="nav-link active" href="{{ route('contact.us') }}" style="font-size: 22px;">CONTACT</a>
                     </li>
                     @auth('customer')
-                        <li class="nav-item px-3">
+                        <li class="nav-item px-3" style="margin-left: 128px;">
                             <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
                                 <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
-                                <div style="max-width:10rem; font-size:calc(1rem + 0.5vw); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                                <div style="max-width:10rem;
+                                    font-size:calc(1rem + 0.5vw);
+                                    white-space:nowrap;
+                                    overflow:hidden;
+                                    text-overflow:ellipsis;">
+                                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
                                     <small>Customer</small>
                                 </div>
                             </a>
@@ -75,25 +83,33 @@
                     <div class="col" style="width: 1300px;">
                         <section class="position-relative py-5">
                             <div class="d-md-none">
-                                <iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="100%"></iframe>
+                                <iframe allowfullscreen="" frameborder="0"
+                                    src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%"
+                                    height="100%"></iframe>
                             </div>
                             <div class="d-none d-md-block position-absolute top-0 start-0 w-100 h-100">
-                                <iframe allowfullscreen="" frameborder="0" src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%" height="100%"></iframe>
+                                <iframe allowfullscreen="" frameborder="0"
+                                    src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%"
+                                    height="100%"></iframe>
                             </div>
                             <div class="position-relative mx-2 my-5 m-md-5">
                                 <div class="container position-relative">
                                     <div class="row">
                                         <div class="col-md-6 col-xl-5 col-xxl-4 offset-md-6 offset-xl-7 offset-xxl-8">
-                                            <form class="border rounded shadow p-3 p-md-4 p-lg-5" method="post" style="background: var(--bs-body-bg);">
+                                            <form class="border rounded shadow p-3 p-md-4 p-lg-5" method="post"
+                                                style="background: var(--bs-body-bg);">
                                                 <h3 class="text-center mb-3">Contact us</h3>
                                                 <div class="mb-3">
-                                                    <input class="form-control" type="text" name="name" placeholder="Name">
+                                                    <input class="form-control" type="text" name="name"
+                                                        placeholder="Name">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <input class="form-control" type="email" name="email" placeholder="Email">
+                                                    <input class="form-control" type="email" name="email"
+                                                        placeholder="Email">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <textarea class="form-control" name="message" placeholder="Message" rows="6"></textarea>
+                                                    <textarea class="form-control" name="message" placeholder="Message"
+                                                        rows="6"></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <button class="btn btn-primary" type="submit">Send</button>
@@ -156,11 +172,14 @@
     <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
+    <script
+        src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>

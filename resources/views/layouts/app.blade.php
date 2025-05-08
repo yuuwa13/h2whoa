@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -54,7 +56,7 @@
                                 white-space:nowrap;
                                 overflow:hidden;
                                 text-overflow:ellipsis;">
-                    <strong>{{ Auth::guard('customer')->user()->name }}</strong><br>
+                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
                     <small>Customer</small>
                     </div>
                             </a>
@@ -120,6 +122,7 @@
 <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
 <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
 <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     @stack('scripts')
 </body>

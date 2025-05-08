@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -34,10 +36,11 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="card-title">Your Order</h4>
+                                <!-- Cancel Order Button as an X Icon -->
                                 <form action="{{ route('orders.cancel') }}" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 1;">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm" style="background: #dc3545;">
-                                        Cancel Order
+                                    <button type="submit" class="btn1 btn-danger btn-sm" style="background: none; border: none; color: #dc3545; font-size: 1.2rem;">
+                                        <i class="fas fa-times"></i> <!-- Font Awesome X Icon -->
                                     </button>
                                 </form>
                             </div>
@@ -54,7 +57,8 @@
                                                 style="width: 80px; display: inline-block;" disabled>
                                         </div>
                                         <div>
-                                            <span id="item-total-{{ $index }}">₱{{ number_format($item['total_price'], 2) }}</span>
+                                            <span
+                                                id="item-total-{{ $index }}">₱{{ number_format($item['total_price'], 2) }}</span>
                                             <button type="button" class="btn btn-danger btn-sm remove-item"
                                                 data-index="{{ $index }}" disabled>Remove</button>
                                         </div>
@@ -78,8 +82,11 @@
                                 <span><strong>Total</strong></span>
                                 <span id="total-price">₱{{ number_format($total, 2) }}</span>
                             </div>
+                            <!-- Edit Order Button -->
                             <button type="button" id="edit-order" class="btn btn-secondary mt-3">Edit Order</button>
-                            <button type="button" id="save-changes" class="btn btn-primary mt-3" disabled>Save Changes</button>
+                            <!-- Save Changes Button (Initially Hidden) -->
+                            <button type="button" id="save-changes" class="btn btn-primary mt-3"
+                                style="display: none;">Save Changes</button>
                         </div>
                     </div>
                 </div>
@@ -88,10 +95,17 @@
                     <h3 class="text-center">Mode of Payment</h3>
                 </div>
                 <div class="products">
-                    <a class="btn btn-primary d-block w-100" role="button" href="{{ route('cod.payment') }}"
+                    <a class="btn btn-primary d-block w-100" role="button" href="{{ route('delivery.details') }}"
+                        onclick="event.preventDefault(); document.getElementById('delivery-details-form').submit();"
                         style="margin-top: 19px;background: #4ac9b0;">
                         Cash on Delivery (COD)
                     </a>
+                    <form id="delivery-details-form" action="{{ route('delivery.details') }}" method="GET"
+                        style="display: none;">
+                        @csrf
+                        @php session(['payment_method_id' => 1]); @endphp <!-- 1 for COD -->
+                    </form>
+
                     <a class="btn btn-primary d-block w-100" role="button" href="{{ route('gcash.payment') }}"
                         style="margin-top: 19px;background: #4ac9b0;">
                         Online Payment (GCash)
@@ -104,6 +118,7 @@
     <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
@@ -117,15 +132,23 @@
         const saveChangesButton = document.getElementById('save-changes');
 
         let cart = @json($cart);
+        let originalCart = JSON.parse(JSON.stringify(cart)); // Clone the original cart to track changes
 
-        // Initially disable editing
+        // Initially disable editing and hide the "Save Changes" button
+        toggleEditing(false);
+        saveChangesButton.style.display = 'none';
+        saveChangesButton.disabled = true; // Disable the button initially
+
+        // Function to toggle editing
         function toggleEditing(enable) {
             const quantityInputs = document.querySelectorAll('.quantity-input');
             const removeButtons = document.querySelectorAll('.remove-item');
 
             quantityInputs.forEach(input => input.disabled = !enable);
             removeButtons.forEach(button => button.disabled = !enable);
-            saveChangesButton.disabled = !enable;
+
+            // Show or hide the "Save Changes" button
+            saveChangesButton.style.display = enable ? 'block' : 'none';
         }
 
         // Enable editing when "Edit Order" is clicked
@@ -162,6 +185,9 @@
             const deliveryFee = {{ $deliveryFee }};
             const total = subtotal + tax + deliveryFee;
             totalPriceElement.textContent = `₱${total.toFixed(2)}`;
+
+            // Check if changes have been made
+            checkForChanges();
         }
 
         // Handle quantity changes
@@ -188,6 +214,12 @@
             }
         });
 
+        // Check if changes have been made to the cart
+        function checkForChanges() {
+            const hasChanges = JSON.stringify(cart) !== JSON.stringify(originalCart);
+            saveChangesButton.disabled = !hasChanges; // Enable or disable the button based on changes
+        }
+
         // Save changes to the session
         saveChangesButton.addEventListener('click', function () {
             fetch('{{ route('orders.saveChanges') }}', {
@@ -196,7 +228,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({ products: cart }) // Ensure cart includes the 'price' key
+                body: JSON.stringify({ products: cart })
             })
                 .then(response => {
                     if (!response.ok) {
@@ -206,18 +238,53 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        alert('Changes saved successfully!');
-                        location.reload(); // Optionally reload the page
+                        // Show success toast notification
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Changes Saved!',
+                            text: 'Your changes have been saved successfully.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 4000, 
+                            timerProgressBar: true,
+                        }).then(() => {
+                            // Reload the page after the toast finishes
+                            location.reload();
+                        });
+
+                        toggleEditing(false); // Disable editing after saving
                     } else {
-                        alert(`Failed to save changes: ${data.message}`);
+                        // Show error toast notification
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Save Failed',
+                            text: `Failed to save changes: ${data.message}`,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while saving changes. Please try again.');
+                    // Show error toast notification
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while saving changes. Please try again.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
                 });
         });
+
         // Disable editing by default
         toggleEditing(false);
-    }); 
+    });
 </script>
