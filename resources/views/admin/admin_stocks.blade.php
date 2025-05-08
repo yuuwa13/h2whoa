@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>History</title>
+    <title>Stocks</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body id="page-top">
     <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark" style="background: rgba(255, 255, 255, 0.04);font-size: 22px;color: rgba(133,135,150,0.04);">
             <div class="container-fluid d-flex flex-column p-0">
-                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.history') }}">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.stocks') }}">
                     <picture>
                         <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}">
                     </picture>
@@ -29,10 +30,10 @@
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -66,71 +67,95 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">History</h3>
+                    <h3 class="text-dark mb-4">Stocks</h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="table-responsive">
-                                @php
-                                    use App\Models\Order;
-
-                                    $orders = Order::whereIn('order_status', ['Delivered', 'Cancelled'])
-                                        ->orderByDesc('order_datetime')
-                                        ->paginate(10);
-                                @endphp
-
-                                <table class="table">
+                            <div class="row">
+                                <div class="col-md-6 text-nowrap">
+                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-md-end dataTables_filter" id="dataTable_filter">
+                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;" onclick="window.location='{{ route('stocks.create') }}'">
+                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Stocks</strong>
+                                        </button>
+                                        <label class="form-label">
+                                            <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Delivery Details</th>
-                                            <th>Order Summary</th>
-                                            <th>Payment Information</th>
-                                            <th>Status</th>
+                                            <th>Image</th>
+                                            <th>Item</th>
+                                            <th>Price</th>
+                                            <th>Stock Quantity</th>
+                                            <th>Availability</th>
+                                            <th>Quantifiable</th>
+                                            <th>Created At</th>
+                                            <th>Last Updated At</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($orders as $order)
-                                            <tr>
-                                                <td>{{ $order->order_id }}<br>
-                                                    @if ($order->order_datetime)
-                                                        {{ $order->order_datetime->timezone('Asia/Manila')->format('F d, Y') }}<br>
-                                                        {{ $order->order_datetime->timezone('Asia/Manila')->format('h:i A') }}<br>
-                                                    @else
-                                                        <span class="text-danger">Invalid Date</span><br>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $order->customer->name }}<br>{{ $order->customer->phone }}<br>{{ $order->customer->address }}</td>
-                                                <td>{{ $order->delivery_details ?? 'N/A' }}</td>
-                                                <td>
-                                                    @foreach ($order->orderDetails as $detail)
-                                                        {{ $detail->quantity }} x {{ $detail->stock->product_name }}<br>
-                                                    @endforeach
-                                                    <strong>Subtotal:</strong> ₱{{ number_format($order->calculateTotalPrice(), 2) }}<br>
-                                                    <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 0, 2) }}<br>
-                                                    <strong>Total:</strong> ₱{{ number_format($order->amount_paid, 2) }}
-                                                </td>
-                                                <td><strong>Payment Method:</strong> {{ $order->payment_method->name ?? 'N/A' }}<br><strong>Transaction Ref:</strong> {{ $order->transaction_reference ?? 'N/A' }}</td>
-                                                <td>
-                                                    <strong>{{ $order->order_status }}</strong><br>
-                                                    @if ($order->updated_at)
-                                                        <small>{{ $order->updated_at->timezone('Asia/Manila')->format('F d, Y h:i A') }}</small>
-                                                    @else
-                                                        <small class="text-danger">No Update Time</small>
-                                                    @endif
-                                                </td>
-                                            </tr>
+                                        @forelse($stocks as $stock)
+                                        <tr>
+                                            <td>
+                                                <img class="rounded-circle me-2" width="30" height="30" src="{{ asset($stock->image_path ?? 'assets/img/elements/default.png') }}" alt="{{ $stock->product_name }}">
+                                            </td>
+                                            <td>{{ $stock->product_name }}</td>
+                                            <td>₱ {{ number_format($stock->price_per_unit, 2) }}</td>
+                                            <td>
+                                                @if ($stock->is_quantifiable)
+                                                    {{ $stock->quantity }}
+                                                @else
+                                                    <span class="text-muted">Not Applicable</span><br>
+                                                    <small>Max Orders: {{ $stock->maximum_orders_allowed }}</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background-color: {{ $stock->is_available ? 'green' : 'red' }}; color: white;">
+                                                    {{ $stock->is_available ? 'Available' : 'Unavailable' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="is_quantifiable" {{ $stock->is_quantifiable ? 'checked' : '' }} disabled>
+                                            </td>
+                                            <td>{{ $stock->created_at ? $stock->created_at->timezone('Asia/Manila')->format('F d, Y; H:i:s e') : 'N/A' }}</td>
+                                            <td>{{ $stock->updated_at ? $stock->updated_at->timezone('Asia/Manila')->format('F d, Y; H:i:s e') : 'N/A' }}</td>
+                                            <td>
+                                                <a href="{{ route('stocks.edit', $stock->stock_id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Edit">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('stocks.destroy', $stock->stock_id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this stock item?');">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="6" class="text-center">No orders found.</td>
-                                            </tr>
-                                        @endforelse
+                                        <tr>
+                                            <td colspan="9" class="text-center">No stock data available</td>
+                                        </tr>
+                                        @endforelse                                        
                                     </tbody>
                                 </table>
-
-                                <div class="d-flex justify-content-center mt-3">
-                                    {{ $orders->links() }}
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6 align-self-center">
+                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">
+                                        Showing {{ $stocks->firstItem() }} to {{ $stocks->lastItem() }} of {{ $stocks->total() }}
+                                    </p>
                                 </div>
+                                <div class="col-md-6">
+                                    {{ $stocks->links('pagination::bootstrap-5') }}
+                                </div>                    
                             </div>
                         </div>
                     </div>
@@ -153,6 +178,24 @@
     <script src="{{ asset('h2whoa_admin/assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---1-Index-Table-with-Search--Sort-Filters.js') }}"></script>
     <script src="{{ asset('h2whoa_admin/assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---Material-UI-Actions.js') }}"></script>
     <script src="{{ asset('h2whoa_admin/assets/js/theme.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const successMessage = '{{ session('success') }}';
+
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: successMessage,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

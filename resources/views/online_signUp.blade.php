@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -50,7 +51,6 @@
                           name="address"
                           id="address"
                           value="{{ old('address') }}"
-                          required
                         >
                         @error('address')
                           <div class="invalid-feedback">{{ $message }}</div>
@@ -98,9 +98,14 @@
                         <label class="form-check-label" for="confirm_info">I confirm that the information provided is accurate</label>
                     </div>
 
+                    <div class="form-check mb-3">
+                        <input name="human" class="form-check-input" type="checkbox" id="human">
+                        <label class="form-check-label" for="human">Check if you are human</label>
+                    </div>
+
                     {{-- Sign Up Button --}}
                     <div class="position-relative">
-                        <button id="signup-btn" class="btn btn-primary" type="button" disabled style="background: #4ac9b0; width: 100%;">SIGN UP</button>
+                        <button id="signup-btn" class="btn btn-primary" type="submit" style="background: #4ac9b0; width: 100%;">SIGN UP</button>
                         <div id="hover-tooltip" class="position-absolute bg-white border px-2 py-1" style="bottom: -40px; left: 0; display: none;">You are required to fill all forms and check all boxes</div>
                     </div>
 
@@ -178,6 +183,40 @@
     <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const signupBtn = document.getElementById('signup-btn');
+            signupBtn.disabled = false; // Temporarily enable the button
+
+            const successMessage = '{{ session('success') }}';
+            const errorMessage = '{{ session('error') }}';
+
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: successMessage,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+
+            if (errorMessage) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

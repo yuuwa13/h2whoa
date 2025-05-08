@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Stocks</title>
+    <title>Sales</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
@@ -29,9 +29,11 @@
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -50,7 +52,7 @@
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="far fa-user" style="margin-right: 21px;font-size: 27px;"></i><span class="d-none d-lg-inline me-2 text-gray-600 small">Station Attendant</span></a>
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="far fa-user" style="margin-right: 21px;font-size: 27px;"></i><span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
                                         <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
                                         <a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
@@ -64,7 +66,7 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Stocks</h3>
+                    <h3 class="text-dark mb-4">Sales</h3>
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="row">
@@ -73,8 +75,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="text-md-end dataTables_filter" id="dataTable_filter">
-                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;">
-                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Stocks</strong>
+                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;" onclick="window.location='{{ route('sales.create') }}'">
+                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Sale</strong>
                                         </button>
                                         <label class="form-label">
                                             <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
@@ -86,51 +88,75 @@
                                 <table class="table my-0" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>Image</th>
-                                            <th>Item</th>
-                                            <th>Price</th>
-                                            <th>Stock Quantity</th>
-                                            <th>Update</th>
+                                            <th>Sale ID</th>
+                                            <th>Order ID</th>
+                                            <th>Sale Type</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Dummy Data -->
+                                        @forelse($sales as $sale)
                                         <tr>
-                                            <td><img class="rounded-circle me-2" width="30" height="30" src="{{ asset('h2whoa_admin/assets/img/elements/Water.png') }}"></td>
-                                            <td>Purified Water</td>
-                                            <td>₱ 30.00</td>
-                                            <td>50</td>
+                                            <td>{{ $sale->sale_id }}</td>
+                                            <td>{{ $sale->order_id }}</td>
+                                            <td>{{ ucfirst($sale->sale_type) }}</td>
+                                            <td>{{ $sale->created_at ? $sale->created_at->timezone('Asia/Manila')->format('F d, Y; H:i:s e') : 'N/A' }}</td>
                                             <td>
-                                                <i class="far fa-edit"></i>
-                                                <i class="far fa-trash-alt" style="margin-left: 15px;"></i>
+                                                <a href="{{ route('sales.edit', $sale->sale_id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Edit">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('sales.destroy', $sale->sale_id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this sale?');">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
+                                        @if($sale->sale_type == 'web-based')
                                         <tr>
-                                            <td><img class="rounded-circle me-2" width="30" height="30" src="{{ asset('h2whoa_admin/assets/img/elements/Caps.png') }}"></td>
-                                            <td>Gallon Caps</td>
-                                            <td>₱ 5.00</td>
-                                            <td>100</td>
-                                            <td>
-                                                <i class="far fa-edit"></i>
-                                                <i class="far fa-trash-alt" style="margin-left: 15px;"></i>
+                                            <td colspan="5">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product Name</th>
+                                                            <th>Quantity</th>
+                                                            <th>Price Per Unit</th>
+                                                            <th>Total Price</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($sale->order->orderDetails as $detail)
+                                                        <tr>
+                                                            <td>{{ $detail->stock->product_name }}</td>
+                                                            <td>{{ $detail->quantity }}</td>
+                                                            <td>₱{{ number_format($detail->stock->price_per_unit, 2) }}</td>
+                                                            <td>₱{{ number_format($detail->total_price, 2) }}</td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </td>
                                         </tr>
+                                        @endif
+                                        @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">No sales data available</td>
+                                        </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="row">
+                            <div class="row mt-3">
                                 <div class="col-md-6 align-self-center">
-                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 2 of 2</p>
+                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">
+                                        Showing {{ $sales->firstItem() }} to {{ $sales->lastItem() }} of {{ $sales->total() }}
+                                    </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
-                                        <ul class="pagination">
-                                            <li class="page-item disabled"><a class="page-link" aria-label="Previous" href="#"><span aria-hidden="true">«</span></a></li>
-                                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                            <li class="page-item"><a class="page-link" aria-label="Next" href="#"><span aria-hidden="true">»</span></a></li>
-                                        </ul>
-                                    </nav>
+                                    {{ $sales->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
                         </div>

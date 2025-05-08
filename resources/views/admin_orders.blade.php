@@ -31,7 +31,9 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -50,7 +52,7 @@
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="far fa-user" style="margin-right: 21px;font-size: 27px;"></i><span class="d-none d-lg-inline me-2 text-gray-600 small">Station Attendant</span></a>
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="far fa-user" style="margin-right: 21px;font-size: 27px;"></i><span class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
                                         <a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a>
                                         <a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a>
@@ -79,22 +81,59 @@
                                             <th>Status</th>
                                         </tr>
                                     </thead>
+                                    @php
+                                        use App\Models\Order;
+
+                                        $orders = Order::whereNotIn('order_status', ['Delivered', 'Cancelled'])
+                                            ->orderByDesc('order_datetime')
+                                            ->paginate(10);
+                                    @endphp
+
                                     <tbody>
-                                        <!-- Dummy Data -->
-                                        <tr>
-                                            <td>0001<br><br>April 24, 2025<br>2:15 PM<br><br><br></td>
-                                            <td>Angelica Ramos<br>09388690077<br>Malita, Davao City<br><br><br></td>
-                                            <td>Door-to-door<br><br><br></td>
-                                            <td>2 x Purified Water (5 Gallon)<br>1 x Gallon Cap<br><br><strong>Subtotal:</strong> ₱70.00<br><strong>Transaction Reference #:</strong> COD-042425-001<br><strong>Delivery Fee:</strong> ₱10.00<br><strong>Total Amount Paid:</strong> ₱80.00</td>
-                                            <td><strong>Payment Method:</strong> <br>Cash on Delivery<br><br><strong>Transaction Reference #:</strong> <br>COD-042425-001<br><br></td>
-                                            <td>
-                                                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button">Pending</button>
-                                                    <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <!-- Add more dummy data as needed -->
+                                        @forelse ($orders as $order)
+                                            <tr>
+                                                <td>
+                                                    @if ($order->order_datetime)
+                                                        {{ $order->order_datetime->timezone('Asia/Manila')->format('F d, Y') }}<br>
+                                                        {{ $order->order_datetime->timezone('Asia/Manila')->format('h:i A') }}
+                                                    @else
+                                                        <span class="text-danger">Invalid Date</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $order->customer->name }}<br>{{ $order->customer->phone }}<br>{{ $order->customer->address }}</td>
+                                                <td>{{ $order->delivery_details ?? 'N/A' }}</td>
+                                                <td>
+                                                    @foreach ($order->orderDetails as $detail)
+                                                        {{ $detail->quantity }} x {{ $detail->stock->product_name }}<br>
+                                                    @endforeach
+                                                    <strong>Subtotal:</strong> ₱{{ number_format($order->calculateTotalPrice(), 2) }}<br>
+                                                    <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 0, 2) }}<br>
+                                                    <strong>Total:</strong> ₱{{ number_format($order->amount_paid, 2) }}
+                                                </td>
+                                                <td><strong>Payment Method:</strong> {{ $order->payment_method->name ?? 'N/A' }}<br><strong>Transaction Ref:</strong> {{ $order->transaction_reference ?? 'N/A' }}</td>
+                                                <td>
+                                                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order->order_id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <select name="order_status" class="form-select" onchange="this.form.submit()">
+                                                            <option value="Pending" {{ $order->order_status == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                                            <option value="Out for Delivery" {{ $order->order_status == 'Out for Delivery' ? 'selected' : '' }}>Out for Delivery</option>
+                                                            <option value="Delivered" {{ $order->order_status == 'Delivered' ? 'selected' : '' }}>Delivered</option>
+                                                            <option value="Cancelled" {{ $order->order_status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                        </select>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">No orders found.</td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
+
+                                    <div class="d-flex justify-content-center mt-3">
+                                        {{ $orders->links() }}
+                                    </div>
                                 </table>
                             </div>
                         </div>

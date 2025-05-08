@@ -8,6 +8,8 @@ use App\Models\OrderDetail;
 use App\Models\Stock;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Sale;
+use App\Models\SaleDetail;
 
 class OrderController extends Controller
 {
@@ -80,15 +82,8 @@ class OrderController extends Controller
         // Add order details and calculate total price
         foreach ($validated['items'] as $item) {
             $stock = \App\Models\Stock::find($item['stock_id']);
-            if ($stock->quantity < $item['quantity']) {
-                return redirect()->back()->withErrors(['error' => 'Not enough stock for ' . $stock->product_name]);
-            }
 
-            // Deduct stock
-            $stock->quantity -= $item['quantity'];
-            $stock->save();
-
-            // Add to order details
+            // Add to order details without decrementing stock
             \App\Models\OrderDetail::create([
                 'order_id' => $order->order_id,
                 'stock_id' => $item['stock_id'],
@@ -390,5 +385,54 @@ class OrderController extends Controller
             ->get();
 
         return view('online_history', compact('orders'));
+    }
+
+    public function updateStatus(Request $request, $orderId)
+    {
+        $validated = $request->validate([
+            'order_status' => 'required|string|in:Pending,Out for Delivery,Delivered,Cancelled',
+        ]);
+
+        $order = Order::findOrFail($orderId);
+
+        // Inside the updateStatus method, add logging
+        Log::info('Updating order status', ['order_id' => $orderId, 'new_status' => $validated['order_status']]);
+
+        // Check if the status is being updated to 'Delivered'
+        if ($validated['order_status'] === 'Delivered' && $order->order_status !== 'Delivered') {
+            Log::info('Order status set to Delivered', ['order_id' => $orderId]);
+
+            // Automatically create a Sale record for web-based transactions
+            $sale = Sale::create([
+                'order_id' => $order->order_id,
+                'sale_type' => 'web',
+            ]);
+            Log::info('Sale record created', ['order_id' => $orderId, 'sale_id' => $sale->sale_id]);
+
+            foreach ($order->orderDetails as $detail) {
+                $stock = $detail->stock;
+
+                // Decrement stock quantity only when status is 'Delivered'
+                if ($stock->is_quantifiable) {
+                    $stock->decrement('quantity', $detail->quantity);
+                    Log::info('Stock decremented', ['stock_id' => $stock->stock_id, 'quantity' => $detail->quantity]);
+                }
+
+                // Create SaleDetail for the web-based sale
+                SaleDetail::create([
+                    'sale_id' => $sale->sale_id, // Link to the corresponding sale
+                    'product_name' => $stock->product_name,
+                    'quantity' => $detail->quantity,
+                    'price_per_unit' => $stock->price_per_unit,
+                    'total_price' => $detail->total_price,
+                ]);
+            }
+        }
+
+        $order->order_status = $validated['order_status'];
+        $order->save();
+        Log::info('Order status updated successfully', ['order_id' => $orderId, 'final_status' => $order->order_status]);
+
+        return redirect()->route('admin.orders')->with('success', 'Order status updated successfully.');
     }
 }

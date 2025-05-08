@@ -53,20 +53,21 @@
                                                                 </a>
                                                             </td>
                                                             <td>
-                                                                <input type="number"
-                                                                    name="products[{{ $product->stock_id }}][quantity]"
-                                                                    id="quantity-{{ $product->stock_id }}"
-                                                                    class="form-control quantity-input" value="" min="0" placeholder="0"
-                                                                    max="{{ $product->quantity }}" 
-                                                                    data-id="{{ $product->stock_id }}"
-                                                                    data-name="{{ $product->product_name }}"
+                                                                @if ($product->is_available)
+                                                                    <input type="number" name="products[{{ $product->stock_id }}][quantity]" 
+                                                                    id="quantity-{{ $product->stock_id }}" class="form-control quantity-input" 
+                                                                    value="" min="0" placeholder="0" max="{{ $product->quantity }}" 
+                                                                    data-id="{{ $product->stock_id }}" 
+                                                                    data-name="{{ $product->product_name }}" 
                                                                     data-price="{{ $product->price_per_unit }}">
-                                                                <input type="hidden"
-                                                                    name="products[{{ $product->stock_id }}][name]"
-                                                                    value="{{ $product->product_name }}">
-                                                                <input type="hidden"
-                                                                    name="products[{{ $product->stock_id }}][price]"
-                                                                    value="{{ $product->price_per_unit }}">
+                                                                @else
+                                                                    <div style="position: relative;">
+                                                                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); z-index: 1;">
+                                                                            <span style="color: red; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Product Unavailable</span>
+                                                                        </div>
+                                                                        <input type="number" class="form-control" disabled>
+                                                                    </div>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 <span id="total-price-{{ $product->stock_id }}">₱0.00</span>

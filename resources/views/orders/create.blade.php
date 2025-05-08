@@ -20,7 +20,9 @@
             <div class="item mb-3">
                 <select name="items[0][stock_id]" class="form-control mb-2" required>
                     @foreach($stocks as $stock)
-                    <option value="{{ $stock->stock_id }}">{{ $stock->product_name }} (₱{{ $stock->price_per_unit }})</option>
+                        @if ($stock->is_available)
+                            <option value="{{ $stock->stock_id }}">{{ $stock->product_name }} (₱{{ $stock->price_per_unit }})</option>
+                        @endif
                     @endforeach
                 </select>
                 <input type="number" name="items[0][quantity]" class="form-control" placeholder="Quantity" required>
@@ -46,7 +48,9 @@
         newItem.innerHTML = `
             <select name="items[${itemIndex}][stock_id]" class="form-control mb-2" required>
                 @foreach($stocks as $stock)
-                <option value="{{ $stock->stock_id }}">{{ $stock->product_name }} (₱{{ $stock->price_per_unit }})</option>
+                    @if ($stock->is_available)
+                        <option value="{{ $stock->stock_id }}">{{ $stock->product_name }} (₱{{ $stock->price_per_unit }})</option>
+                    @endif
                 @endforeach
             </select>
             <input type="number" name="items[${itemIndex}][quantity]" class="form-control" placeholder="Quantity" required>
