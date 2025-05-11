@@ -38,12 +38,16 @@ class StockController extends Controller
     {
         $validated = $request->validate([
             'product_name' => 'required|string|max:255',
-            'quantity' => $request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable|integer|min:0',
+            'quantity' => $request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable',
             'price_per_unit' => 'required|numeric|min:0',
             'is_available' => 'sometimes|boolean',
             'is_quantifiable' => 'sometimes|boolean',
-            'maximum_orders_allowed' => 'required|integer|min:0',
+            'maximum_orders_allowed' => !$request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable',
         ]);
+
+        // Ensure default values for undefined keys
+        $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0);
+        $validated['quantity'] = $request->input('quantity', 0);
 
         if ($request->has('is_quantifiable') && $validated['maximum_orders_allowed'] > $validated['quantity']) {
             return redirect()->back()->withErrors(['maximum_orders_allowed' => 'Maximum orders allowed cannot exceed the quantity.'])->withInput();
@@ -91,8 +95,12 @@ class StockController extends Controller
             'price_per_unit' => 'required|numeric|min:0',
             'is_available' => 'sometimes|boolean',
             'is_quantifiable' => 'sometimes|boolean',
-            'maximum_orders_allowed' => 'required|integer|min:0',
+            'maximum_orders_allowed' => !$request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable|integer|min:0',
         ]);
+
+        // Ensure default values for undefined keys
+        $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0);
+        $validated['quantity'] = $request->input('quantity', 0);
 
         if ($request->has('is_quantifiable') && $validated['maximum_orders_allowed'] > $validated['quantity']) {
             return redirect()->back()->withErrors(['maximum_orders_allowed' => 'Maximum orders allowed cannot exceed the quantity.'])->withInput();

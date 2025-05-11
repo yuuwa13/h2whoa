@@ -84,7 +84,8 @@
                                     @php
                                         use App\Models\Order;
 
-                                        $orders = Order::whereNotIn('order_status', ['Delivered', 'Cancelled'])
+                                        $orders = Order::with(['customer', 'orderDetails.stock', 'paymentMethod', 'gcashDetail'])
+                                            ->whereNotIn('order_status', ['Delivered', 'Cancelled'])
                                             ->orderByDesc('order_datetime')
                                             ->paginate(10);
                                     @endphp
@@ -110,7 +111,14 @@
                                                     <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 0, 2) }}<br>
                                                     <strong>Total:</strong> ₱{{ number_format($order->amount_paid, 2) }}
                                                 </td>
-                                                <td><strong>Payment Method:</strong> {{ $order->payment_method->name ?? 'N/A' }}<br><strong>Transaction Ref:</strong> {{ $order->transaction_reference ?? 'N/A' }}</td>
+                                                <td><strong>Payment Method:</strong> {{ $order->paymentMethod->method_name ?? 'N/A' }}<br>
+                                                    <strong>Transaction Ref:</strong> 
+                                                    @if ($order->payment_method_id === 2)
+                                                        {{ $order->gcashDetail->reference_number ?? 'N/A' }}
+                                                    @else
+                                                        {{ $order->transaction_reference ?? 'N/A' }}
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <form method="POST" action="{{ route('admin.orders.updateStatus', $order->order_id) }}">
                                                         @csrf

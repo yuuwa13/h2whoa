@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Sale;
 use App\Models\SaleDetail;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -205,14 +206,35 @@ class OrderController extends Controller
             $cart = [];
             $subtotal = 0;
 
-            foreach ($products as $product) {
-                $price = $product['price'] ?? ($product['total_price'] / $product['quantity'] ?? 0);
+            // Debugging: Log the entire products array to identify missing keys
+            Log::info('Products array:', $products); // Debugging log
 
-                if ($product['quantity'] > 0) {
-                    $itemTotal = $product['quantity'] * $price;
+            // Debugging: Log the Stock data for each product
+            foreach ($products as $product) {
+                // Check if stock_id is present and valid
+                if (empty($product['stock_id'])) {
+                    Log::warning('Missing or invalid stock_id for product:', $product); // Debugging log
+                    continue; // Skip this product
+                }
+
+                $stock = Stock::find($product['stock_id']);
+                if (!$stock) {
+                    Log::warning('Stock not found for stock_id:', ['stock_id' => $product['stock_id']]); // Debugging log
+                    continue; // Skip this product
+                }
+
+                Log::info('Stock Data:', $stock->toArray()); // Debugging log
+
+                // Ensure required keys exist and provide default values if missing
+                $name = $stock->product_name ?? 'Unknown Product';
+                $quantity = $product['quantity'] ?? 0;
+                $price = $stock->price_per_unit ?? 0;
+
+                if ($quantity > 0) {
+                    $itemTotal = $quantity * $price;
                     $cart[] = [
-                        'name' => $product['name'],
-                        'quantity' => $product['quantity'],
+                        'name' => $name,
+                        'quantity' => $quantity,
                         'price' => $price,
                         'total_price' => $itemTotal,
                     ];
@@ -233,6 +255,10 @@ class OrderController extends Controller
                 'deliveryFee' => $deliveryFee,
                 'total' => $total,
             ]);
+
+            // Debugging: Log session data and redirection
+            Log::info('Session Data:', session()->all()); // Debugging log
+            Log::info('Redirecting to mode.payment'); // Debugging log
 
             // Redirect to the mode-payment page
             return redirect()->route('mode.payment');
@@ -314,6 +340,25 @@ class OrderController extends Controller
             // Get the payment method from the request
             $paymentMethodId = $request->input('payment_method_id'); // 1 for COD, 2 for GCash
 
+            // Debugging: Log customer_id and payment_method_id
+            Log::info('Confirming order with customer_id:', ['customer_id' => $customer->customer_id]);
+            Log::info('Confirming order with payment_method_id:', ['payment_method_id' => $request->input('payment_method_id')]);
+
+            // Validate customer_id and payment_method_id
+            if (!\App\Models\Customer::find($customer->customer_id)) {
+                Log::error('Invalid customer_id:', ['customer_id' => $customer->customer_id]);
+                return redirect()->route('mode.payment')->withErrors(['error' => 'Invalid customer ID.']);
+            }
+
+            // Debugging: Log query result for payment_method_id
+            $paymentMethodExists = \DB::table('payment_methods')->where('payment_method_id', $paymentMethodId)->exists();
+            Log::info('Payment method exists:', ['payment_method_id' => $paymentMethodId, 'exists' => $paymentMethodExists]);
+
+            if (!$paymentMethodExists) {
+                Log::error('Invalid payment_method_id:', ['payment_method_id' => $paymentMethodId]);
+                return redirect()->route('mode.payment')->withErrors(['error' => 'Invalid payment method ID.']);
+            }
+
             // Create the order
             $order = Order::create([
                 'customer_id' => $customer->customer_id,
@@ -337,13 +382,6 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'total_price' => $item['total_price'],
                 ]);
-
-                // Deduct stock quantity
-                $stock = Stock::where('product_name', $item['name'])->first();
-                if ($stock) {
-                    $stock->quantity -= $item['quantity'];
-                    $stock->save();
-                }
             }
 
             // Clear the session cart

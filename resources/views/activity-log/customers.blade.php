@@ -12,7 +12,6 @@
                     <th>Account Created</th>
                     <th>Actions</th>
                     <th>Order History</th>
-                    <th>Logs</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,7 +22,6 @@
                     <td>{{ $customer->created_at->format('F d, Y h:i A') }}</td>
                     <td><a href="{{ route('admin.activity-log.customer-actions', $customer->customer_id) }}" class="btn btn-secondary btn-sm">View Actions</a></td>
                     <td><a href="{{ route('admin.activity-log.customer-details', $customer->customer_id) }}" class="btn btn-primary btn-sm">View Order History</a></td>
-                    <td><a href="{{ route('admin.activity-log.customer-logs', $customer->customer_id) }}" class="btn btn-info btn-sm">View Logs</a></td>
                 </tr>
                 @endforeach
             </tbody>

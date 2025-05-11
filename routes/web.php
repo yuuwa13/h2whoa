@@ -44,6 +44,9 @@ Route::get('/forgot-password', fn() => 'Forgot Password — Coming Soon')
 Route::get('/admin-login', fn() => 'Admin Login — Coming Soon')
      ->name('admin.login');
 
+// Admin Login Routes
+Route::get('/admin-login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login');
+Route::post('/admin-login', [LoginController::class, 'adminLogin'])->name('admin.login.submit');
 
 Route::get('/', function () {
      return view('homepage');

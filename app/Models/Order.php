@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PaymentMethod;
 
 class Order extends Model
 {
@@ -43,6 +44,18 @@ class Order extends Model
     public function sale()
     {
         return $this->hasOne(Sale::class, 'order_id', 'order_id');
+    }
+
+    // Relationship with PaymentMethod
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'payment_method_id');
+    }
+
+    // Relationship with GcashDetail
+    public function gcashDetail()
+    {
+        return $this->hasOne(GcashDetail::class, 'order_id', 'order_id');
     }
 
     // Calculate total price dynamically from order details

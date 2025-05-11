@@ -22,11 +22,15 @@ class GcashController extends Controller
             $imagePath = $request->file('image')->store('gcash_receipts', 'public');
         }
 
+        // Retrieve the order ID from the session or request
+        $orderId = $request->input('order_id') ?? session('order_id');
+
         // Save GCash details to the database
         GcashDetail::create([
             'name' => $request->input('name'),
             'reference_number' => $request->input('reference_number'),
             'image' => $imagePath,
+            'order_id' => $orderId, // Associate with the order
         ]);
 
         // Store the payment method in the session

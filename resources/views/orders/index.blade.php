@@ -44,7 +44,7 @@
                                                         <tr>
                                                             <td>
                                                                 <img class="img-fluid d-block mx-auto image"
-                                                                    src="{{ asset('h2whoa_user/assets/img/elements/default.png') }}">
+                                                                    src="{{ asset('h2whoa_user/assets/img/elements/Water.png') }}">
                                                                 <a class="product-name">
                                                                     <br><strong>{{ strtoupper($product->product_name) }}</strong><br><br>
                                                                     <span>Amount:
@@ -60,6 +60,7 @@
                                                                     data-id="{{ $product->stock_id }}" 
                                                                     data-name="{{ $product->product_name }}" 
                                                                     data-price="{{ $product->price_per_unit }}">
+                                                                    <input type="hidden" name="products[{{ $product->stock_id }}][stock_id]" value="{{ $product->stock_id }}">
                                                                 @else
                                                                     <div style="position: relative;">
                                                                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); z-index: 1;">

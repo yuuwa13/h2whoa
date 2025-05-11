@@ -15,9 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        // Seed the payment_methods table with default values
+        \DB::table('payment_methods')->insertOrIgnore([
+            ['payment_method_id' => 1, 'method_name' => 'Cash on Delivery'],
+            ['payment_method_id' => 2, 'method_name' => 'G-Cash'],
         ]);
     }
 }

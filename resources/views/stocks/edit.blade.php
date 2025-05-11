@@ -47,7 +47,6 @@
                 class="form-control @error('quantity') is-invalid @enderror"
                 value="{{ old('quantity', $stock->quantity) }}"
             >
-            <input type="hidden" id="hidden_quantity" name="quantity" value="{{ old('quantity', $stock->quantity) }}">
             @error('quantity')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror

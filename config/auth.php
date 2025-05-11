@@ -117,6 +117,17 @@ return [
     |
     */
 
-    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'admin' => [
+        'email' => env('ADMIN_EMAIL', 'admin@gmail.com'),
+        'password' => env('ADMIN_PASSWORD'), // Replace with a securely hashed password
+    ],
+
+    //'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    // Add admin credentials for manual setup
+    //'admin' => [
+    //    'email' => env('ADMIN_EMAIL', 'admin@example.com'),
+    //    'password' => env('ADMIN_PASSWORD', bcrypt('admin123')), // Replace with a securely hashed password
+    //],
 
 ];

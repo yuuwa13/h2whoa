@@ -110,7 +110,7 @@
                                                     <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 0, 2) }}<br>
                                                     <strong>Total:</strong> ₱{{ number_format($order->amount_paid, 2) }}
                                                 </td>
-                                                <td><strong>Payment Method:</strong> {{ $order->payment_method->name ?? 'N/A' }}<br><strong>Transaction Ref:</strong> {{ $order->transaction_reference ?? 'N/A' }}</td>
+                                                <td><strong>Payment Method:</strong> {{ $order->payment_method->method_name ?? 'N/A' }}<br><strong>Transaction Ref:</strong> {{ $order->transaction_reference ?? 'N/A' }}</td>
                                                 <td>
                                                     <strong>{{ $order->order_status }}</strong><br>
                                                     @if ($order->updated_at)

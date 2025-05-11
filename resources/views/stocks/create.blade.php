@@ -140,14 +140,12 @@
         function toggleFields() {
             if (isQuantifiableCheckbox.checked) {
                 quantityField.disabled = false;
-                quantityField.required = true;
                 maxOrdersField.disabled = true;
-                maxOrdersField.required = false;
+                maxOrdersField.value = ''; // Clear value when disabled
             } else {
                 quantityField.disabled = true;
-                quantityField.required = false;
                 maxOrdersField.disabled = false;
-                maxOrdersField.required = true;
+                quantityField.value = ''; // Clear value when disabled
             }
         }
 
