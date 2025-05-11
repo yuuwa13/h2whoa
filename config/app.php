@@ -137,6 +137,7 @@ return [
     'aliases' => [
         'Hash' => Illuminate\Support\Facades\Hash::class,
         'DB' => Illuminate\Support\Facades\DB::class,
+        'Auth' => Illuminate\Support\Facades\Auth::class,
     ],
 
 ];

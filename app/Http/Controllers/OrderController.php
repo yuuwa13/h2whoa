@@ -465,8 +465,6 @@ class OrderController extends Controller
 
     return redirect()->route('orders.index')->with('success', 'Address and delivery fee updated successfully!');
 }
-    }
-
     public function updateStatus(Request $request, $orderId)
     {
         $validated = $request->validate([

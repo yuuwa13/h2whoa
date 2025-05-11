@@ -13,7 +13,11 @@
                         <div class="col-md-6">
                             <h4 style="width: 500px;">Your Address</h4>
                             <p style="width: 500px;">
-                                {{ Auth::guard('customer')->user()->address }}
+                                @if(Auth::guard('customer')->check())
+                                    {{ Auth::guard('customer')->user()->address }}
+                                @else
+                                    <span class="text-danger">You are not logged in. Please <a href="{{ route('login.form') }}">log in</a> to view your address.</span>
+                                @endif
                             </p>
                         </div>
                         <div class="col-md-6">
