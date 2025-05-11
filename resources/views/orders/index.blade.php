@@ -12,7 +12,9 @@
                         <!-- Address Section -->
                         <div class="col-md-6">
                             <h4 style="width: 500px;">Your Address</h4>
-                            <p style="width: 500px;">Apo ni Lola, San Antonio<br>Matina, Davao City</p>
+                            <p style="width: 500px;">
+                                {{ Auth::guard('customer')->user()->address }}
+                            </p>
                         </div>
                         <div class="col-md-6">
                             <a class="btn btn-primary btn-lg d-block w-100" role="button"
@@ -21,7 +23,12 @@
                                 <i class="fas fa-map-marker" style="font-size: 24px; margin-right: 33px;"></i>Locate Address
                             </a>
                         </div>
-                    </div>
+
+                        @if(!session('selected_address') && !Auth::guard('customer')->user()->address)
+                            <div class="alert alert-warning mt-3" role="alert">
+                                Please select your delivery address before proceeding to payment.
+                            </div>
+                        @endif
 
                     <!-- Products Table -->
                     <div class="container">
@@ -81,46 +88,47 @@
                                     </div>
                                 </div>
 
-                                <!-- Summary Section -->
-                                <div class="col-md-12 col-lg-4">
-                                    <div class="bg-body-tertiary summary">
-                                        <h3>Summary</h3>
-                                        <div id="summary-items">
-                                            <!-- Summary items will be dynamically added here -->
+                                    <!-- Summary Section -->
+                                    <div class="col-md-12 col-lg-4">
+                                        <div class="bg-body-tertiary summary">
+                                            <h3>Summary</h3>
+                                            <div id="summary-items">
+                                                <!-- Summary items will be dynamically added here -->
+                                            </div>
+                                            <h4 class="border-primary-subtle"
+                                                style="border-color: var(--bs-primary-border-subtle); margin-top: 20px;">
+                                                <span class="text">Subtotal</span>
+                                                <span id="subtotal-price" class="price">₱0.00</span>
+                                                <!-- Initialize as ₱0.00 -->
+                                            </h4>
+                                            <h4 class="border-primary-subtle"
+                                                style="border-color: var(--bs-primary-border-subtle);">
+                                                <span class="text">Tax (12%)</span>
+                                                <span id="tax-price" class="price">₱0.00</span> <!-- Initialize as ₱0.00 -->
+                                            </h4>
+                                            <h4 class="border-primary-subtle"
+                                                style="border-color: var(--bs-primary-border-subtle);">
+                                                <span class="text">Delivery Fee</span>
+                                                <span id="delivery-fee"
+                                                    class="price">₱{{ number_format(session('delivery_fee', 20), 2) }}</span>
+                                            </h4>
+                                            <h4 class="border-primary-subtle"
+                                                style="border-color: var(--bs-primary-border-subtle);">
+                                                <span class="text">Total</span>
+                                                <span id="total-price" class="price">₱0.00</span>
+                                                <!-- Initialize as ₱50.00 (delivery fee only) -->
+                                            </h4>
+                                            <button type="submit" id="proceed-to-payment"
+                                                class="btn btn-primary btn-lg d-block w-100"
+                                                style="background: #4ac9b0; margin-top: 40px;" {{ session('selected_address') ? '' : 'disabled' }}>
+                                                <i class="fas fa-arrow-circle-right"
+                                                    style="font-size: 24px; margin-right: 33px;"></i>Proceed to Payment
+                                            </button>
                                         </div>
-                                        <h4 class="border-primary-subtle"
-                                            style="border-color: var(--bs-primary-border-subtle); margin-top: 20px;">
-                                            <span class="text">Subtotal</span>
-                                            <span id="subtotal-price" class="price">₱0.00</span>
-                                            <!-- Initialize as ₱0.00 -->
-                                        </h4>
-                                        <h4 class="border-primary-subtle"
-                                            style="border-color: var(--bs-primary-border-subtle);">
-                                            <span class="text">Tax (20%)</span>
-                                            <span id="tax-price" class="price">₱0.00</span> <!-- Initialize as ₱0.00 -->
-                                        </h4>
-                                        <h4 class="border-primary-subtle"
-                                            style="border-color: var(--bs-primary-border-subtle);">
-                                            <span class="text">Delivery Fee</span>
-                                            <span class="price">₱50.00</span> <!-- Delivery fee is static -->
-                                        </h4>
-                                        <h4 class="border-primary-subtle"
-                                            style="border-color: var(--bs-primary-border-subtle);">
-                                            <span class="text">Total</span>
-                                            <span id="total-price" class="price">₱50.00</span>
-                                            <!-- Initialize as ₱50.00 (delivery fee only) -->
-                                        </h4>
-                                        <button type="submit" id="proceed-to-payment"
-                                            class="btn btn-primary btn-lg d-block w-100"
-                                            style="background: #4ac9b0; margin-top: 40px;" disabled>
-                                            <i class="fas fa-arrow-circle-right"
-                                                style="font-size: 24px; margin-right: 33px;"></i>Proceed to Payment
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </form>
             </div>
         </section>
@@ -190,12 +198,12 @@
                         const summaryItem = document.createElement('div');
                         summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
                         summaryItem.innerHTML = `
-                        <span>
-                            <strong>${itemName}</strong><br>
-                            Quantity: ${quantity}
-                        </span>
-                        <span>₱${itemTotal.toFixed(2)}</span>
-                    `;
+                    <span>
+                        <strong>${itemName}</strong><br>
+                        Quantity: ${quantity}
+                    </span>
+                    <span>₱${itemTotal.toFixed(2)}</span>
+                `;
                         summaryItemsContainer.appendChild(summaryItem);
 
                         // Add to the subtotal
@@ -206,12 +214,15 @@
                 // Update the subtotal element
                 subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
 
-                // Update the tax (20% of subtotal)
-                const tax = subtotal * 0.20;
+                // Calculate the tax (12% of subtotal)
+                const tax = subtotal * 0.12;
                 taxElement.textContent = `₱${tax.toFixed(2)}`;
 
-                // Update the total price (subtotal + tax + delivery fee)
-                const deliveryFee = 50;
+                // Retrieve the delivery fee from the DOM
+                const deliveryFeeElement = document.getElementById('delivery-fee'); // Select the delivery fee element by id
+                const deliveryFee = parseFloat(deliveryFeeElement.textContent.replace('₱', '')) || 20; // Default to 20 if not set
+
+                // Calculate the total (subtotal + tax + delivery fee)
                 const total = subtotal + tax + deliveryFee;
                 totalPriceElement.textContent = `₱${total.toFixed(2)}`;
 

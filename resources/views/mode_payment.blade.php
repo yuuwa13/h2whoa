@@ -37,9 +37,11 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="card-title">Your Order</h4>
                                 <!-- Cancel Order Button as an X Icon -->
-                                <form action="{{ route('orders.cancel') }}" method="POST" style="position: absolute; top: 10px; right: 10px; z-index: 1;">
+                                <form action="{{ route('orders.cancel') }}" method="POST"
+                                    style="position: absolute; top: 10px; right: 10px; z-index: 1;">
                                     @csrf
-                                    <button type="submit" class="btn1 btn-danger btn-sm" style="background: none; border: none; color: #dc3545; font-size: 1.2rem;">
+                                    <button type="submit" class="btn1 btn-danger btn-sm"
+                                        style="background: none; border: none; color: #dc3545; font-size: 1.2rem;">
                                         <i class="fas fa-times"></i> <!-- Font Awesome X Icon -->
                                     </button>
                                 </form>
@@ -76,7 +78,7 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span><strong>Delivery Fee</strong></span>
-                                <span>₱{{ number_format($deliveryFee, 2) }}</span>
+                                <span>₱{{ number_format(session('delivery_fee', 20), 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span><strong>Total</strong></span>
@@ -246,7 +248,7 @@
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 4000, 
+                            timer: 4000,
                             timerProgressBar: true,
                         }).then(() => {
                             // Reload the page after the toast finishes
