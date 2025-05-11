@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&libraries=places"></script>
 </head>
 
 <body>
@@ -49,7 +51,9 @@
                     </div>
                     <div class="item">
                         <p class="item-name">Delivery Address</p>
-                        <p class="item-description">{{ $customer->address }}</p>
+                        <p class="item-description">
+                            {{ Auth::guard('customer')->user()->address }}
+                        </p>
                     </div>
                     <div class="item"><span class="price"></span></div>
                     <div class="d-flex justify-content-between">
@@ -69,7 +73,7 @@
                     <!-- Edit Details Modal -->
                     <div class="modal fade" id="editDetailsModal" tabindex="-1" aria-labelledby="editDetailsModalLabel"
                         aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <form action="{{ route('customer.update', $customer->customer_id) }}" method="POST"
                                     id="edit-details-form">
@@ -93,15 +97,18 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="address" class="form-label">Delivery Address</label>
-                                            <textarea class="form-control" id="address" name="address" rows="3"
-                                                required>{{ $customer->address }}</textarea>
+                                            <input type="text" class="form-control" id="search-box"
+                                                placeholder="Search for a location">
+                                            <div id="map" style="height: 400px; margin-top: 10px;"></div>
+                                            <input type="hidden" id="address" name="address"
+                                                value="{{ $customer->address }}">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Cancel</button>
                                         <button type="submit" class="btn btn-primary" id="save-changes-button"
-                                            style="background: #4ac9b0;" disabled>Save Changes</button>
+                                            style="background: #4ac9b0;">Save Changes</button>
                                     </div>
                                 </form>
                             </div>
@@ -125,7 +132,80 @@
                             });
                         </script>
                     @endif
+                    <script>
+                        let map, marker, geocoder, autocomplete;
 
+                        function initMap() {
+                            geocoder = new google.maps.Geocoder();
+
+                            // Get the customer's current address from the hidden input field
+                            const customerAddress = document.getElementById("address").value;
+
+                            // Geocode the customer's address to get latitude and longitude
+                            geocoder.geocode({ address: customerAddress }, function (results, status) {
+                                if (status === "OK" && results[0]) {
+                                    const location = results[0].geometry.location;
+
+                                    // Initialize the map centered on the customer's address
+                                    map = new google.maps.Map(document.getElementById("map"), {
+                                        center: location,
+                                        zoom: 15,
+                                    });
+
+                                    // Place a draggable marker on the map
+                                    marker = new google.maps.Marker({
+                                        map: map,
+                                        draggable: true,
+                                        position: location,
+                                    });
+
+                                    // Add autocomplete to the search box
+                                    const searchBox = document.getElementById("search-box");
+                                    autocomplete = new google.maps.places.Autocomplete(searchBox);
+                                    autocomplete.bindTo("bounds", map);
+
+                                    // Update the map and marker when a place is selected
+                                    autocomplete.addListener("place_changed", function () {
+                                        const place = autocomplete.getPlace();
+                                        if (!place.geometry || !place.geometry.location) {
+                                            alert("No details available for the selected location.");
+                                            return;
+                                        }
+
+                                        // Move the map and marker to the selected location
+                                        map.setCenter(place.geometry.location);
+                                        map.setZoom(15);
+                                        marker.setPosition(place.geometry.location);
+
+                                        // Update the address field
+                                        document.getElementById("address").value = place.formatted_address || place.name;
+                                    });
+
+                                    // Update the address field when the marker is dragged
+                                    google.maps.event.addListener(marker, "dragend", function () {
+                                        geocodePosition(marker.getPosition());
+                                    });
+                                } else {
+                                    alert("Geocode was not successful for the following reason: " + status);
+                                }
+                            });
+                        }
+
+                        function geocodePosition(position) {
+                            geocoder.geocode({ location: position }, function (results, status) {
+                                if (status === "OK" && results[0]) {
+                                    document.getElementById("address").value = results[0].formatted_address;
+                                } else {
+                                    alert("Geocode was not successful for the following reason: " + status);
+                                }
+                            });
+                        }
+
+                        // Initialize the map when the modal is shown
+                        document.getElementById('editDetailsModal').addEventListener('shown.bs.modal', function () {
+                            initMap();
+                        });
+                    </script>
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const form = document.getElementById('edit-details-form');

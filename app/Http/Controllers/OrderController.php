@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class OrderController extends Controller
 {
     // Display all orders
-    public function index()
+    public function index(Request $request)
     {
         // Fetch all available stocks
         $products = Stock::all(); // Fetch all stocks from the database
@@ -38,14 +38,17 @@ class OrderController extends Controller
             $subtotal += $itemTotal;
         }
 
-        // Calculate tax (20% of subtotal)
-        $tax = $subtotal * 0.20;
+        // Calculate tax (12% of subtotal)
+        $tax = $subtotal * 0.12;
 
-        // Add delivery fee
-        $deliveryFee = 50;
+        // Retrieve the dynamic delivery fee from the session
+        $deliveryFee = session('delivery_fee', 20); // Default to 20 if not set
 
         // Calculate the total price
         $total = $subtotal + $tax + $deliveryFee;
+
+        // Check if the customer has an address and set it as the default selected_address
+        $customer = Auth::guard('customer')->user();
 
         // Pass data to the view
         return view('orders.index', compact('products', 'cart', 'subtotal', 'tax', 'deliveryFee', 'total'));
@@ -195,14 +198,18 @@ class OrderController extends Controller
         $cart = $request->session()->get('cart', []);
         $subtotal = $request->session()->get('subtotal', 0);
         $tax = $request->session()->get('tax', 0);
-        $deliveryFee = $request->session()->get('deliveryFee', 50);
-        $total = $request->session()->get('total', $subtotal + $tax + $deliveryFee);
+        $deliveryFee = $request->session()->get('delivery_fee', 20); // Default to 20 if not set
+        $total = $subtotal + $tax + $deliveryFee;
 
         // Pass data to the mode_payment view
         return view('mode_payment', compact('cart', 'subtotal', 'tax', 'deliveryFee', 'total'));
     }
     public function save(Request $request)
     {
+        if (!session('selected_address')) {
+            return redirect()->route('orders.index')->withErrors(['error' => 'Please select your delivery address before proceeding to payment.']);
+        }
+
         try {
             $products = $request->input('products', []);
 
@@ -226,8 +233,8 @@ class OrderController extends Controller
             }
 
             // Calculate tax and total
-            $tax = $subtotal * 0.20;
-            $deliveryFee = 50;
+            $tax = $subtotal * 0.12;
+            $deliveryFee = session('delivery_fee', 20); // Default to 20 if not set
             $total = $subtotal + $tax + $deliveryFee;
 
             // Save to session
@@ -235,7 +242,7 @@ class OrderController extends Controller
                 'cart' => $cart,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
-                'deliveryFee' => $deliveryFee,
+                'delivery_fee' => $deliveryFee,
                 'total' => $total,
             ]);
 
@@ -273,8 +280,8 @@ class OrderController extends Controller
             }
 
             // Calculate tax and total
-            $tax = $subtotal * 0.20;
-            $deliveryFee = 50;
+            $tax = $subtotal * 0.12;
+            $deliveryFee = session('delivery_fee', 20); // Default to 20 if not set
             $total = $subtotal + $tax + $deliveryFee;
 
             // Save to session
@@ -282,7 +289,7 @@ class OrderController extends Controller
                 'cart' => $cart,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
-                'deliveryFee' => $deliveryFee,
+                'delivery_fee' => $deliveryFee,
                 'total' => $total,
             ]);
 
@@ -299,25 +306,28 @@ class OrderController extends Controller
 
     public function confirmOrder(Request $request)
     {
+        Log::info('Session Data:', $request->session()->all());
         try {
             // Retrieve the cart and customer details from the session
             $cart = $request->session()->get('cart', []);
             $subtotal = $request->session()->get('subtotal', 0);
             $tax = $request->session()->get('tax', 0);
-            $deliveryFee = $request->session()->get('deliveryFee', 50);
-            $total = $request->session()->get('total', $subtotal + $tax + $deliveryFee);
+            $deliveryFee = $request->session()->get('delivery_fee', 20); // Default to 20 if not set
+            $total = $subtotal + $tax + $deliveryFee;
             $customer = Auth::guard('customer')->user();
 
+            // Check if the customer is logged in
             if (!$customer) {
                 return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to place an order.']);
             }
 
+            // Check if the cart is empty
             if (empty($cart)) {
                 return redirect()->route('mode.payment')->withErrors(['error' => 'Your cart is empty.']);
             }
 
             // Get the payment method from the request
-            $paymentMethodId = $request->input('payment_method_id'); // 1 for COD, 2 for GCash
+            $paymentMethodId = $request->input('payment_method_id', 1); // Default to COD if not provided
 
             // Create the order
             $order = Order::create([
@@ -352,14 +362,18 @@ class OrderController extends Controller
             }
 
             // Clear the session cart
-            $request->session()->forget(['cart', 'subtotal', 'tax', 'deliveryFee', 'total']);
+            $request->session()->forget(['cart', 'subtotal', 'tax', 'delivery_fee', 'total']);
 
+            // Flash success message
             session()->flash('delivery_confirmed', 'Your delivery details have been confirmed successfully!');
 
             // Redirect to the track orders page
             return redirect()->route('track.orders');
         } catch (\Exception $e) {
+            // Log the error for debugging
             Log::error('Error confirming order: ' . $e->getMessage());
+
+            // Redirect back to the mode payment page with an error message
             return redirect()->route('mode.payment')->withErrors(['error' => 'An error occurred while placing your order.']);
         }
     }
@@ -396,4 +410,26 @@ class OrderController extends Controller
 
         return view('online_history', compact('orders'));
     }
+    public function saveAddress(Request $request)
+{
+    $request->validate([
+        'address' => 'required|string|max:255',
+        'delivery_fee' => 'required|numeric|min:20', // Validate the delivery fee
+    ]);
+
+    // Save the selected address and delivery fee to the session
+    session([
+        'selected_address' => $request->input('address'),
+        'delivery_fee' => $request->input('delivery_fee'),
+    ]);
+
+    // Check if the customer is authenticated
+    $customer = \App\Models\Customer::find(Auth::guard('customer')->id());
+    if ($customer) {
+        $customer->address = $request->input('address');
+        $customer->save();
+    }
+
+    return redirect()->route('orders.index')->with('success', 'Address and delivery fee updated successfully!');
+}
 }

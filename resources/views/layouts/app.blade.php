@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>@yield('title', 'H2WHOA')</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/fonts/fontawesome-all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
@@ -22,43 +23,48 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-</head>
+    </head>
 
 <body>
     <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
         <div class="container">
             <a class="navbar-brand logo" href="{{ route('orders.index') }}">
-                <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2WHOA Logo" width="100" height="80">
+                <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2WHOA Logo" width="100"
+                    height="80">
                 H2WHOA
             </a>
-            <div class="collapse navbar-collapse text-start" id="navcol-1" style="margin-left: 242px; margin-right: 318px;">
+            <div class="collapse navbar-collapse text-start" id="navcol-1"
+                style="margin-left: 242px; margin-right: 318px;">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item text-center" style="padding-right: 33px;">
-                        <a class="nav-link text-end active" href="{{ route('orders.index') }}" style="width: 99px; height: 32px; text-align: center; font-size: 22px;">ORDERS</a>
+                        <a class="nav-link text-end active" href="{{ route('orders.index') }}"
+                            style="width: 99px; height: 32px; text-align: center; font-size: 22px;">ORDERS</a>
                     </li>
                     <li class="nav-item text-center" style="padding-right: 33px;">
-                        <a class="nav-link text-end" href="{{ route('track.orders') }}" style="width: 99px; height: 32px; text-align: center; font-size: 22px;">TRACK</a>
+                        <a class="nav-link text-end" href="{{ route('track.orders') }}"
+                            style="width: 99px; height: 32px; text-align: center; font-size: 22px;">TRACK</a>
                     </li>
                     <li class="nav-item" style="padding-right: 33px;">
-                        <a class="nav-link" href="{{ route('orders.history') }}" style="width: 99px; height: 32px; text-align: center; font-size: 22px;">HISTORY</a>
+                        <a class="nav-link" href="{{ route('orders.history') }}"
+                            style="width: 99px; height: 32px; text-align: center; font-size: 22px;">HISTORY</a>
                     </li>
                     <li class="nav-item" style="padding-right: 33px;">
-                        <a class="nav-link" href="{{ route('contact.us') }}" style="width: 99px; height: 32px; text-align: center; font-size: 22px;">CONTACT</a>
+                        <a class="nav-link" href="{{ route('contact.us') }}"
+                            style="width: 99px; height: 32px; text-align: center; font-size: 22px;">CONTACT</a>
                     </li>
-                    
+
                     @auth('customer')
-                <li class="nav-item px-3" style="margin-left: 128px;">
-                <a href="{{ route('profile.show') }}"
-                    class="d-flex align-items-center text-decoration-none">
-                    <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
-                    <div style="max-width:10rem;
-                                font-size:calc(1rem + 0.5vw);
-                                white-space:nowrap;
-                                overflow:hidden;
-                                text-overflow:ellipsis;">
-                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
-                    <small>Customer</small>
-                    </div>
+                        <li class="nav-item px-3" style="margin-left: 128px;">
+                            <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
+                                <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
+                                <div style="max-width:10rem;
+                                    font-size:calc(1rem + 0.5vw);
+                                    white-space:nowrap;
+                                    overflow:hidden;
+                                    text-overflow:ellipsis;">
+                                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
+                                    <small>Customer</small>
+                                </div>
                             </a>
                         </li>
                     @endauth
@@ -115,15 +121,15 @@
         <div class="footer-copyright">
             <p>© 2025 Copyright Text</p>
         </div>
-    </footer> 
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-<script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-<script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @stack('scripts')
 </body>
 

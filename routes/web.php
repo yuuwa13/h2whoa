@@ -62,7 +62,7 @@ Route::post('/orders/save', [OrderController::class, 'save'])->name('orders.save
 
 Route::post('/orders/confirm', [OrderController::class, 'confirmOrder'])->name('orders.confirm');
 Route::post('/orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
-
+Route::post('/orders/save-address', [OrderController::class, 'saveAddress'])->name('orders.saveAddress');
 
 Route::get('/track-orders', [OrderController::class, 'trackOrders'])->name('track.orders');
 
