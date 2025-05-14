@@ -11,8 +11,9 @@ class Customer extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'customers';
-    protected $primaryKey = 'customer_id';
+
+    protected $table = 'customers'; // Ensure this matches the database table name
+    protected $primaryKey = 'customer_id'; // Ensure this matches the primary key in the database
     public $timestamps = true;
 
     // include password here so Auth can fill it
@@ -33,7 +34,7 @@ class Customer extends Authenticatable
     public function editLogs()
     {
         return $this->hasMany(CustomerEditLog::class, 'customer_id', 'customer_id')
-                    ->orderByDesc('changed_at');
+            ->orderByDesc('changed_at');
     }
 
 

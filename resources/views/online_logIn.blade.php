@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Login - H2WHOA</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
@@ -18,6 +19,8 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
@@ -36,13 +39,8 @@
                     {{-- Email --}}
                     <div class="mb-3">
                         <label class="form-label" for="email">Email Address</label>
-                        <input
-                            name="email"
-                            type="email"
-                            id="email"
-                            value="{{ old('email') }}"
-                            class="form-control item @error('email') is-invalid @enderror"
-                        >
+                        <input name="email" type="email" id="email" value="{{ old('email') }}"
+                            class="form-control item @error('email') is-invalid @enderror">
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -51,12 +49,8 @@
                     {{-- Password --}}
                     <div class="mb-3">
                         <label class="form-label" for="password">Password</label>
-                        <input
-                            name="password"
-                            type="password"
-                            id="password"
-                            class="form-control @error('password') is-invalid @enderror"
-                        >
+                        <input name="password" type="password" id="password"
+                            class="form-control @error('password') is-invalid @enderror">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -73,12 +67,8 @@
                     {{-- Are you human? --}}
                     <div class="mb-3">
                         <div class="form-check">
-                            <input
-                                name="human"
-                                type="checkbox"
-                                id="humanCheckbox"
-                                class="form-check-input @error('human') is-invalid @enderror"
-                            >
+                            <input name="human" type="checkbox" id="humanCheckbox"
+                                class="form-check-input @error('human') is-invalid @enderror">
                             <label class="form-check-label" for="humanCheckbox">Are you human?</label>
                             @error('human')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -87,13 +77,8 @@
                     </div>
 
                     {{-- Submit --}}
-                    <button
-                        id="loginBtn"
-                        type="submit"
-                        class="btn btn-primary"
-                        style="background: #4ac9b0; width: 413px;"
-                        disabled
-                    >
+                    <button id="loginBtn" type="submit" class="btn btn-primary"
+                        style="background: #4ac9b0; width: 413px;" disabled>
                         LOG IN
                     </button>
 
@@ -110,6 +95,56 @@
             </div>
         </section>
     </main>
+
+    {{-- SweetAlert for Success Message --}}
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sign Up Successful',
+                    text: '{{ session('success') }}',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
+    @if(session('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logged Out',
+                    text: '{{ session('status') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
+    @if(session('status1'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'success',
+                title: 'Account Deleted',
+                text: '{{ session('status') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        });
+    </script>
+@endif
 
     {{-- Small JS to enable/disable the button --}}
     <script>
@@ -174,6 +209,7 @@
     <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

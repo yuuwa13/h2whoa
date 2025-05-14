@@ -93,12 +93,10 @@
                                         <div class="mb-3">
                                             <label for="phone" class="form-label">Contact Number</label>
                                             <input type="text" class="form-control" id="phone" name="phone"
-                                                value="{{ $customer->phone }}" required>
+                                               minlength="11" maxlength="11" value="{{ $customer->phone }}" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="address" class="form-label">Delivery Address</label>
-                                            <input type="text" class="form-control" id="search-box"
-                                                placeholder="Search for a location">
                                             <div id="map" style="height: 400px; margin-top: 10px;"></div>
                                             <input type="hidden" id="address" name="address"
                                                 value="{{ $customer->address }}">
@@ -121,10 +119,10 @@
                             document.addEventListener('DOMContentLoaded', function () {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Update Successful',
+                                    title: 'Success',
                                     text: '{{ session('success') }}',
                                     toast: true,
-                                    position: 'top-end',
+                                    position: 'bottom-end', // Changed to bottom-right
                                     showConfirmButton: false,
                                     timer: 3000,
                                     timerProgressBar: true,
@@ -132,58 +130,28 @@
                             });
                         </script>
                     @endif
+
                     <script>
-                        let map, marker, geocoder, autocomplete;
+                        let map, marker, geocoder;
 
                         function initMap() {
                             geocoder = new google.maps.Geocoder();
 
-                            // Get the customer's current address from the hidden input field
                             const customerAddress = document.getElementById("address").value;
 
-                            // Geocode the customer's address to get latitude and longitude
                             geocoder.geocode({ address: customerAddress }, function (results, status) {
                                 if (status === "OK" && results[0]) {
                                     const location = results[0].geometry.location;
 
-                                    // Initialize the map centered on the customer's address
                                     map = new google.maps.Map(document.getElementById("map"), {
                                         center: location,
                                         zoom: 15,
                                     });
 
-                                    // Place a draggable marker on the map
                                     marker = new google.maps.Marker({
                                         map: map,
-                                        draggable: true,
                                         position: location,
-                                    });
-
-                                    // Add autocomplete to the search box
-                                    const searchBox = document.getElementById("search-box");
-                                    autocomplete = new google.maps.places.Autocomplete(searchBox);
-                                    autocomplete.bindTo("bounds", map);
-
-                                    // Update the map and marker when a place is selected
-                                    autocomplete.addListener("place_changed", function () {
-                                        const place = autocomplete.getPlace();
-                                        if (!place.geometry || !place.geometry.location) {
-                                            alert("No details available for the selected location.");
-                                            return;
-                                        }
-
-                                        // Move the map and marker to the selected location
-                                        map.setCenter(place.geometry.location);
-                                        map.setZoom(15);
-                                        marker.setPosition(place.geometry.location);
-
-                                        // Update the address field
-                                        document.getElementById("address").value = place.formatted_address || place.name;
-                                    });
-
-                                    // Update the address field when the marker is dragged
-                                    google.maps.event.addListener(marker, "dragend", function () {
-                                        geocodePosition(marker.getPosition());
+                                        draggable: false, // Disable dragging
                                     });
                                 } else {
                                     alert("Geocode was not successful for the following reason: " + status);
@@ -191,50 +159,14 @@
                             });
                         }
 
-                        function geocodePosition(position) {
-                            geocoder.geocode({ location: position }, function (results, status) {
-                                if (status === "OK" && results[0]) {
-                                    document.getElementById("address").value = results[0].formatted_address;
-                                } else {
-                                    alert("Geocode was not successful for the following reason: " + status);
-                                }
-                            });
-                        }
-
-                        // Initialize the map when the modal is shown
                         document.getElementById('editDetailsModal').addEventListener('shown.bs.modal', function () {
                             initMap();
-                        });
-                    </script>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const form = document.getElementById('edit-details-form');
-                            const saveButton = document.getElementById('save-changes-button');
-                            const originalValues = {
-                                name: form.name.value,
-                                phone: form.phone.value,
-                                address: form.address.value,
-                            };
-
-                            // Function to check if any field has changed
-                            function checkForChanges() {
-                                const hasChanges =
-                                    form.name.value !== originalValues.name ||
-                                    form.phone.value !== originalValues.phone ||
-                                    form.address.value !== originalValues.address;
-
-                                saveButton.disabled = !hasChanges; // Enable or disable the Save Changes button
-                            }
-
-                            // Add event listeners to form fields
-                            form.name.addEventListener('input', checkForChanges);
-                            form.phone.addEventListener('input', checkForChanges);
-                            form.address.addEventListener('input', checkForChanges);
                         });
                     </script>
                 </div>
         </section>
     </main>
+
     @if(session('payment_confirmed'))
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -243,7 +175,7 @@
                     title: 'Payment Confirmed',
                     text: '{{ session('payment_confirmed') }}',
                     toast: true,
-                    position: 'top-end',
+                    position: 'bottom-end', // Changed to bottom-right
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
@@ -257,9 +189,6 @@
     <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script
-        src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 

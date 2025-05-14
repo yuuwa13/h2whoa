@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('sale_id');
             $table->unsignedBigInteger('order_id')->nullable(); // Link to orders
             $table->enum('sale_type', ['web', 'phone', 'on-site']); // Sale type
-            $table->string('unique_sale_id')->unique(); // Unique ID for each sale
             $table->timestamps(); // created_at and updated_at
 
             // Foreign key constraint

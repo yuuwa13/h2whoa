@@ -63,6 +63,25 @@
             </div>
         </section>
     </main>
+
+    <!-- SweetAlert for Address Confirmation -->
+    @if(session('address_confirmed'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Address Confirmed',
+                    text: '{{ session('address_confirmed') }}',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
+
     <script>
         let map, marker, geocoder, autocomplete;
 
@@ -156,21 +175,6 @@
 
         window.onload = initMap;
     </script>
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script
-        src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
 </body>
 
 </html>

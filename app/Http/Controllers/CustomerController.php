@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
@@ -40,12 +41,12 @@ class CustomerController extends Controller
         ]);
 
         // Redirect to the login page with a success message
-        return redirect()->route('login.form')->with('success', 'Account created successfully!');
+        return redirect()->route('login.form')->with('success', 'Account created successfully! You can now log in.');
     }
     /** Display profile */
     public function show()
     {
-        $customer = Auth::guard('customer')->user();
+        $customer = Customer::find(Auth::guard('customer')->id());
         return view('customer-profile.profile', [
             'customer' => Auth::guard('customer')->user(),
             // formatted for display
@@ -132,9 +133,9 @@ class CustomerController extends Controller
     }
     public function destroy(Request $request)
     {
-        $customer = Auth::guard('customer')->user();
+        $customer = Customer::find(Auth::guard('customer')->id());
 
-        // 1) Validate inputs
+        // Validate inputs
         $request->validate([
             'password'        => 'required',
             'confirm_delete'  => 'accepted',
@@ -144,21 +145,34 @@ class CustomerController extends Controller
             'human.accepted'          => 'Please confirm you are human.',
         ]);
 
-        // 2) Verify password
-        if (! Hash::check($request->password, $customer->password)) {
+        // Verify password
+        if (!Hash::check($request->password, $customer->password)) {
             return back()->withErrors(['password' => 'Incorrect password.']);
         }
 
-        // 3) Log out and delete
-        Auth::guard('customer')->logout();
-        $customer->delete();  // permanent since no soft-deletes
+        // Soft delete: Set is_deleted to true
+        $customer->is_deleted = true;
+        $customer->save();
 
-        // 4) Invalidate session
+        // Log out and invalidate session
+        Auth::guard('customer')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // 5) Redirect home
-        return redirect('/')
-            ->with('status', 'Your account has been permanently deleted.');
+        // Redirect to login page with a success message
+        return redirect()->route('login.form')
+            ->with('status1', 'Your account has been successfully deleted.');
+    }
+    public function logout(Request $request)
+    {
+        // Log out the customer
+        Auth::guard('customer')->logout();
+
+        // Invalidate the session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Redirect to the login page with a success message
+        return redirect()->route('login.form')->with('status', 'You have been logged out successfully.');
     }
 }

@@ -29,9 +29,76 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .contact-form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 50px;
+            /* Add margin below the contact form */
+        }
+
+        .contact-form-container h3 {
+            margin-bottom: 20px;
+            /* Add space below the heading */
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .form-floating-label {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-floating-label input,
+        .form-floating-label textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .form-floating-label label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            color: #aaa;
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .form-floating-label input:focus+label,
+        .form-floating-label textarea:focus+label,
+        .form-floating-label input:not(:placeholder-shown)+label,
+        .form-floating-label textarea:not(:placeholder-shown)+label {
+            top: -20px;
+            left: 10px;
+            font-size: 14px;
+            color: #007bff;
+        }
+
+        .contact-form-container button {
+            font-size: 18px;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
         <div class="container">
             <a class="navbar-brand logo" href="{{ route('contact.us') }}">
@@ -60,10 +127,10 @@
                             <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
                                 <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
                                 <div style="max-width:10rem;
-                                    font-size:calc(1rem + 0.5vw);
-                                    white-space:nowrap;
-                                    overflow:hidden;
-                                    text-overflow:ellipsis;">
+                                                        font-size:calc(1rem + 0.5vw);
+                                                        white-space:nowrap;
+                                                        overflow:hidden;
+                                                        text-overflow:ellipsis;">
                                     <strong>{{ explode(' ', auth('customer')->user()->name)[0] }}</strong><br>
                                     <small>Customer</small>
                                 </div>
@@ -75,57 +142,31 @@
         </div>
     </nav>
 
-    <main class="page">
-        <section class="clean-block features">
-            <div class="container">
-                <div class="block-heading"></div>
-                <div class="row justify-content-center">
-                    <div class="col" style="width: 1300px;">
-                        <section class="position-relative py-5">
-                            <div class="d-md-none">
-                                <iframe allowfullscreen="" frameborder="0"
-                                    src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%"
-                                    height="100%"></iframe>
-                            </div>
-                            <div class="d-none d-md-block position-absolute top-0 start-0 w-100 h-100">
-                                <iframe allowfullscreen="" frameborder="0"
-                                    src="https://cdn.bootstrapstudio.io/placeholders/map.html" width="100%"
-                                    height="100%"></iframe>
-                            </div>
-                            <div class="position-relative mx-2 my-5 m-md-5">
-                                <div class="container position-relative">
-                                    <div class="row">
-                                        <div class="col-md-6 col-xl-5 col-xxl-4 offset-md-6 offset-xl-7 offset-xxl-8">
-                                            <form class="border rounded shadow p-3 p-md-4 p-lg-5" method="post"
-                                                style="background: var(--bs-body-bg);">
-                                                <h3 class="text-center mb-3">Contact us</h3>
-                                                <div class="mb-3">
-                                                    <input class="form-control" type="text" name="name"
-                                                        placeholder="Name">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <input class="form-control" type="email" name="email"
-                                                        placeholder="Email">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <textarea class="form-control" name="message" placeholder="Message"
-                                                        rows="6"></textarea>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <button class="btn btn-primary" type="submit">Send</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+    <!-- Map Section -->
+    <div id="map"></div>
 
+    <!-- Contact Form Section -->
+    <div class="contact-form-container">
+        <h3>Contact Us</h3>
+        <form method="POST" action="{{ route('contact.send') }}">
+            @csrf
+            <div class="form-floating-label">
+                <input type="text" name="name" id="name" placeholder=" " required>
+                <label for="name">Name</label>
+            </div>
+            <div class="form-floating-label">
+                <input type="email" name="email" id="email" placeholder=" " required>
+                <label for="email">Email</label>
+            </div>
+            <div class="form-floating-label">
+                <textarea name="message" id="message" placeholder=" " rows="6" required></textarea>
+                <label for="message">Message</label>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Send</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
     <footer class="page-footer dark">
         <div class="container">
             <div class="row">
@@ -168,21 +209,33 @@
         </div>
     </footer>
 
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script
-        src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script>
+        function initMap() {
+            const location = { lat: 6.41154, lng: 125.60835 }; // Shop's location
+
+            // Initialize the map
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: location,
+                zoom: 15,
+            });
+
+            // Custom blue pin icon
+            const customIcon = {
+                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", // URL for the blue pin icon
+                scaledSize: new google.maps.Size(60, 60), // Resize the icon (width, height)
+            };
+
+            // Add a custom marker
+            new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "H2WHOA Office",
+                icon: customIcon, // Use the custom icon
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&callback=initMap"
+        async defer></script>
 </body>
 
 </html>

@@ -19,24 +19,24 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
-            'human'    => 'accepted',
-        ], [
-            'human.accepted' => 'Please confirm you are human.',
         ]);
 
-        $customer = Customer::where('email', $credentials['email'])->first();
+        // Check if the customer exists and is deleted
+        $customer = Customer::where('email', $request->email)->first();
 
-        if (! $customer || ! Hash::check($credentials['password'], $customer->password)) {
-            return back()
-                ->withErrors(['email' => 'Invalid credentials.'])
-                ->withInput();
+        if ($customer && $customer->is_deleted) {
+            return back()->withErrors(['email' => 'This account has been deactivated.']);
         }
 
-        // ← Here’s the key line:
-        Auth::guard('customer')->login($customer);
+        // Attempt to log in the customer
+        if (Auth::guard('customer')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/orders');
+        }
 
-        // Now Auth::guard('customer')->user() is $customer
-        return redirect()->route('orders.index');
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     public function showAdminLoginForm()

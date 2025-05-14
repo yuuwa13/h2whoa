@@ -10,15 +10,8 @@
         href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/dh-row-titile-text-image-right-1.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
@@ -108,14 +101,9 @@
                             accurate</label>
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input name="human" class="form-check-input" type="checkbox" id="human">
-                        <label class="form-check-label" for="human">Check if you are human</label>
-                    </div>
-
                     {{-- Sign Up Button --}}
                     <div class="position-relative">
-                        <button id="signup-btn" class="btn btn-primary" type="button"
+                        <button id="signup-btn" class="btn btn-primary" type="button" disabled
                             style="background: #4ac9b0; width: 100%;" data-bs-toggle="modal"
                             data-bs-target="#humanConfirmationModal">
                             SIGN UP
@@ -152,18 +140,83 @@
                         </div>
                     </div>
 
+
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const confirmHumanBtn = document.getElementById('confirmHumanBtn');
                             const humanCheckbox = document.getElementById('human');
                             const signupForm = document.getElementById('signup-form');
+                            const signupButton = document.getElementById('signup-btn');
+                            const hoverTooltip = document.getElementById('hover-tooltip');
+                            const requiredFields = signupForm.querySelectorAll('input[required]');
+                            const checkboxes = signupForm.querySelectorAll('input[type="checkbox"]:not(#human)'); // Exclude the "human" checkbox
 
+                            // Function to validate the form (excluding the "human" checkbox)
+                            function validateForm() {
+                                let allFieldsFilled = true;
+
+                                requiredFields.forEach(field => {
+                                    if (!field.value.trim()) {
+                                        allFieldsFilled = false;
+                                    }
+                                });
+
+                                let allCheckboxesChecked = true;
+
+                                checkboxes.forEach(checkbox => {
+                                    if (!checkbox.checked) {
+                                        allCheckboxesChecked = false;
+                                    }
+                                });
+
+                                // Enable or disable the Sign Up button
+                                signupButton.disabled = !(allFieldsFilled && allCheckboxesChecked);
+
+                                // Hide the tooltip if the button is enabled
+                                if (!signupButton.disabled) {
+                                    hoverTooltip.style.display = 'none';
+                                }
+                            }
+
+                            // Show tooltip only when hovering over the disabled button
+                            signupButton.addEventListener('mouseenter', function () {
+                                if (signupButton.disabled) {
+                                    hoverTooltip.style.display = 'block';
+                                }
+                            });
+
+                            signupButton.addEventListener('mouseleave', function () {
+                                hoverTooltip.style.display = 'none';
+                            });
+
+                            // Add event listeners to required fields and checkboxes
+                            requiredFields.forEach(field => {
+                                field.addEventListener('input', validateForm);
+                            });
+
+                            checkboxes.forEach(checkbox => {
+                                checkbox.addEventListener('change', validateForm);
+                            });
+
+                            // Initialize validation on page load
+                            validateForm();
+
+                            // Handle modal confirmation
                             confirmHumanBtn.addEventListener('click', function () {
                                 if (humanCheckbox.checked) {
-                                    // Submit the form if the checkbox is checked
+                                    // Submit the form if the "human" checkbox is checked
                                     signupForm.submit();
                                 } else {
-                                    alert('Please confirm that you are human.');
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Validation Error',
+                                        text: 'Please confirm that you are human.',
+                                        toast: true,
+                                        position: 'bottom-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                    });
                                 }
                             });
                         });
@@ -172,161 +225,9 @@
             </div>
         </section>
     </main>
-
-    <footer class="page-footer dark">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-3">
-                    <h5>Get started</h5>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Sign up</a></li>
-                        <li><a href="#">Downloads</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3">
-                    <h5>About us</h5>
-                    <ul>
-                        <li><a href="#">Company Information</a></li>
-                        <li><a href="#">Contact us</a></li>
-                        <li><a href="#">Reviews</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3">
-                    <h5>Support</h5>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Help desk</a></li>
-                        <li><a href="#">Forums</a></li>
-                    </ul>
-                </div>
-                <div class="col-sm-3">
-                    <h5>Legal</h5>
-                    <ul>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Terms of Use</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <p>© 2025 Copyright Text</p>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const confirmHumanBtn = document.getElementById('confirmHumanBtn');
-            const humanCheckbox = document.getElementById('human');
-            const signupForm = document.getElementById('signup-form');
-            const signupButton = document.getElementById('signup-btn');
-            const hoverTooltip = document.getElementById('hover-tooltip');
-            const requiredFields = signupForm.querySelectorAll('input[required]');
-            const checkboxes = signupForm.querySelectorAll('input[type="checkbox"]:not(#human)'); // Exclude the "human" checkbox
-
-            // Function to validate the form (excluding the "human" checkbox)
-            function validateForm() {
-                let allFieldsFilled = true;
-
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        allFieldsFilled = false;
-                    }
-                });
-
-                let allCheckboxesChecked = true;
-
-                checkboxes.forEach(checkbox => {
-                    if (!checkbox.checked) {
-                        allCheckboxesChecked = false;
-                    }
-                });
-
-                // Enable or disable the Sign Up button
-                signupButton.disabled = !(allFieldsFilled && allCheckboxesChecked);
-
-                // Hide the tooltip if the button is enabled
-                if (!signupButton.disabled) {
-                    hoverTooltip.style.display = 'none';
-                }
-            }
-
-            // Show tooltip only when hovering over the disabled button
-            signupButton.addEventListener('mouseenter', function () {
-                if (signupButton.disabled) {
-                    hoverTooltip.style.display = 'block';
-                }
-            });
-
-            signupButton.addEventListener('mouseleave', function () {
-                hoverTooltip.style.display = 'none';
-            });
-
-            // Add event listeners to required fields and checkboxes
-            requiredFields.forEach(field => {
-                field.addEventListener('input', validateForm);
-            });
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', validateForm);
-            });
-
-            // Initialize validation on page load
-            validateForm();
-
-            // Handle modal confirmation
-            confirmHumanBtn.addEventListener('click', function () {
-                if (humanCheckbox.checked) {
-                    // Submit the form if the "human" checkbox is checked
-                    signupForm.submit();
-                } else {
-                    alert('Please confirm that you are human.');
-                }
-            });
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const signupBtn = document.getElementById('signup-btn');
-            signupBtn.disabled = false; // Temporarily enable the button
-
-            const successMessage = '{{ session('success') }}';
-            const errorMessage = '{{ session('error') }}';
-
-            if (successMessage) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: successMessage,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
-
-            if (errorMessage) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

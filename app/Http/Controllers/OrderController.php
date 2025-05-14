@@ -41,6 +41,7 @@ class OrderController extends Controller
             $subtotal += $itemTotal;
         }
 
+
         // Calculate tax (12% of subtotal)
         $tax = $subtotal * 0.12;
 
@@ -337,35 +338,34 @@ class OrderController extends Controller
             $total = $subtotal + $tax + $deliveryFee;
             $customer = Auth::guard('customer')->user();
 
+            // Debugging logs
+            Log::info('Customer:', $customer ? (is_object($customer) ? (array) $customer : $customer) : []);
+            Log::info('Cart:', $cart);
+            Log::info('Subtotal:', ['value' => $subtotal]); // Wrap in an array
+            Log::info('Tax:', ['value' => $tax]); // Wrap in an array
+            Log::info('Delivery Fee:', ['value' => $deliveryFee]); // Wrap in an array
+            Log::info('Total:', ['value' => $total]); // Wrap in an array
+
             // Check if the customer is logged in
             if (!$customer) {
+                Log::warning('Customer not logged in.');
                 return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to place an order.']);
             }
 
             // Check if the cart is empty
             if (empty($cart)) {
+                Log::warning('Cart is empty.');
                 return redirect()->route('mode.payment')->withErrors(['error' => 'Your cart is empty.']);
             }
 
             // Get the payment method from the request
-            $paymentMethodId = $request->input('payment_method_id'); // 1 for COD, 2 for GCash
-
-            // Debugging: Log customer_id and payment_method_id
-            Log::info('Confirming order with customer_id:', ['customer_id' => $customer->customer_id]);
-            Log::info('Confirming order with payment_method_id:', ['payment_method_id' => $request->input('payment_method_id')]);
-
-            // Validate customer_id and payment_method_id
-            if (!\App\Models\Customer::find($customer->customer_id)) {
-                Log::error('Invalid customer_id:', ['customer_id' => $customer->customer_id]);
-                return redirect()->route('mode.payment')->withErrors(['error' => 'Invalid customer ID.']);
-            }
-
-            // Debugging: Log query result for payment_method_id
-            $paymentMethodExists = \DB::table('payment_methods')->where('payment_method_id', $paymentMethodId)->exists();
-            Log::info('Payment method exists:', ['payment_method_id' => $paymentMethodId, 'exists' => $paymentMethodExists]);
+            $paymentMethodId = $request->input('payment_method_id', 1); // Default to COD
+            $paymentMethodExists = DB::table('payment_methods')->where('payment_method_id', $paymentMethodId)->exists();
+            Log::info('Payment Method ID:', ['value' => $paymentMethodId]); // Wrap in an array
+            Log::info('Payment Method Exists:', ['exists' => $paymentMethodExists]);
 
             if (!$paymentMethodExists) {
-                Log::error('Invalid payment_method_id:', ['payment_method_id' => $paymentMethodId]);
+                Log::warning('Invalid payment method ID.');
                 return redirect()->route('mode.payment')->withErrors(['error' => 'Invalid payment method ID.']);
             }
 
@@ -383,6 +383,7 @@ class OrderController extends Controller
                 $stockId = Stock::where('product_name', $item['name'])->value('stock_id');
 
                 if (!$stockId) {
+                    Log::warning("Stock not found for product: {$item['name']}");
                     return redirect()->route('mode.payment')->withErrors(['error' => "Stock not found for product: {$item['name']}"]);
                 }
 
@@ -395,13 +396,13 @@ class OrderController extends Controller
             }
 
             // Clear the session cart
-            $request->session()->forget(['cart', 'subtotal', 'tax', 'delivery_fee', 'total']);
+            $request->session()->forget(['cart', 'subtotal', 'tax', 'delivery_fee', 'total', 'payment_method_id']);
 
             // Flash success message
             session()->flash('delivery_confirmed', 'Your delivery details have been confirmed successfully!');
 
             // Redirect to the track orders page
-            return redirect()->route('track.orders');
+            return redirect()->route('track.orders')->with('success', 'Your order has been placed successfully!');
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error('Error confirming order: ' . $e->getMessage());
@@ -444,27 +445,28 @@ class OrderController extends Controller
         return view('online_history', compact('orders'));
     }
     public function saveAddress(Request $request)
-{
-    $request->validate([
-        'address' => 'required|string|max:255',
-        'delivery_fee' => 'required|numeric|min:20', // Validate the delivery fee
-    ]);
+    {
+        $request->validate([
+            'address' => 'required|string|max:255',
+            'delivery_fee' => 'required|numeric|min:20', // Validate the delivery fee
+        ]);
 
-    // Save the selected address and delivery fee to the session
-    session([
-        'selected_address' => $request->input('address'),
-        'delivery_fee' => $request->input('delivery_fee'),
-    ]);
+        // Save the selected address and delivery fee to the session
+        session([
+            'selected_address' => $request->input('address'),
+            'delivery_fee' => $request->input('delivery_fee'),
+        ]);
 
-    // Check if the customer is authenticated
-    $customer = \App\Models\Customer::find(Auth::guard('customer')->id());
-    if ($customer) {
-        $customer->address = $request->input('address');
-        $customer->save();
+        // Check if the customer is authenticated
+        $customer = \App\Models\Customer::find(Auth::guard('customer')->id());
+        if ($customer) {
+            $customer->address = $request->input('address');
+            $customer->save();
+        }
+
+        // Set a success message
+        return redirect()->route('orders.index')->with('address_confirmed', 'Your address has been successfully confirmed!');
     }
-
-    return redirect()->route('orders.index')->with('success', 'Address and delivery fee updated successfully!');
-}
     public function updateStatus(Request $request, $orderId)
     {
         $validated = $request->validate([
@@ -512,5 +514,15 @@ class OrderController extends Controller
         Log::info('Order status updated successfully', ['order_id' => $orderId, 'final_status' => $order->order_status]);
 
         return redirect()->route('admin.orders')->with('success', 'Order status updated successfully.');
+    }
+    public function deliveryDetails()
+    {
+        $customer = Auth::guard('customer')->user();
+
+        if (!$customer) {
+            return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to view delivery details.']);
+        }
+
+        return view('delivery_details', compact('customer'));
     }
 }

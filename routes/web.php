@@ -14,7 +14,10 @@ use App\Models\Order;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GcashController;
+use App\Http\Controllers\ContactController;
 
+// Logout route
+Route::post('/logout', [CustomerController::class, 'logout'])->name('logout');
 //For Customers
 Route::get('/signup', [CustomerController::class, 'create'])->name('signup.form');
 Route::post('/signup', [CustomerController::class, 'store'])->name('signup.store');
@@ -84,10 +87,7 @@ Route::get('/locate-address', function () {
 
 Route::get('/mode-payment', [OrderController::class, 'modePayment'])->name('mode.payment');
 
-Route::get('/delivery-details', function () {
-    $customer = Auth::guard('customer')->user(); // Get the authenticated customer
-    return view('delivery_details', compact('customer'));
-})->name('delivery.details');
+Route::get('/delivery-details', [OrderController::class, 'deliveryDetails'])->name('delivery.details');
 
 Route::get('/payment/gcash', function () {
      $subtotal = session('subtotal', 0);
@@ -107,37 +107,37 @@ Route::get('/admin/history', function () {
 Route::get('/admin/stocks', function () {
      $stocks = Stock::paginate(10); // Fetch stocks with pagination
      return view('admin.admin_stocks', compact('stocks'));
- })->name('admin.stocks');
- Route::resource('stocks', StockController::class)
-     ->only(['index','create','store','edit','update','destroy']);
- 
+})->name('admin.stocks');
+Route::resource('stocks', StockController::class)
+     ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
 //Dashboard route
 Route::get('/admin', function () {
-    // Calculate Daily Sales
-    $dailySales = Sale::whereDate('created_at', today())
-        ->with('saleDetails')
-        ->get()
-        ->flatMap(fn($sale) => $sale->saleDetails)
-        ->sum('total_price');
+     // Calculate Daily Sales
+     $dailySales = Sale::whereDate('created_at', today())
+          ->with('saleDetails')
+          ->get()
+          ->flatMap(fn($sale) => $sale->saleDetails)
+          ->sum('total_price');
 
-    // Calculate Monthly Earnings
-    $monthlyEarnings = Sale::whereMonth('created_at', today()->month)
-        ->with('saleDetails')
-        ->get()
-        ->flatMap(fn($sale) => $sale->saleDetails)
-        ->sum('total_price');
+     // Calculate Monthly Earnings
+     $monthlyEarnings = Sale::whereMonth('created_at', today()->month)
+          ->with('saleDetails')
+          ->get()
+          ->flatMap(fn($sale) => $sale->saleDetails)
+          ->sum('total_price');
 
-    // Calculate Yearly Earnings
-    $yearlyEarnings = Sale::whereYear('created_at', today()->year)
-        ->with('saleDetails')
-        ->get()
-        ->flatMap(fn($sale) => $sale->saleDetails)
-        ->sum('total_price');
+     // Calculate Yearly Earnings
+     $yearlyEarnings = Sale::whereYear('created_at', today()->year)
+          ->with('saleDetails')
+          ->get()
+          ->flatMap(fn($sale) => $sale->saleDetails)
+          ->sum('total_price');
 
-    // Count Pending Orders
-    $pendingOrders = Order::where('order_status', 'Pending')->count();
+     // Count Pending Orders
+     $pendingOrders = Order::where('order_status', 'Pending')->count();
 
-    return view('admin_index', compact('dailySales', 'monthlyEarnings', 'yearlyEarnings', 'pendingOrders'));
+     return view('admin_index', compact('dailySales', 'monthlyEarnings', 'yearlyEarnings', 'pendingOrders'));
 })->name('admin.dashboard');
 
 Route::get('/admin/orders', function () {
@@ -148,60 +148,60 @@ Route::put('/admin/orders/{order}/status', [OrderController::class, 'updateStatu
 
 // Temporary route to check for null order_datetime values
 Route::get('/debug/orders-null-datetime', function () {
-    $nullOrders = DB::table('orders')->whereNull('order_datetime')->get();
-    return response()->json($nullOrders);
+     $nullOrders = DB::table('orders')->whereNull('order_datetime')->get();
+     return response()->json($nullOrders);
 });
 
 // Temporary route to check for Delivered orders
 Route::get('/check-delivered-orders', function () {
-    $deliveredOrders = Order::where('order_status', 'Delivered')->get();
-    return response()->json($deliveredOrders);
+     $deliveredOrders = Order::where('order_status', 'Delivered')->get();
+     return response()->json($deliveredOrders);
 });
 
 // Sales routes
 Route::resource('sales', SalesController::class);
 
 Route::get('/admin/sales-data', function (Request $request) {
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+     $startDate = $request->query('start_date');
+     $endDate = $request->query('end_date');
 
-    // Default to the current month if no dates are provided
-    if (!$startDate || !$endDate) {
-        $startDate = now()->startOfMonth()->toDateString();
-        $endDate = now()->endOfMonth()->toDateString();
-    }
+     // Default to the current month if no dates are provided
+     if (!$startDate || !$endDate) {
+          $startDate = now()->startOfMonth()->toDateString();
+          $endDate = now()->endOfMonth()->toDateString();
+     }
 
-    // Fetch sales data grouped by day
-    $salesData = DB::table('sales')
-        ->join('sale_details', 'sales.sale_id', '=', 'sale_details.sale_id')
-        ->whereBetween('sales.created_at', [$startDate, $endDate])
-        ->select(DB::raw('DATE(sales.created_at) as date'), DB::raw('SUM(sale_details.total_price) as total_sales'))
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+     // Fetch sales data grouped by day
+     $salesData = DB::table('sales')
+          ->join('sale_details', 'sales.sale_id', '=', 'sale_details.sale_id')
+          ->whereBetween('sales.created_at', [$startDate, $endDate])
+          ->select(DB::raw('DATE(sales.created_at) as date'), DB::raw('SUM(sale_details.total_price) as total_sales'))
+          ->groupBy('date')
+          ->orderBy('date')
+          ->get();
 
-    return response()->json($salesData);
+     return response()->json($salesData);
 })->name('admin.sales-data');
 
 Route::get('/admin/item-sales-data', function (Request $request) {
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+     $startDate = $request->query('start_date');
+     $endDate = $request->query('end_date');
 
-    // Default to the current month if no dates are provided
-    if (!$startDate || !$endDate) {
-        $startDate = now()->startOfMonth()->toDateString();
-        $endDate = now()->endOfMonth()->toDateString();
-    }
+     // Default to the current month if no dates are provided
+     if (!$startDate || !$endDate) {
+          $startDate = now()->startOfMonth()->toDateString();
+          $endDate = now()->endOfMonth()->toDateString();
+     }
 
-    // Fetch item sales data grouped by product name
-    $itemSalesData = DB::table('sale_details')
-        ->select('product_name', DB::raw('SUM(quantity) as total_quantity'), DB::raw('SUM(total_price) as total_sales'))
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy('product_name')
-        ->orderBy('total_sales', 'desc')
-        ->get();
+     // Fetch item sales data grouped by product name
+     $itemSalesData = DB::table('sale_details')
+          ->select('product_name', DB::raw('SUM(quantity) as total_quantity'), DB::raw('SUM(total_price) as total_sales'))
+          ->whereBetween('created_at', [$startDate, $endDate])
+          ->groupBy('product_name')
+          ->orderBy('total_sales', 'desc')
+          ->get();
 
-    return response()->json($itemSalesData);
+     return response()->json($itemSalesData);
 })->name('admin.item-sales-data');
 
 // Activity Log Routes
@@ -231,3 +231,6 @@ Route::get('/terms-of-use', fn() => 'Terms of Use — Coming Soon')
 
 Route::get('/privacy-policy', fn() => 'Privacy Policy — Coming Soon')
      ->name('legal.privacy');
+
+
+Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');

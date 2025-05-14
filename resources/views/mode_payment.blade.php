@@ -73,7 +73,7 @@
                                 <span id="subtotal-price">₱{{ number_format($subtotal, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span><strong>Tax (20%)</strong></span>
+                                <span><strong>Tax (12%)</strong></span>
                                 <span id="tax-price">₱{{ number_format($tax, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
@@ -182,7 +182,7 @@
 
             // Update subtotal, tax, and total
             subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
-            const tax = subtotal * 0.20;
+            const tax = subtotal * 0.12; // 12% tax
             taxElement.textContent = `₱${tax.toFixed(2)}`;
             const deliveryFee = {{ $deliveryFee }};
             const total = subtotal + tax + deliveryFee;

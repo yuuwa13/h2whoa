@@ -5,6 +5,24 @@
   <div class="container my-5" style="max-width:700px;">
     <h2 class="mb-4">My Profile</h2>
 
+     {{-- SweetAlert for Success Message --}}
+    @if(session('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Profile Updated',
+                    text: '{{ session('status') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
+
     {{-- Customer ID & Created Date --}}
     <dl class="row">
     <dt class="col-sm-3">Customer ID</dt>
@@ -54,7 +72,7 @@
     <div class="mb-3">
       <label for="phone" class="form-label">Phone Number</label>
       <input type="text" id="phone" name="phone" class="form-control @error('phone') is-invalid @enderror"
-      value="{{ old('phone', $customer->phone) }}" readonly>
+      maxlength="11" value="{{ old('phone', $customer->phone) }}" readonly>
       @error('phone')
       <div class="invalid-feedback">{{ $message }}</div>
     @enderror
@@ -199,7 +217,10 @@
 
     {{-- Logout & Delete placeholders --}}
     <div class="mt-4">
-    <button class="btn btn-outline-secondary me-2">Logout</button>
+    <form method="POST" action="{{ route('logout') }}">
+      @csrf
+      <button type="submit" class="btn btn-outline-secondary me-2">Logout</button>
+    </form>
     {{-- DELETE ACCOUNT BUTTON --}}
     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModalStep1">
       Delete Account
@@ -221,17 +242,17 @@
     const cancelBtn = document.getElementById('cancelBtn');
 
     editBtn.addEventListener('click', () => {
-    inputs.forEach(i => i.removeAttribute('readonly'));
-    action.classList.remove('d-none');
-    editBtn.classList.add('d-none');
+      inputs.forEach(i => i.removeAttribute('readonly'));
+      action.classList.remove('d-none');
+      editBtn.classList.add('d-none');
 
-    // Enable Google Places Autocomplete for the address field
-    const addressInput = document.getElementById('address');
-    const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-        types: ['geocode'],
-        componentRestrictions: { country: 'ph' },
+      // Enable Google Places Autocomplete for the address field
+      const addressInput = document.getElementById('address');
+      const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+      types: ['geocode'],
+      componentRestrictions: { country: 'ph' },
+      });
     });
-});
 
     // 2) Enable Save as soon as human is checked
     humanChk.addEventListener('change', () => {
@@ -275,32 +296,32 @@
     });
     </script>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          const addressInput = document.getElementById('address');
-  
-          // Initialize the Google Places Autocomplete
-          const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-              types: ['geocode'], // Suggest addresses
-              componentRestrictions: { country: 'ph' }, // Restrict to the Philippines
-          });
-  
-          // Listen for the place_changed event
-          autocomplete.addListener('place_changed', function () {
-              const place = autocomplete.getPlace();
-  
-              // Check if the place has a geometry (valid location)
-              if (!place.geometry) {
-                  alert('No details available for the selected location.');
-                  return;
-              }
-  
-              // Optionally, log the selected place details
-              console.log('Selected Place:', place);
-          });
-      });
-  </script>
-  <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&libraries=places"></script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const addressInput = document.getElementById('address');
+
+    // Initialize the Google Places Autocomplete
+    const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+      types: ['geocode'], // Suggest addresses
+      componentRestrictions: { country: 'ph' }, // Restrict to the Philippines
+    });
+
+    // Listen for the place_changed event
+    autocomplete.addListener('place_changed', function () {
+      const place = autocomplete.getPlace();
+
+      // Check if the place has a geometry (valid location)
+      if (!place.geometry) {
+      alert('No details available for the selected location.');
+      return;
+      }
+
+      // Optionally, log the selected place details
+      console.log('Selected Place:', place);
+    });
+    });
+    </script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&libraries=places"></script>
 
 
   @endpush
