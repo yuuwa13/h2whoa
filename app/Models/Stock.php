@@ -22,6 +22,7 @@ class Stock extends Model
         'is_available',
         'is_quantifiable', // Added is_quantifiable to fillable attributes
         'maximum_orders_allowed', // Added maximum_orders_allowed to fillable attributes
+        'uploaded_image_id',
     ];
 
     protected $attributes = [
@@ -32,6 +33,11 @@ class Stock extends Model
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class, 'stock_id', 'stock_id');
+    }
+
+    public function uploadedImage()
+    {
+        return $this->belongsTo(UploadedImage::class, 'uploaded_image_id');
     }
 
     public function getIsAvailableAttribute($value)

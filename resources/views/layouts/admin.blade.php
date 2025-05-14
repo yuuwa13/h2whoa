@@ -25,7 +25,7 @@
                 class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
                 href="{{ route('admin.dashboard') }}">
                 <picture><img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;"
-                    src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}"></picture>
+                    src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}"></picture>
                 <div class="sidebar-brand-icon rotate-n-15"></div>
                 <div class="sidebar-brand-text mx-3"><span
                     style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
@@ -51,9 +51,9 @@
                 <li class="nav-item"><a class="nav-link active" href="{{ route('admin.activity-log') }}"><i class="fas fa-list"
                     style="color: var(--bs-accordion-active-color);"></i><span
                     style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload"
+                    style="color: var(--bs-accordion-active-color);"></i><span
+                    style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
             </ul>
             <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
                 id="sidebarToggle" type="button"></button></div>

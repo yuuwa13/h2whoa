@@ -6,6 +6,7 @@ use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; // Add this import
 
 class SalesController extends Controller
 {
@@ -61,6 +62,13 @@ class SalesController extends Controller
             }
         }
 
+        DB::table('sale_logs')->insert([
+            'sale_id' => $sale->sale_id,
+            'action' => 'create',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return redirect()->route('sales.index')->with('success', 'Sale created successfully!');
     }
 
@@ -78,6 +86,9 @@ class SalesController extends Controller
             'order_id' => 'nullable|exists:orders,order_id',
             'sale_type' => 'required|in:web,phone,on-site',
         ]);
+
+        $oldValues = $sale->only(array_keys($validated));
+        $newValues = $validated;
 
         $sale->update($validated);
 
@@ -113,12 +124,29 @@ class SalesController extends Controller
             }
         }
 
+        DB::table('sale_logs')->insert([
+            'sale_id' => $sale->sale_id,
+            'action' => 'update',
+            'old_value' => json_encode($oldValues),
+            'new_value' => json_encode($newValues),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return redirect()->route('sales.index')->with('success', 'Sale updated successfully!');
     }
 
     // Delete a sale
     public function destroy(Sale $sale)
     {
+        // Log the deletion action before deleting the sale
+        DB::table('sale_logs')->insert([
+            'sale_id' => $sale->sale_id,
+            'action' => 'delete',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         $sale->delete();
 
         return redirect()->route('sales.index')->with('success', 'Sale deleted successfully!');

@@ -83,6 +83,18 @@ class OrderController extends Controller
             'order_datetime' => now(),
         ]);
 
+        // Store the order_id in the session for later use
+        session(['order_id' => $order->order_id]);
+
+        // Debugging: Log the session data after setting order_id
+        Log::info('Session after setting order_id:', session()->all());
+
+        // Debugging: Log session write confirmation
+        Log::info('Session write check after setting order_id:', ['order_id' => session('order_id')]);
+
+        // Debugging: Log the order_id value immediately after setting it in the session
+        Log::info('Order ID set in session:', ['order_id' => session('order_id')]);
+
         // Add order details and calculate total price
         foreach ($validated['items'] as $item) {
             $stock = \App\Models\Stock::find($item['stock_id']);

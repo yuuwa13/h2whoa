@@ -21,7 +21,7 @@
             <div class="container-fluid d-flex flex-column p-0">
                 <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.stocks') }}">
                     <picture>
-                        <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}">
+                        <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}">
                     </picture>
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
@@ -34,6 +34,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -82,6 +83,26 @@
                                             <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
                                         </label>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
+                                        <label class="form-check-label" for="searchsale_id">Sale ID</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
+                                        <label class="form-check-label" for="searchorder_id">Order ID</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchQuantity" value="3" checked>
+                                        <label class="form-check-label" for="searchsale_type">Sale Type</label>
+                                    </div>
+                                    <!-- Add more checkboxes for other columns as needed -->
                                 </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
@@ -180,6 +201,48 @@
     <script src="{{ asset('h2whoa_admin/assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---1-Index-Table-with-Search--Sort-Filters.js') }}"></script>
     <script src="{{ asset('h2whoa_admin/assets/js/Ludens---1-Index-Table-with-Search--Sort-Filters-v20-Ludens---Material-UI-Actions.js') }}"></script>
     <script src="{{ asset('h2whoa_admin/assets/js/theme.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const table = document.getElementById('dataTable');
+            const rows = table.querySelectorAll('tbody tr');
+
+            // Search functionality for relevant columns (Sale ID, Order ID, Sale Type)
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    const saleId = row.children[0]?.textContent.toLowerCase() || '';
+                    const orderId = row.children[1]?.textContent.toLowerCase() || '';
+                    const saleType = row.children[2]?.textContent.toLowerCase() || '';
+
+                    const matches = saleId.includes(query) || orderId.includes(query) || saleType.includes(query);
+                    row.style.display = matches ? '' : 'none';
+                });
+            });
+
+            // Sorting functionality for table headers (excluding Actions column)
+            const headers = table.querySelectorAll('thead th');
+            headers.forEach((header, index) => {
+                if (index === 4) return; // Skip Actions column
+
+                header.classList.add('sortable-column');
+                header.addEventListener('click', function () {
+                    const isAscending = header.classList.toggle('ascending');
+                    const direction = isAscending ? 1 : -1;
+
+                    const sortedRows = Array.from(rows).sort((a, b) => {
+                        const aText = a.children[index]?.textContent.trim().toLowerCase() || '';
+                        const bText = b.children[index]?.textContent.trim().toLowerCase() || '';
+
+                        return aText > bText ? direction : aText < bText ? -direction : 0;
+                    });
+
+                    sortedRows.forEach(row => table.querySelector('tbody').appendChild(row));
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -65,6 +65,32 @@
             @enderror
         </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Current Image</label>
+                <div>
+                    <img src="{{ $stock->uploadedImage ? asset('storage/' . $stock->uploadedImage->file_path) : asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}" alt="Current Image" style="max-width: 150px; max-height: 150px;">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Selected New Image</label>
+                <div>
+                    <img id="image_preview" src="{{ asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}" alt="Selected Image Preview" style="max-width: 150px; max-height: 150px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="uploaded_image_id" class="form-label">Select New Image</label>
+            <select id="uploaded_image_id" name="uploaded_image_id" class="form-control">
+                <option value="">No Image</option>
+                @foreach($uploadedImages as $image)
+                    <option value="{{ $image->id }}" data-image-url="{{ asset('storage/' . $image->file_path) }}" {{ $stock->uploaded_image_id == $image->id ? 'selected' : '' }}>{{ $image->file_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <div class="mb-3">
             <label for="is_available" class="form-label">Available</label>
             <input type="checkbox" id="is_available" name="is_available" value="1" {{ old('is_available', $stock->is_available) ? 'checked' : '' }}>
@@ -147,6 +173,20 @@
 
         isQuantifiableCheckbox.addEventListener('change', toggleFields);
         toggleFields(); // Initialize on page load
+
+        const imageSelect = document.getElementById('uploaded_image_id');
+        const imagePreview = document.getElementById('image_preview');
+
+        imageSelect.addEventListener('change', function () {
+            const selectedOption = imageSelect.options[imageSelect.selectedIndex];
+            const imageUrl = selectedOption.getAttribute('data-image-url');
+
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+            } else {
+                imagePreview.src = '{{ asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}';
+            }
+        });
     });
 </script>
 

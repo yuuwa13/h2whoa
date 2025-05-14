@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Stock;
+use App\Models\UploadedImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB; // Add this import
 
 
 class StockController extends Controller
@@ -29,13 +32,17 @@ class StockController extends Controller
     // Show the “create stock” form //
     public function create()
     {
-        return view('stocks.create');
+        $uploadedImages = UploadedImage::all();
+        return view('stocks.create', compact('uploadedImages'));
     }
 
 
     // Handle the form POST and save new stock //
     public function store(Request $request)
     {
+        // Log the incoming request data
+        Log::info('Store method called with request data:', $request->all());
+
         $validated = $request->validate([
             'product_name' => 'required|string|max:255',
             'quantity' => $request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable',
@@ -43,7 +50,11 @@ class StockController extends Controller
             'is_available' => 'sometimes|boolean',
             'is_quantifiable' => 'sometimes|boolean',
             'maximum_orders_allowed' => !$request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable',
+            'uploaded_image_id' => 'nullable|exists:uploaded_images,id',
         ]);
+
+        // Log the validated data
+        Log::info('Validated data for store:', $validated);
 
         // Ensure default values for undefined keys
         $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0);
@@ -72,7 +83,20 @@ class StockController extends Controller
             $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0); // Save user-provided value
         }
 
-        Stock::create($validated);
+        $validated['uploaded_image_id'] = $request->input('uploaded_image_id');
+
+        // Log the created stock
+        $stock = Stock::create($validated);
+        Log::info('Stock created:', $stock->toArray());
+
+        // Log the action in stock_logs table
+        DB::table('stock_logs')->insert([
+            'stock_id' => $stock->stock_id,
+            'action' => 'create',
+            'new_values' => json_encode($stock->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return redirect()->route('admin.stocks')->with('success', 'Stock created successfully!');
     }
@@ -80,13 +104,17 @@ class StockController extends Controller
 
     public function edit(Stock $stock)
     {
-        return view('stocks.edit', compact('stock'));
+        $uploadedImages = UploadedImage::all();
+        return view('stocks.edit', compact('stock', 'uploadedImages'));
     }
 
 
     // Handle the form PUT and save updates //
     public function update(Request $request, $id)
     {
+        // Log the incoming request data
+        Log::info('Update method called with request data:', $request->all());
+
         $stock = Stock::findOrFail($id);
 
         $validated = $request->validate([
@@ -96,7 +124,11 @@ class StockController extends Controller
             'is_available' => 'sometimes|boolean',
             'is_quantifiable' => 'sometimes|boolean',
             'maximum_orders_allowed' => !$request->has('is_quantifiable') ? 'required|integer|min:0' : 'nullable|integer|min:0',
+            'uploaded_image_id' => 'nullable|exists:uploaded_images,id',
         ]);
+
+        // Log the validated data
+        Log::info('Validated data for update:', $validated);
 
         // Ensure default values for undefined keys
         $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0);
@@ -125,7 +157,24 @@ class StockController extends Controller
             $validated['maximum_orders_allowed'] = $request->input('maximum_orders_allowed', 0); // Save user-provided value
         }
 
+        $validated['uploaded_image_id'] = $request->input('uploaded_image_id');
+
+        // Log the old values before updating
+        $oldValues = $stock->toArray();
+
+        // Log the updated stock
         $stock->update($validated);
+        Log::info('Stock updated:', $stock->toArray());
+
+        // Log the action in stock_logs table
+        DB::table('stock_logs')->insert([
+            'stock_id' => $stock->stock_id,
+            'action' => 'update',
+            'old_values' => json_encode($oldValues),
+            'new_values' => json_encode($stock->toArray()),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return redirect()->route('admin.stocks')->with('success', 'Stock updated successfully!');
     }
@@ -133,8 +182,19 @@ class StockController extends Controller
 
     public function destroy(Stock $stock)
     {
-        $stock->delete();
+        // Log the old values before deleting
+        $oldValues = $stock->toArray();
 
+        // Log the action in stock_logs table before deleting the stock
+        DB::table('stock_logs')->insert([
+            'stock_id' => $stock->stock_id,
+            'action' => 'delete',
+            'old_values' => json_encode($oldValues),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $stock->delete();
 
         return redirect()
             ->route('admin.stocks')
