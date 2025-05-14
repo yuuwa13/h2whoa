@@ -54,9 +54,8 @@ class ActivityLogController extends Controller
 
     public function stockActions($stockId)
     {
-        $logs = DB::table('activity_logs')
-            ->where('model_type', 'Stock')
-            ->where('model_id', $stockId)
+        $logs = DB::table('stock_logs')
+            ->where('stock_id', $stockId)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -65,10 +64,10 @@ class ActivityLogController extends Controller
 
     public function saleActions($saleId)
     {
-        $logs = DB::table('activity_logs')
-            ->where('model_type', 'Sale')
-            ->where('model_id', $saleId)
-            ->orderBy('created_at', 'desc')
+        $logs = DB::table('sale_logs')
+            ->join('sales', 'sale_logs.sale_id', '=', 'sales.sale_id')
+            ->select('sale_logs.action', 'sale_logs.old_value', 'sale_logs.new_value', 'sale_logs.created_at')
+            ->orderBy('sale_logs.created_at', 'desc')
             ->paginate(10);
 
         return view('activity-log.sale-actions', compact('logs'));

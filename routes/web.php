@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GcashController;
+use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\ContactController;
 
 // Logout route
@@ -214,6 +215,11 @@ Route::get('/admin/activity-log/stocks', [ActivityLogController::class, 'stocks'
 Route::get('/admin/activity-log/sales', [ActivityLogController::class, 'sales'])->name('admin.activity-log.sales');
 Route::get('/admin/activity-log/stocks/{stock}/actions', [ActivityLogController::class, 'stockActions'])->name('admin.activity-log.stocks.actions');
 Route::get('/admin/activity-log/sales/{sale}/actions', [ActivityLogController::class, 'saleActions'])->name('admin.activity-log.sales.actions');
+
+// Image Upload Routes
+Route::get('/admin/upload-image', [ImageUploadController::class, 'index'])->name('admin.upload-image');
+Route::post('/admin/upload-image', [ImageUploadController::class, 'upload'])->name('admin.upload-image.store');
+Route::delete('/admin/upload-image/{id}', [ImageUploadController::class, 'delete'])->name('admin.upload-image.delete');
 
 //Placeholder routes for some of those footer navigation stuff
 

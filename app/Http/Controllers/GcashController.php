@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GcashDetail;
+use Illuminate\Support\Facades\Log;
 
 class GcashController extends Controller
 {
@@ -24,6 +25,13 @@ class GcashController extends Controller
 
         // Retrieve the order ID from the session or request
         $orderId = $request->input('order_id') ?? session('order_id');
+
+        // Debugging: Log the order ID and image path
+        Log::info('Order ID:', ['order_id' => $orderId]);
+        Log::info('Image Path:', ['image_path' => $imagePath]);
+
+        // Debugging: Log the entire session to verify if order_id is present
+        Log::info('Session Data:', session()->all());
 
         // Save GCash details to the database
         GcashDetail::create([

@@ -22,7 +22,7 @@
             <div class="container-fluid d-flex flex-column p-0">
                 <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.stocks') }}">
                     <picture>
-                        <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}">
+                        <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}">
                     </picture>
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
@@ -32,9 +32,10 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var (--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
@@ -85,18 +86,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
+                                        <label class="form-check-label" for="searchItem">Item</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
+                                        <label class="form-check-label" for="searchPrice">Price</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input search-column" type="checkbox" id="searchStock" value="3" checked>
+                                        <label class="form-check-label" for="searchStock">Stock Quantity</label>
+                                    </div>
+                                    <!-- Add more checkboxes for other columns as needed -->
+                                </div>
+                            </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
+                                <table class="table my-0 sortable" id="dataTable">
                                     <thead>
                                         <tr>
                                             <th>Image</th>
-                                            <th>Item</th>
-                                            <th>Price</th>
-                                            <th>Stock Quantity</th>
-                                            <th>Availability</th>
+                                            <th class="sortable-column">Item</th>
+                                            <th class="sortable-column">Price</th>
+                                            <th class="sortable-column">Stock Quantity</th>
+                                            <th class="sortable-column">Availability</th>
                                             <th>Quantifiable</th>
-                                            <th>Created At</th>
-                                            <th>Last Updated At</th>
+                                            <th class="sortable-column">Created At</th>
+                                            <th class="sortable-column">Last Updated At</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -104,7 +125,7 @@
                                         @forelse($stocks as $stock)
                                         <tr>
                                             <td>
-                                                <img class="rounded-circle me-2" width="30" height="30" src="{{ asset($stock->image_path ?? 'assets/img/elements/default.png') }}" alt="{{ $stock->product_name }}">
+                                                <img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;" src="{{ $stock->uploadedImage ? asset('storage/' . $stock->uploadedImage->file_path) : asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}">
                                             </td>
                                             <td>{{ $stock->product_name }}</td>
                                             <td>₱ {{ number_format($stock->price_per_unit, 2) }}</td>
@@ -194,6 +215,36 @@
                     timer: 3000
                 });
             }
+
+            const searchInput = document.getElementById('searchInput');
+            const checkboxes = document.querySelectorAll('.search-column');
+            const table = document.getElementById('dataTable');
+            const rows = table.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+                const activeColumns = Array.from(checkboxes).filter(cb => cb.checked).map(cb => parseInt(cb.value));
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const matches = activeColumns.some(index => cells[index] && cells[index].textContent.toLowerCase().includes(query));
+                    row.style.display = matches ? '' : 'none';
+                });
+            });
+
+            document.querySelectorAll('.sortable-column').forEach(header => {
+                header.addEventListener('click', function () {
+                    const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+                    const isAscending = header.classList.toggle('ascending');
+
+                    Array.from(rows).sort((a, b) => {
+                        const aText = a.children[columnIndex].textContent.trim();
+                        const bText = b.children[columnIndex].textContent.trim();
+
+                        return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                    }).forEach(row => table.querySelector('tbody').appendChild(row));
+                });
+            });
         });
     </script>
 </body>

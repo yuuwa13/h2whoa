@@ -24,41 +24,41 @@
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark"
             style="background: rgba(255, 255, 255, 0.04);font-size: 22px;color: rgba(133,135,150,0.04);">
             <div class="container-fluid d-flex flex-column p-0"><a
-                class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
-                href="{{ route('admin.dashboard') }}">
-                <picture><img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;"
-                    src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa%20logo.png') }}"></picture>
-                <div class="sidebar-brand-icon rotate-n-15"></div>
-                <div class="sidebar-brand-text mx-3"><span
-                    style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
+            class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+            href="{{ route('admin.dashboard') }}">
+            <picture><img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;"
+                src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}"></picture>
+            <div class="sidebar-brand-icon rotate-n-15"></div>
+            <div class="sidebar-brand-text mx-3"><span
+                style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
             </a>
             <hr class="sidebar-divider my-0">
             <ul class="navbar-nav text-light" id="accordionSidebar">
-                <li class="nav-item"><a class="nav-link active" href="{{ route('admin.dashboard') }}"
-                    style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt"
-                    style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user"
-                    style="color: var(--bs-emphasis-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i
-                    class="fas fa-table"
-                    style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
+            <li class="nav-item"><a class="nav-link active" href="{{ route('admin.dashboard') }}"
+                style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt"
+                style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user"
+                style="color: var(--bs-emphasis-color);"></i><span
+                style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i
+                class="fas fa-table"
+                style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register"
+                style="color: var(--bs-accordion-active-color);"></i><span
+                style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history"
+                style="color: var(--bs-accordion-active-color);"></i><span
+                style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list"
+                style="color: var(--bs-accordion-active-color);"></i><span
+                style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload"
+                style="color: var(--bs-accordion-active-color);"></i><span
+                style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
             </ul>
             <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                id="sidebarToggle" type="button"></button></div>
+            id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">

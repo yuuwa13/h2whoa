@@ -8,6 +8,8 @@
             <thead>
                 <tr>
                     <th>Action</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
                     <th>Date</th>
                 </tr>
             </thead>
@@ -15,6 +17,8 @@
                 @foreach ($logs as $log)
                 <tr>
                     <td>{{ $log->action }}</td>
+                    <td>{{ $log->old_value ? json_encode(json_decode($log->old_value, true), JSON_PRETTY_PRINT) : 'N/A' }}</td>
+                    <td>{{ $log->new_value ? json_encode(json_decode($log->new_value, true), JSON_PRETTY_PRINT) : 'N/A' }}</td>
                     <td>{{ $log->created_at }}</td>
                 </tr>
                 @endforeach

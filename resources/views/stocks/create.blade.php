@@ -95,6 +95,23 @@
             <small class="form-text text-muted">Maximum orders allowed should not exceed the quantity if quantifiable.</small>
         </div>
 
+        <div class="mb-3">
+            <label for="uploaded_image_id" class="form-label">Select Image</label>
+            <select id="uploaded_image_id" name="uploaded_image_id" class="form-control">
+                <option value="">No Image</option>
+                @foreach($uploadedImages as $image)
+                    <option value="{{ $image->id }}" data-image-url="{{ asset('storage/' . $image->file_path) }}">{{ $image->file_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Image Preview</label>
+            <div>
+                <img id="image_preview" src="{{ asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}" alt="Image Preview" style="max-width: 150px; max-height: 150px;">
+            </div>
+        </div>
+
         <a href="{{ route('admin.stocks') }}" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">Save Stock</button>
     </form>
@@ -151,6 +168,23 @@
 
         isQuantifiableCheckbox.addEventListener('change', toggleFields);
         toggleFields(); // Initialize on page load
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageSelect = document.getElementById('uploaded_image_id');
+        const imagePreview = document.getElementById('image_preview');
+
+        imageSelect.addEventListener('change', function () {
+            const selectedOption = imageSelect.options[imageSelect.selectedIndex];
+            const imageUrl = selectedOption.getAttribute('data-image-url');
+
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+            } else {
+                imagePreview.src = '{{ asset('h2whoa_admin/assets/img/no-image-placeholder.png') }}';
+            }
+        });
     });
 </script>
 
