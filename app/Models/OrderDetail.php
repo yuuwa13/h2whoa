@@ -20,6 +20,7 @@ class OrderDetail extends Model
         'stock_id',
         'quantity',
         'total_price',
+        'price_per_unit',
     ];
 
     // Relationship with Order

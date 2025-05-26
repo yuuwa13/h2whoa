@@ -26,20 +26,32 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #F8F9FA !important;
+        }
+    </style>
 </head>
 
 <body>
     <main class="page payment-page">
         <section class="clean-block payment-form dark">
             <div class="container" style="margin-top: 82px;">
-                <div class="block-heading">
-                    <h3 class="title" style="text-align: center;">GCASH Payment</h3>
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <a href="{{ route('mode.payment') }}" class="btn btn-link p-0 me-2"
+                        style="font-size: 1.5rem; text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h3 class="title text-center mb-0" style="flex: 1;">GCASH Payment</h3>
                 </div>
-                <form id="gcash-payment-form" action="{{ route('gcash.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="gcash-payment-form" action="{{ route('gcash.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="products">
                         <h3 class="title" style="text-align: center;">
-                            <img src="{{ asset('h2whoa_user/assets/img/tech/gcash.png') }}" style="margin-top: 0px;" width="201" height="228">
+                            <img src="{{ asset('h2whoa_user/assets/img/tech/gcash.png') }}" style="margin-top: 0px;"
+                                width="201" height="228">
                         </h3>
                         <div class="item d-flex justify-content-between">
                             <p class="item-name1">Subtotal</p>
@@ -60,7 +72,8 @@
                             <div class="col-sm-7">
                                 <div class="mb-3">
                                     <label class="form-label" for="name">Gcash Name</label>
-                                    <input class="form-control" type="text" id="name" name="name" placeholder="K.... B... M...." required>
+                                    <input class="form-control" type="text" id="name" name="name"
+                                        placeholder="K.... B... M...." required>
                                 </div>
                             </div>
                             <div class="col-sm-5">
@@ -72,12 +85,14 @@
                             <div class="col-sm-8">
                                 <div class="mb-3">
                                     <label class="form-label" for="reference_number">Reference Number</label>
-                                    <input class="form-control" type="text" id="reference_number" name="reference_number" placeholder="002asd32139323" required>
+                                    <input class="form-control" type="text" id="reference_number"
+                                        name="reference_number" placeholder="002asd32139323" required>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="mb-3">
-                                    <button id="confirm-payment-button" class="btn btn-primary d-block w-100" type="button" style="background: #4ac9b0;">
+                                    <button id="confirm-payment-button" class="btn btn-primary d-block w-100"
+                                        type="button" style="background: #4ac9b0;">
                                         Confirm Payment
                                     </button>
                                 </div>
@@ -85,18 +100,18 @@
                         </div>
                     </div>
                 </form>
-                
+
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const confirmButton = document.getElementById('confirm-payment-button');
                         const paymentForm = document.getElementById('gcash-payment-form');
-                
+
                         confirmButton.addEventListener('click', function () {
                             // Validate form fields
                             const name = document.getElementById('name').value.trim();
                             const referenceNumber = document.getElementById('reference_number').value.trim();
                             const receipt = document.getElementById('image').files.length;
-                
+
                             if (!name || !referenceNumber || receipt === 0) {
                                 // Show error if any field is empty
                                 Swal.fire({
@@ -107,7 +122,7 @@
                                 });
                                 return;
                             }
-                
+
                             // Show confirmation modal if all fields are valid
                             Swal.fire({
                                 title: 'Are you sure?',
@@ -130,7 +145,7 @@
                                         timer: 2000,
                                         timerProgressBar: true,
                                     });
-                
+
                                     // Submit the form programmatically after the toast
                                     setTimeout(() => {
                                         paymentForm.submit();
@@ -143,7 +158,7 @@
             </div>
         </section>
     </main>
-    
+
     <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
     <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>

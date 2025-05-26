@@ -58,6 +58,7 @@ Route::get('/', function () {
 Route::get('/invoice', function () {
      return view('invoice');
 });
+Route::get('/invoice/{order}', [OrderController::class, 'invoice'])->name('orders.invoice');
 Route::get('/contact-us', function () {
      return view('online_contactUs');
 })->name('contact.us');

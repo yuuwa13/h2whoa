@@ -51,7 +51,7 @@
 
                 <div class="btn-group" role="group">
                     <a class="btn btn-primary" style="background: #4ac9b0; width: 120px; margin-left: 46px;" href="{{ route('login.form') }}">LOG IN</a>
-                    <a class="btn btn-primary" style="margin-left: 20px; background: #4ac9b0;" href="{{ route('signup.form') }}">REGISTER NOW</a>
+                    <a class="btn btn-primary" style="margin-left: 20px; background: #4ac9b0;" href="{{ route('signup.form') }}">CREATE ACCOUNT</a>
                 </div>
             </div>
 

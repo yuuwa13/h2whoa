@@ -14,48 +14,30 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    // Display all orders
     public function index(Request $request)
     {
-        // Fetch all available stocks
-        $products = Stock::all(); // Fetch all stocks from the database
+        $products = Stock::with('uploadedImage')->get();
+        $customer = Auth::guard('customer')->user();
+        $selectedAddress = session('selected_address');
 
-        // Simulate a cart by initializing an empty array
+        // Do NOT redirect if address is not set, just pass everything to the view
         $cart = [];
-
-        // Calculate the subtotal dynamically
-        $subtotal = 0; // Initialize subtotal
+        $subtotal = 0;
         foreach ($products as $product) {
-            // Example: Assume each stock has a default quantity of 1 for demonstration
-            $quantity = 1; // Replace this with actual logic if needed
+            $quantity = 1;
             $itemTotal = $quantity * $product->price_per_unit;
-
-            // Add to the cart array
             $cart[] = [
                 'name' => $product->product_name,
                 'quantity' => $quantity,
                 'total_price' => $itemTotal,
             ];
-
-            // Add to the subtotal
             $subtotal += $itemTotal;
         }
-
-
-        // Calculate tax (12% of subtotal)
         $tax = $subtotal * 0.12;
-
-        // Retrieve the dynamic delivery fee from the session
-        $deliveryFee = session('delivery_fee', 20); // Default to 20 if not set
-
-        // Calculate the total price
+        $deliveryFee = session('delivery_fee', 20);
         $total = $subtotal + $tax + $deliveryFee;
 
-        // Check if the customer has an address and set it as the default selected_address
-        $customer = Auth::guard('customer')->user();
-
-        // Pass data to the view
-        return view('orders.index', compact('products', 'cart', 'subtotal', 'tax', 'deliveryFee', 'total'));
+        return view('orders.index', compact('products', 'cart', 'subtotal', 'tax', 'deliveryFee', 'total', 'selectedAddress'));
     }
 
     // Show the form to create a new order
@@ -383,11 +365,15 @@ class OrderController extends Controller
 
             // Create the order
             $order = Order::create([
-                'customer_id' => $customer->customer_id,
-                'amount_paid' => $total,
-                'order_datetime' => now(),
-                'order_status' => 'Pending', // Default status
+                'customer_id'      => $customer->customer_id,
+                'amount_paid'      => $total,
+                'order_datetime'   => now(),
+                'order_status'     => 'Pending',
                 'payment_method_id' => $paymentMethodId,
+                // Snapshot fields:
+                'customer_name'    => $customer->name,
+                'customer_phone'   => $customer->phone,
+                'customer_address' => session('selected_address') ?? $customer->address,
             ]);
 
             // Add order details
@@ -403,6 +389,7 @@ class OrderController extends Controller
                     'order_id' => $order->order_id,
                     'stock_id' => $stockId,
                     'quantity' => $item['quantity'],
+                    'price_per_unit' => $item['price'], // Save the price per unit at order time
                     'total_price' => $item['total_price'],
                 ]);
             }
@@ -537,4 +524,9 @@ class OrderController extends Controller
 
         return view('delivery_details', compact('customer'));
     }
+    public function invoice(Order $order)
+{
+    // Optionally, check if the user is allowed to view this invoice
+    return view('invoice', compact('order'));
+}
 }

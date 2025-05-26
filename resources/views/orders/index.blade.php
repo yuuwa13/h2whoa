@@ -5,35 +5,34 @@
 @section('content')
     <main class="page shopping-cart-page">
         <section class="clean-block clean-cart dark">
-            <div class="container" style="width: 1300px; margin-top: 150px;">
+            <div class="container" style="width: 1300px; margin-top: -28px;">
                 <form action="{{ route('orders.save') }}" method="POST">
                     @csrf
                     <div class="row">
-                        <!-- Address Section -->
+                        {{-- Address Section --}}
                         <div class="col-md-6">
-                            <h4 style="width: 500px;">Your Address</h4>
+                            <h4 style="width: 500px; margin-top: 40px;">Your Address</h4>
                             <p style="width: 500px;">
-                                @if(Auth::guard('customer')->check())
-                                    @if(Auth::guard('customer')->user()->address)
-                                        {{ Auth::guard('customer')->user()->address }}
-                                    @else
-                                        <span class="text-warning">No address is set. Please <a
-                                                href="{{ route('locate.address') }}">set your address</a>.</span>
-                                    @endif
+                                @if(session('selected_address'))
+                                    {{ session('selected_address') }}
                                 @else
-                                    <span class="text-danger">You are not logged in. Please <a
-                                            href="{{ route('login.form') }}">log in</a> to view your address.</span>
+                                    <div class="alert alert-warning mt-3" role="alert">
+                                        <strong>Warning:</strong> You must verify your delivery address before you can place an
+                                        order.
+                                        <a href="{{ route('locate.address') }}" class="alert-link">Click here to set your
+                                            address.</a>
+                                    </div>
                                 @endif
                             </p>
                         </div>
                         <div class="col-md-6">
                             <a class="btn btn-primary btn-lg d-block w-100" role="button"
                                 href="{{ route('locate.address') }}"
-                                style="background: #4ac9b0; width: 300px; margin-top: 37px;">
+                                style="background: #4ac9b0; width: 300px; margin-top: 90px; margin-bottom: 24px;">
                                 <i class="fas fa-map-marker" style="font-size: 24px; margin-right: 33px;"></i>Locate Address
                             </a>
                         </div>
-                        
+
                         <!-- Please fix -->
                         @if(!session('selected_address') && !Auth::guard('customer')->user()->address)
                             <div class="alert alert-warning mt-3" role="alert">
@@ -59,46 +58,48 @@
                                                     </thead>
                                                     <tbody>
                                                         @foreach($products as $product)
-                                                            <tr>
-                                                                <td>
-                                                                    <img class="img-fluid d-block mx-auto image"
-                                                                        src="{{ asset('h2whoa_user/assets/img/elements/Water.png') }}">
-                                                                    <a class="product-name">
-                                                                        <br><strong>{{ strtoupper($product->product_name) }}</strong><br><br>
-                                                                        <span>Amount:
-                                                                            ₱{{ number_format($product->price_per_unit, 2) }}<br>In
-                                                                            Stock: {{ $product->quantity }}</span>
-                                                                    </a>
-                                                                </td>
-                                                                <td>
-                                                                    @if ($product->is_available)
-                                                                        <input type="number"
-                                                                            name="products[{{ $product->stock_id }}][quantity]"
-                                                                            id="quantity-{{ $product->stock_id }}"
-                                                                            class="form-control quantity-input" value="" min="0"
-                                                                            placeholder="0" max="{{ $product->quantity }}"
-                                                                            data-id="{{ $product->stock_id }}"
-                                                                            data-name="{{ $product->product_name }}"
-                                                                            data-price="{{ $product->price_per_unit }}">
-                                                                        <input type="hidden"
-                                                                            name="products[{{ $product->stock_id }}][stock_id]"
-                                                                            value="{{ $product->stock_id }}">
-                                                                    @else
-                                                                        <div style="position: relative;">
-                                                                            <div
-                                                                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); z-index: 1;">
-                                                                                <span
-                                                                                    style="color: red; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Product
-                                                                                    Unavailable</span>
-                                                                            </div>
-                                                                            <input type="number" class="form-control" disabled>
-                                                                        </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                    <span id="total-price-{{ $product->stock_id }}">₱0.00</span>
-                                                                </td>
-                                                            </tr>
+                                                                                                        <tr>
+                                                                                                            <td>
+                                                                                                                <img class="img-fluid d-block mx-auto image" width="80"
+                                                                                                                    height="60" src="{{ $product->uploadedImage
+                                                            ? asset('storage/' . ltrim($product->uploadedImage->file_path, '/'))
+                                                            : asset('h2whoa_user/assets/img/elements/Water.png') }}">
+                                                                                                                <a class="product-name">
+                                                                                                                    <br><strong>{{ strtoupper($product->product_name) }}</strong><br><br>
+                                                                                                                    <span>Amount:
+                                                                                                                        ₱{{ number_format($product->price_per_unit, 2) }}<br>In
+                                                                                                                        Stock: {{ $product->quantity }}</span>
+                                                                                                                </a>
+                                                                                                            </td>
+                                                                                                            <td>
+                                                                                                                @if ($product->is_available)
+                                                                                                                    <input type="number"
+                                                                                                                        name="products[{{ $product->stock_id }}][quantity]"
+                                                                                                                        id="quantity-{{ $product->stock_id }}"
+                                                                                                                        class="form-control quantity-input" value="" min="0"
+                                                                                                                        placeholder="0" max="{{ $product->quantity }}"
+                                                                                                                        data-id="{{ $product->stock_id }}"
+                                                                                                                        data-name="{{ $product->product_name }}"
+                                                                                                                        data-price="{{ $product->price_per_unit }}">
+                                                                                                                    <input type="hidden"
+                                                                                                                        name="products[{{ $product->stock_id }}][stock_id]"
+                                                                                                                        value="{{ $product->stock_id }}">
+                                                                                                                @else
+                                                                                                                    <div style="position: relative;">
+                                                                                                                        <div
+                                                                                                                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); z-index: 1;">
+                                                                                                                            <span
+                                                                                                                                style="color: red; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Product
+                                                                                                                                Unavailable</span>
+                                                                                                                        </div>
+                                                                                                                        <input type="number" class="form-control" disabled>
+                                                                                                                    </div>
+                                                                                                                @endif
+                                                                                                            </td>
+                                                                                                            <td>
+                                                                                                                <span id="total-price-{{ $product->stock_id }}">₱0.00</span>
+                                                                                                            </td>
+                                                                                                        </tr>
                                                         @endforeach
                                                     </tbody>
                                                 </table>
@@ -137,9 +138,11 @@
                                             </h4>
                                             <button type="submit" id="proceed-to-payment"
                                                 class="btn btn-primary btn-lg d-block w-100"
-                                                style="background: #4ac9b0; margin-top: 40px;" disabled>
+                                                style="background: #4ac9b0; margin-top: 40px;"
+                                                @if(!session('selected_address')) disabled @endif>
                                                 <i class="fas fa-arrow-circle-right"
-                                                    style="font-size: 24px; margin-right: 33px;"></i>Proceed to Payment
+                                                    style="font-size: 24px; margin-right: 33px;"></i>
+                                                Proceed to Payment
                                             </button>
                                         </div>
                                     </div>
@@ -256,12 +259,12 @@
                         const summaryItem = document.createElement('div');
                         summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
                         summaryItem.innerHTML = `
-                                        <span>
-                                            <strong>${itemName}</strong><br>
-                                            Quantity: ${quantity}
-                                        </span>
-                                        <span>₱${itemTotal.toFixed(2)}</span>
-                                    `;
+                                                                        <span>
+                                                                            <strong>${itemName}</strong><br>
+                                                                            Quantity: ${quantity}
+                                                                        </span>
+                                                                        <span>₱${itemTotal.toFixed(2)}</span>
+                                                                    `;
                         summaryItemsContainer.appendChild(summaryItem);
 
                         // Add to the subtotal

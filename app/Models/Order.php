@@ -21,7 +21,10 @@ class Order extends Model
         'payment_method_id',
         'amount_paid',
         'order_datetime',
-        'order_status', // Add this
+        'order_status',
+        'customer_name',
+        'customer_phone',
+        'customer_address',
     ];
 
     protected $casts = [

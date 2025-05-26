@@ -1,3 +1,4 @@
+{{-- filepath: resources/views/locate_address.blade.php --}}
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -28,9 +29,14 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&libraries=places"></script>
     <style>
+        body {
+            background-color: #F8F9FA !important;
+        }
+
         #map {
             height: 400px;
             width: 100%;
@@ -46,7 +52,13 @@
     <main class="page payment-page">
         <section class="clean-block payment-form dark">
             <div class="container" style="margin-top: 82px;">
-                <h3 class="text-center">Locate Your Address</h3>
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <a href="{{ route('orders.index') }}" class="btn btn-link p-0 me-2"
+                        style="font-size: 1.5rem; text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h3 class="text-center mb-0" style="flex: 1;">Locate Your Address</h3>
+                </div>
                 <!-- Search Box -->
                 <input id="search-box" class="form-control search-box" type="text" placeholder="Search for a location">
                 <div id="map"></div>
@@ -63,8 +75,23 @@
             </div>
         </section>
     </main>
+    @if(session('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Verify Address',
+                    text: '{{ session('status') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+        </script>
+    @endif
 
-    <!-- SweetAlert for Address Confirmation -->
     @if(session('address_confirmed'))
         <script>
             document.addEventListener('DOMContentLoaded', function () {

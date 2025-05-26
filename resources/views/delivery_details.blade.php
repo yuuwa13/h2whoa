@@ -74,9 +74,9 @@
                     <div class="modal fade" id="editDetailsModal" tabindex="-1" aria-labelledby="editDetailsModalLabel"
                         aria-hidden="true">
                         <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
+                            <div class="modal-content p-0">
                                 <form action="{{ route('customer.update', $customer->customer_id) }}" method="POST"
-                                    id="edit-details-form">
+                                    id="edit-details-form" class="w-100">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
@@ -93,7 +93,7 @@
                                         <div class="mb-3">
                                             <label for="phone" class="form-label">Contact Number</label>
                                             <input type="text" class="form-control" id="phone" name="phone"
-                                               minlength="11" maxlength="11" value="{{ $customer->phone }}" required>
+                                                minlength="11" maxlength="11" value="{{ $customer->phone }}" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="address" class="form-label">Delivery Address</label>
