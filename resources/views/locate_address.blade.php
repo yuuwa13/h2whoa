@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJG45QmDHbTK6Z1lmcLER74Mzo9mQxXug&libraries=places"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQnsNJBV6gfQnNeURHNyDBgp79XK7eBAA&libraries=places"></script>
     <style>
         body {
             background-color: #F8F9FA !important;
