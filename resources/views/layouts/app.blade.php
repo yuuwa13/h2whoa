@@ -23,18 +23,18 @@
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    </head>
+</head>
 
 <body>
     <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
         <div class="container">
-            <a class="navbar-brand logo" href="{{ route('orders.index') }}">
+            <a class="navbar-brand logo d-flex align-items-center" href="{{ route('orders.index') }}">
                 <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2WHOA Logo" width="100"
-                    height="80">
-                H2WHOA
+                    height="80" class="me-2">
+                <span class="fw-bold">H2WHOA</span>
             </a>
             <div class="collapse navbar-collapse text-start" id="navcol-1"
-                style="margin-left: 242px; margin-right: 318px;">
+                style="">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item text-center" style="padding-right: 33px;">
                         <a class="nav-link text-end active" href="{{ route('orders.index') }}"
@@ -48,25 +48,21 @@
                         <a class="nav-link" href="{{ route('orders.history') }}"
                             style="width: 99px; height: 32px; text-align: center; font-size: 22px;">HISTORY</a>
                     </li>
-                    <li class="nav-item" style="padding-right: 33px;">
+                    <li class="nav-item" style="padding-right: 50px;">
                         <a class="nav-link" href="{{ route('contact.us') }}"
                             style="width: 99px; height: 32px; text-align: center; font-size: 22px;">CONTACT</a>
                     </li>
 
                     @auth('customer')
-                        <li class="nav-item px-3" style="margin-left: 128px;">
-                            <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
-                                <i class="far fa-user me-2" style="font-size:1.8rem;"></i>
-                                <div style="max-width:10rem;
-                                    font-size:calc(1rem + 0.5vw);
-                                    white-space:nowrap;
-                                    overflow:hidden;
-                                    text-overflow:ellipsis;">
-                                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
-                                    <small>Customer</small>
-                                </div>
-                            </a>
-                        </li>
+                        <li class="nav-item mt-2 mt-lg-0">
+                        <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
+                            <i class="far fa-user me-2" style="font-size:2rem;"></i>
+                            <div class="text-truncate" style="max-width: 10rem; font-size: 18px;">
+                                <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
+                                <small>Customer</small>
+                            </div>
+                        </a>
+                    </li>
                     @endauth
                 </ul>
             </div>

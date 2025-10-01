@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQnsNJBV6gfQnNeURHNyDBgp79XK7eBAA&libraries=places"></script>
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places"></script>
 </head>
 
 <body>

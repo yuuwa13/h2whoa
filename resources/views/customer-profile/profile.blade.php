@@ -321,7 +321,7 @@
     });
     </script>
     <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQnsNJBV6gfQnNeURHNyDBgp79XK7eBAA&libraries=places"></script>
+    src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places"></script>
 
 
   @endpush
