@@ -191,8 +191,49 @@
         document.addEventListener('DOMContentLoaded', function () {
             const proceedButton = document.getElementById('proceed-to-payment');
             const form = document.querySelector('form[action="{{ route('orders.save') }}"]');
+            // Whether the customer has a selected address (from session)
+            const hasAddress = @json(session('selected_address') ? true : false);
+
+            // Backup: prevent regular form submit if no address
+            form.addEventListener('submit', function (e) {
+                if (!hasAddress) {
+                    e.preventDefault();
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Address required',
+                            text: 'Please set your delivery address before proceeding to payment.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    } else {
+                        alert('Please set your delivery address before proceeding to payment.');
+                    }
+                }
+            });
 
             proceedButton.addEventListener('click', function (event) {
+                // If no address selected, show a toast and do nothing
+                if (!hasAddress) {
+                    event.preventDefault();
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Address required',
+                            text: 'Please set your delivery address before proceeding to payment.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    } else {
+                        alert('Please set your delivery address before proceeding to payment.');
+                    }
+                    return;
+                }
+
                 event.preventDefault(); // Prevent the default form submission
 
                 Swal.fire({
