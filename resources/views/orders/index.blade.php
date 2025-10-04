@@ -227,7 +227,26 @@
                 input.addEventListener('input', function () {
                     const id = this.dataset.id;
                     const price = parseFloat(this.dataset.price);
-                    const quantity = parseInt(this.value) || 0;
+                    let quantity = parseInt(this.value) || 0;
+
+                    // Enforce frontend max (clamp to stock)
+                    const max = parseInt(this.getAttribute('max'));
+                    if (!isNaN(max) && quantity > max) {
+                        // clamp value and notify user
+                        this.value = max;
+                        quantity = max;
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Not enough stock',
+                                text: `Only ${max} unit(s) available for ${this.dataset.name}.`,
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 2500,
+                            });
+                        }
+                    }
 
                     // Update the total price for the product
                     const totalPrice = quantity * price;
@@ -243,11 +262,17 @@
                 summaryItemsContainer.innerHTML = ''; // Clear the summary items container
 
                 let hasItems = false; // Track if there are items in the summary
+                let exceededStock = false;
 
                 // Calculate the subtotal from the total prices and update the summary
                 document.querySelectorAll('.quantity-input').forEach(input => {
                     const price = parseFloat(input.dataset.price);
                     const quantity = parseInt(input.value) || 0;
+                    const max = parseInt(input.getAttribute('max'));
+
+                    if (!isNaN(max) && quantity > max) {
+                        exceededStock = true;
+                    }
 
                     if (quantity > 0) {
                         hasItems = true; // Mark that there are items in the summary
@@ -288,7 +313,24 @@
                 totalPriceElement.textContent = `₱${total.toFixed(2)}`;
 
                 // Enable or disable the proceed button based on whether there are items
-                proceedButton.disabled = !hasItems;
+                // Disable if no items or any quantity exceeded stock
+                if (exceededStock) {
+                    proceedButton.disabled = true;
+                    // optional inline message (only once)
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Quantity exceeds stock',
+                            text: 'Please reduce quantities to available stock before proceeding.',
+                            toast: true,
+                            position: 'bottom-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                        });
+                    }
+                } else {
+                    proceedButton.disabled = !hasItems;
+                }
             }
 
             // Initial check on page load

@@ -82,15 +82,6 @@
                         LOG IN
                     </button>
 
-                    {{-- Forgot password --}}
-                    <div class="mt-2">
-                        <a href="{{ route('password.request') }}">Forgot Password?</a>
-                    </div>
-
-                    {{-- Admin login stub --}}
-                    <div class="mt-3">
-                        <a href="{{ route('admin.login') }}">Admin Login</a>
-                    </div>
                 </form>
             </div>
         </section>
@@ -130,21 +121,21 @@
         </script>
     @endif
     @if(session('status1'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Swal.fire({
-                icon: 'success',
-                title: 'Account Deleted',
-                text: '{{ session('status') }}',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Deleted',
+                    text: '{{ session('status') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
             });
-        });
-    </script>
-@endif
+        </script>
+    @endif
 
     {{-- Small JS to enable/disable the button --}}
     <script>

@@ -51,6 +51,8 @@ Route::get('/admin-login', fn() => 'Admin Login — Coming Soon')
 // Admin Login Routes
 Route::get('/admin-login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login');
 Route::post('/admin-login', [LoginController::class, 'adminLogin'])->name('admin.login.submit');
+// Admin logout
+Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
 
 Route::get('/', function () {
      return view('homepage');
@@ -115,6 +117,10 @@ Route::resource('stocks', StockController::class)
 
 //Dashboard route
 Route::get('/admin', function () {
+     // Redirect to admin login if not authenticated as admin
+     if (!session('is_admin')) {
+          return redirect()->route('admin.login');
+     }
      // Calculate Daily Sales
      $dailySales = Sale::whereDate('created_at', today())
           ->with('saleDetails')

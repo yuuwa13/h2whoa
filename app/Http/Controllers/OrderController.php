@@ -229,8 +229,13 @@ class OrderController extends Controller
 
                 // Ensure required keys exist and provide default values if missing
                 $name = $stock->product_name ?? 'Unknown Product';
-                $quantity = $product['quantity'] ?? 0;
+                $quantity = isset($product['quantity']) ? intval($product['quantity']) : 0;
                 $price = $stock->price_per_unit ?? 0;
+
+                // Server-side validation: ensure quantity does not exceed available stock
+                if ($quantity > $stock->quantity) {
+                    return redirect()->back()->withErrors(['error' => "Not enough stock for {$stock->product_name}. Available: {$stock->quantity}, requested: {$quantity}"])->withInput();
+                }
 
                 if ($quantity > 0) {
                     $itemTotal = $quantity * $price;
@@ -283,11 +288,21 @@ class OrderController extends Controller
                 // Check if the 'price' key exists, and provide a default value if it doesn't
                 $price = $product['price'] ?? ($product['total_price'] / $product['quantity'] ?? 0);
 
-                if ($product['quantity'] > 0) {
-                    $itemTotal = $product['quantity'] * $price;
+                $quantity = isset($product['quantity']) ? intval($product['quantity']) : 0;
+
+                // If stock_id was provided, validate against DB
+                if (isset($product['stock_id'])) {
+                    $stock = Stock::find($product['stock_id']);
+                    if ($stock && $quantity > $stock->quantity) {
+                        return response()->json(['success' => false, 'message' => "Not enough stock for {$stock->product_name}. Available: {$stock->quantity}, requested: {$quantity}"], 422);
+                    }
+                }
+
+                if ($quantity > 0) {
+                    $itemTotal = $quantity * $price;
                     $cart[] = [
                         'name' => $product['name'],
-                        'quantity' => $product['quantity'],
+                        'quantity' => $quantity,
                         'price' => $price, // Include the price in the cart
                         'total_price' => $itemTotal,
                     ];
@@ -378,11 +393,24 @@ class OrderController extends Controller
 
             // Add order details
             foreach ($cart as $item) {
-                $stockId = Stock::where('product_name', $item['name'])->value('stock_id');
+                // Prefer to use stock_id when available; otherwise try to resolve by product_name
+                $stockId = $item['stock_id'] ?? Stock::where('product_name', $item['name'])->value('stock_id');
 
                 if (!$stockId) {
                     Log::warning("Stock not found for product: {$item['name']}");
                     return redirect()->route('mode.payment')->withErrors(['error' => "Stock not found for product: {$item['name']}"]);
+                }
+
+                $stock = Stock::find($stockId);
+                if (!$stock) {
+                    Log::warning("Stock entry disappeared for id: {$stockId}");
+                    return redirect()->route('mode.payment')->withErrors(['error' => "Stock not found for product: {$item['name']}"]);
+                }
+
+                // Server-side validation: ensure quantity does not exceed available stock
+                if ($item['quantity'] > $stock->quantity) {
+                    Log::warning("Requested quantity exceeds stock for {$item['name']}", ['requested' => $item['quantity'], 'available' => $stock->quantity]);
+                    return redirect()->route('mode.payment')->withErrors(['error' => "Not enough stock for {$item['name']}. Available: {$stock->quantity}, requested: {$item['quantity']}"]);
                 }
 
                 OrderDetail::create([
@@ -392,6 +420,8 @@ class OrderController extends Controller
                     'price_per_unit' => $item['price'], // Save the price per unit at order time
                     'total_price' => $item['total_price'],
                 ]);
+
+                // Optionally decrement now or later when Delivered; this project decrements on Delivered in updateStatus
             }
 
             // Clear the session cart

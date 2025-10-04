@@ -63,4 +63,13 @@ class LoginController extends Controller
             'email' => 'Invalid credentials.',
         ])->withInput();
     }
+
+    public function adminLogout(Request $request)
+    {
+        // Remove admin flag from session
+        $request->session()->forget('is_admin');
+        // Optionally regenerate session to prevent fixation
+        $request->session()->regenerate();
+        return redirect()->route('admin.login');
+    }
 }
