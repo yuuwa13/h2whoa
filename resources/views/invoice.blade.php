@@ -20,6 +20,19 @@
             padding: 30px;
             border-radius: 8px;
         }
+        /* Hide print button when printing */
+        @media print {
+            .no-print { display: none !important; }
+        }
+        /* Themed print button */
+        .btn-print-theme {
+            background: #4ac9b0; /* light blue theme */
+            color: #fff;
+            border: none;
+        }
+        .btn-print-theme .fa-print {
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -35,9 +48,10 @@
             </h1>
             <div class="page-tools">
                 <div class="action-buttons">
-                    <a class="btn bg-white btn-light mx-1px text-95" href="#" onclick="window.print()"
-                        data-title="Print">
-                        <i class="mr-1 fa fa-print text-primary-m1 text-120 w-2"></i>
+                    <!-- Print button: styled to match theme and hidden in printed/PDF view -->
+                    <a class="btn btn-print-theme no-print mx-1px text-95" href="#" onclick="window.print()"
+                        data-title="Print" role="button">
+                        <i class="mr-1 fa fa-print text-120 w-2"></i>
                         Print
                     </a>
                 </div>
@@ -131,12 +145,24 @@
                                 Thank you for choosing H2WHOA!
                             </div>
                             <div class="col-12 col-sm-5 text-grey text-90 order-first order-sm-last">
+                                @php
+                                    $subtotal = $order->orderDetails->sum('total_price');
+                                    $tax = $subtotal * 0.12; // 12% tax
+                                @endphp
+
                                 <div class="row my-2">
                                     <div class="col-7 text-right">SubTotal</div>
                                     <div class="col-5"><span
-                                            class="text-120 text-secondary-d1">₱{{ number_format($order->orderDetails->sum('total_price'), 2) }}</span>
+                                            class="text-120 text-secondary-d1">₱{{ number_format($subtotal, 2) }}</span>
                                     </div>
                                 </div>
+                                <div class="row my-2">
+                                    <div class="col-7 text-right">Tax (12%)</div>
+                                    <div class="col-5"><span
+                                            class="text-120 text-secondary-d1">₱{{ number_format($tax, 2) }}</span>
+                                    </div>
+                                </div>
+
                                 <div class="row my-2 align-items-center bgc-primary-l3 p-2">
                                     <div class="col-7 text-right">Total Amount</div>
                                     <div class="col-5"><span

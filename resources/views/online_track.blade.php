@@ -111,7 +111,7 @@
                                             @endforeach
                                             <strong>Subtotal:</strong>
                                             ₱{{ number_format($order->orderDetails->sum('total_price'), 2) }}<br>
-                                            <strong>Delivery Fee:</strong> ₱50.00<br>
+                                            <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 20, 2) }}<br>
                                             <strong>Total Amount:</strong> ₱{{ number_format($order->amount_paid, 2) }}<br>
                                         </p>
                                     </div>

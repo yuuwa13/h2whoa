@@ -393,7 +393,8 @@ class OrderController extends Controller
             // Check if the cart is empty
             if (empty($cart)) {
                 Log::warning('Cart is empty.');
-                return redirect()->route('mode.payment')->withErrors(['error' => 'Your cart is empty.']);
+                // Use a flash message for easier display in the UI
+                return redirect()->route('mode.payment')->with('error', 'Your cart is empty.');
             }
 
             // Get the payment method from the request
@@ -403,11 +404,14 @@ class OrderController extends Controller
             Log::info('Payment Method Exists:', ['exists' => $paymentMethodExists]);
 
             if (!$paymentMethodExists) {
-                Log::warning('Invalid payment method ID.');
-                return redirect()->route('mode.payment')->withErrors(['error' => 'Invalid payment method ID.']);
+                // If the payment methods table isn't seeded or the id is missing, don't abort the flow.
+                // Fall back to null (or you could default to COD: 1). We'll log a warning and continue.
+                Log::warning('Payment method id not found, falling back to null.');
+                $paymentMethodId = null;
+                session()->flash('warning', 'Selected payment method not found; proceeding with default.');
             }
 
-            // Create the order
+            // Create the order and persist delivery_fee
             $order = Order::create([
                 'customer_id'      => $customer->customer_id,
                 'amount_paid'      => $total,
@@ -418,6 +422,7 @@ class OrderController extends Controller
                 'customer_name'    => $customer->name,
                 'customer_phone'   => $customer->phone,
                 'customer_address' => session('selected_address') ?? $customer->address,
+                'delivery_fee'     => $deliveryFee,
             ]);
 
             // Add order details
@@ -427,19 +432,19 @@ class OrderController extends Controller
 
                 if (!$stockId) {
                     Log::warning("Stock not found for product: {$item['name']}");
-                    return redirect()->route('mode.payment')->withErrors(['error' => "Stock not found for product: {$item['name']}"]);
+                    return redirect()->route('mode.payment')->with('error', "Stock not found for product: {$item['name']}");
                 }
 
                 $stock = Stock::find($stockId);
                 if (!$stock) {
                     Log::warning("Stock entry disappeared for id: {$stockId}");
-                    return redirect()->route('mode.payment')->withErrors(['error' => "Stock not found for product: {$item['name']}"]);
+                    return redirect()->route('mode.payment')->with('error', "Stock not found for product: {$item['name']}");
                 }
 
                 // Server-side validation: ensure quantity does not exceed available stock
                 if ($item['quantity'] > $stock->quantity) {
                     Log::warning("Requested quantity exceeds stock for {$item['name']}", ['requested' => $item['quantity'], 'available' => $stock->quantity]);
-                    return redirect()->route('mode.payment')->withErrors(['error' => "Not enough stock for {$item['name']}. Available: {$stock->quantity}, requested: {$item['quantity']}"]);
+                    return redirect()->route('mode.payment')->with('error', "Not enough stock for {$item['name']}. Available: {$stock->quantity}, requested: {$item['quantity']}");
                 }
 
                 OrderDetail::create([
@@ -453,8 +458,8 @@ class OrderController extends Controller
                 // Optionally decrement now or later when Delivered; this project decrements on Delivered in updateStatus
             }
 
-            // Clear the session cart
-            $request->session()->forget(['cart', 'subtotal', 'tax', 'delivery_fee', 'total', 'payment_method_id']);
+            // Clear the session cart but keep delivery_fee so the user's selected location price persists
+            $request->session()->forget(['cart', 'subtotal', 'tax', 'total', 'payment_method_id']);
 
             // Flash success message
             session()->flash('delivery_confirmed', 'Your delivery details have been confirmed successfully!');
@@ -462,18 +467,25 @@ class OrderController extends Controller
             // Redirect to the track orders page
             return redirect()->route('track.orders')->with('success', 'Your order has been placed successfully!');
         } catch (\Exception $e) {
-            // Log the error for debugging
-            Log::error('Error confirming order: ' . $e->getMessage());
+            // Log the error for debugging (include stack trace)
+            Log::error('Error confirming order: ' . $e->getMessage(), ['exception' => $e]);
 
-            // Redirect back to the mode payment page with an error message
-            return redirect()->route('mode.payment')->withErrors(['error' => 'An error occurred while placing your order.']);
+            // Prepare a user-facing message; include the exception message when in debug mode
+            $userMessage = 'An error occurred while placing your order.';
+            if (config('app.debug')) {
+                $userMessage .= ' ' . $e->getMessage();
+            }
+
+            // Redirect back to the mode payment page with a flash error message
+            return redirect()->route('mode.payment')->with('error', $userMessage);
         }
     }
 
     public function cancelOrder(Request $request)
     {
         // Clear the session data related to the order
-        $request->session()->forget(['cart', 'subtotal', 'tax', 'deliveryFee', 'total']);
+        // Keep the user's delivery_fee/session selection so they don't have to re-select location
+        $request->session()->forget(['cart', 'subtotal', 'tax', 'total', 'payment_method_id']);
 
         // Add a flash message to the session
         session()->flash('order_canceled', 'The order has been successfully canceled.');

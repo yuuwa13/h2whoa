@@ -135,6 +135,21 @@
 </body>
 
 </html>
+@if(session('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 4000,
+            });
+        });
+    </script>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const orderItems = document.getElementById('order-items');
