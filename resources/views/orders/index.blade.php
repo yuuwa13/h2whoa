@@ -324,12 +324,12 @@
                         const summaryItem = document.createElement('div');
                         summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
                         summaryItem.innerHTML = `
-                                                                                    <span>
-                                                                                        <strong>${itemName}</strong><br>
-                                                                                        Quantity: ${quantity}
-                                                                                    </span>
-                                                                                    <span>₱${itemTotal.toFixed(2)}</span>
-                                                                                `;
+                                                                            <span>
+                                                                                <strong>${itemName}</strong><br>
+                                                                                Quantity: ${quantity}
+                                                                            </span>
+                                                                            <span>₱${itemTotal.toFixed(2)}</span>
+                                                                        `;
                         summaryItemsContainer.appendChild(summaryItem);
 
                         // Add to the subtotal
