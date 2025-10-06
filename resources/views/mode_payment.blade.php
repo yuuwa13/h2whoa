@@ -48,19 +48,30 @@
                             </div>
                             <ul class="list-group" id="order-items">
                                 @foreach($cart as $index => $item)
+                                    @php
+                                        $availableStock = $stockMap[$index] ?? 0;
+                                        $pricePerUnit = $item['quantity'] ? ($item['total_price'] / $item['quantity']) : 0;
+                                    @endphp
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
-                                            <strong>{{ $item['name'] }}</strong><br>
+                                            <strong>{{ $item['name'] }}</strong>
+                                            <br>
+                                            <small class="text-muted">In Stock: {{ $availableStock }}</small>
+                                            <br>
                                             <label for="quantity-{{ $index }}">Quantity:</label>
                                             <input type="number" id="quantity-{{ $index }}"
                                                 class="form-control quantity-input" value="{{ $item['quantity'] }}" min="0"
+                                                max="{{ $availableStock }}"
+                                                data-max="{{ $availableStock }}"
                                                 data-index="{{ $index }}"
-                                                data-price="{{ $item['total_price'] / $item['quantity'] }}"
-                                                style="width: 80px; display: inline-block;" disabled>
+                                                data-price="{{ $pricePerUnit }}"
+                                                style="width: 80px; display: inline-block;" {{ $availableStock == 0 ? 'disabled' : '' }}>
+                                            @if($availableStock == 0)
+                                                <div class="small text-danger">This item is currently out of stock.</div>
+                                            @endif
                                         </div>
                                         <div>
-                                            <span
-                                                id="item-total-{{ $index }}">₱{{ number_format($item['total_price'], 2) }}</span>
+                                            <span id="item-total-{{ $index }}">₱{{ number_format($item['total_price'], 2) }}</span>
                                             <button type="button" class="btn btn-danger btn-sm remove-item"
                                                 data-index="{{ $index }}" disabled>Remove</button>
                                         </div>
@@ -199,6 +210,40 @@
             }
         });
 
+            // Enforce max stock and show toast when user tries to exceed
+                function clampInputAndNotify(input) {
+                    const max = parseInt(input.getAttribute('data-max')) || parseInt(input.getAttribute('max')) || 0;
+                    let val = parseInt(input.value) || 0;
+                    if (max && val > max) {
+                        input.value = max;
+                        val = max;
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Not enough stock',
+                                text: `Only ${max} unit(s) available for ${input.closest('li').querySelector('strong').textContent}.`,
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 2500,
+                            });
+                        } else {
+                            alert(`Only ${max} unit(s) available.`);
+                        }
+                    }
+                }
+
+                // Attach listener to inputs
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('input', function () {
+                        clampInputAndNotify(this);
+                        updateTotals();
+                    });
+                });
+
+                // Clamp all inputs on load (in case session/cart values exceed current stock)
+                document.querySelectorAll('.quantity-input').forEach(input => clampInputAndNotify(input));
+
         // Handle item removal
         orderItems.addEventListener('click', function (event) {
             if (event.target.classList.contains('remove-item')) {
@@ -213,6 +258,33 @@
 
                 // Update totals
                 updateTotals();
+
+                // If no items remain, auto-submit the cancel order form and return user to orders page
+                const remainingItems = orderItems.querySelectorAll('li').length;
+                if (remainingItems === 0) {
+                    const cancelForm = document.querySelector('form[action="{{ route('orders.cancel') }}"]');
+                    if (cancelForm) {
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Order canceled',
+                                text: 'All items removed. Returning to Orders page...',
+                                toast: true,
+                                position: 'bottom-end',
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(() => {
+                                cancelForm.submit();
+                            });
+                        } else {
+                            // Fallback: submit immediately
+                            cancelForm.submit();
+                        }
+                    } else {
+                        // As a fallback, redirect to orders index route
+                        window.location.href = '{{ route('orders.index') }}';
+                    }
+                }
             }
         });
 

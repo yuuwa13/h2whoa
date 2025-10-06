@@ -192,8 +192,36 @@ class OrderController extends Controller
         $deliveryFee = $request->session()->get('delivery_fee', 20); // Default to 20 if not set
         $total = $subtotal + $tax + $deliveryFee;
 
+        // Build a stock availability map for the cart to avoid repeated lookups in the view
+        $stockMap = [];
+        foreach ($cart as $index => $item) {
+            $available = 0;
+            if (isset($item['stock_id'])) {
+                $stock = Stock::find($item['stock_id']);
+                if ($stock) {
+                    $available = $stock->quantity;
+                }
+            }
+            if ($available === 0) {
+                // Try case-insensitive name match as fallback
+                $name = trim($item['name'] ?? '');
+                if ($name !== '') {
+                    $stockByName = Stock::whereRaw('LOWER(product_name) = ?', [strtolower($name)])->first();
+                    if ($stockByName) {
+                        $available = $stockByName->quantity;
+                    } else {
+                        $stockLike = Stock::where('product_name', 'like', "%{$name}%")->first();
+                        if ($stockLike) {
+                            $available = $stockLike->quantity;
+                        }
+                    }
+                }
+            }
+            $stockMap[$index] = (int) ($available ?? 0);
+        }
+
         // Pass data to the mode_payment view
-        return view('mode_payment', compact('cart', 'subtotal', 'tax', 'deliveryFee', 'total'));
+        return view('mode_payment', compact('cart', 'subtotal', 'tax', 'deliveryFee', 'total', 'stockMap'));
     }
     public function save(Request $request)
     {
@@ -241,6 +269,7 @@ class OrderController extends Controller
                     $itemTotal = $quantity * $price;
                     $cart[] = [
                         'name' => $name,
+                        'stock_id' => $stock->stock_id,
                         'quantity' => $quantity,
                         'price' => $price,
                         'total_price' => $itemTotal,
