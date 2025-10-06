@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg fixed-top bg-body clean-navbar navbar-light">
         <div class="container">
             <a class="navbar-brand logo d-flex align-items-center" href="{{ route('orders.index') }}">
@@ -33,11 +33,10 @@
                     height="80" class="me-2">
                 <span class="fw-bold">H2WHOA</span>
             </a>
-            <div class="collapse navbar-collapse text-start" id="navcol-1"
-                style="">
+            <div class="collapse navbar-collapse text-start" id="navcol-1" style="">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item text-center" style="padding-right: 33px;">
-                        <a class="nav-link text-end active" href="{{ route('orders.index') }}"
+                        <a class="nav-link text-end" href="{{ route('orders.index') }}"
                             style="width: 99px; height: 32px; text-align: center; font-size: 22px;">ORDERS</a>
                     </li>
                     <li class="nav-item text-center" style="padding-right: 33px;">
@@ -55,14 +54,14 @@
 
                     @auth('customer')
                         <li class="nav-item mt-2 mt-lg-0">
-                        <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
-                            <i class="far fa-user me-2" style="font-size:2rem;"></i>
-                            <div class="text-truncate" style="max-width: 10rem; font-size: 18px;">
-                                <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
-                                <small>Customer</small>
-                            </div>
-                        </a>
-                    </li>
+                            <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
+                                <i class="far fa-user me-2" style="font-size:2rem;"></i>
+                                <div class="text-truncate" style="max-width: 10rem; font-size: 18px;">
+                                    <strong>{{ explode(' ', Auth::guard('customer')->user()->name)[0] }}</strong><br>
+                                    <small>Customer</small>
+                                </div>
+                            </a>
+                        </li>
                     @endauth
                 </ul>
             </div>
@@ -73,9 +72,10 @@
         </div>
     </nav>
 
-    <main class="page" style="padding-top: 180px;">
+    <main class="page flex-grow-1" style="padding-top: 180px;">
         @yield('content')
     </main>
+
 
     <footer class="page-footer dark mt-auto">
         <div class="container">
