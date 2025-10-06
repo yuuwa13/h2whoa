@@ -5,14 +5,14 @@
 @section('content')
     <main class="page shopping-cart-page">
         <section class="clean-block clean-cart dark">
-            <div class="container" style="width: 1300px; margin-top: -28px;">
+            <div class="container py-4">
                 <form action="{{ route('orders.save') }}" method="POST">
                     @csrf
                     <div class="row">
                         {{-- Address Section --}}
                         <div class="col-md-6">
-                            <h4 style="width: 500px; margin-top: 40px;">Your Address</h4>
-                            <p style="width: 500px;">
+                            <h4 class="mb-3">Your Address</h4>
+                            <p>
                                 @if(session('selected_address'))
                                     {{ session('selected_address') }}
                                 @else
@@ -25,10 +25,9 @@
                                 @endif
                             </p>
                         </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-primary btn-lg d-block w-100" role="button"
-                                href="{{ route('locate.address') }}"
-                                style="background: #4ac9b0; width: 300px; margin-top: 90px; margin-bottom: 24px;">
+                        <div class="col-md-6 d-flex align-items-center" style="height: 100%;">
+                            <a class="btn btn-primary btn-lg w-100 mt-4 mb-3" href="{{ route('locate.address') }}"
+                                style="background: #4ac9b0;">
                                 <i class="fas fa-map-marker" style="font-size: 24px; margin-right: 33px;"></i>Locate Address
                             </a>
                         </div>
