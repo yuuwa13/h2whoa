@@ -1,77 +1,64 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomePage</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/baguetteBox.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Banner-Heading-Image-images.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Billing-Table-with-Add-Row--Fixed-Header-Feature.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Bootstrap-Payment-Form-.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Company-Invoice.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Contact-Form-v2-Modal--Full-with-Google-Map.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/dh-row-titile-text-image-right-1.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Features-Image-icons.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Map-Location-5-styles.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar-navbar.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/Sidebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/vanilla-zoom.min.css') }}">
+    <style>
+        /* Additional responsive tweaks */
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+        }
+        .hero-subtitle {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        .hero-text {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+        }
+        .btn-home {
+            min-width: 140px;
+        }
+    </style>
 </head>
-
 <body>
     <main class="page blog-post">
         <section class="clean-block clean-post dark">
             <div class="container py-4 py-xl-5">
-                <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2Whoa Logo" style="max-width: 100px; height: auto;">
-                
-                <div class="row row-cols-1 row-cols-md-2">
-                    <div class="col d-flex flex-column justify-content-center p-4">
-                        <div class="text-center text-md-start d-flex flex-column align-items-center align-items-md-start mb-5">
-                            <div>
-                                <h4 style="font-size: 84px; color: rgb(33, 37, 41);">HW2WHOA</h4>
-                                <p style="font-size: 48px;">L &amp; A WATER REFILLING STATION</p>
-                                <p style="font-size: 22px;">Pure. Clean. Refreshing. Your trusted source for safe drinking water.</p>
+                {{-- Logo --}}
+                <div class="text-center mb-4">
+                    <img src="{{ asset('h2whoa_user/assets/img/elements/h2whoa_logo.png') }}" alt="H2Whoa Logo"
+                         style="max-width: 120px; height: auto;">
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-6 order-2 order-md-1 px-3 px-md-0">
+                        <div class="text-center text-md-start">
+                            <h4 class="hero-title mb-3 text-dark">HW2WHOA</h4>
+                            <p class="hero-subtitle mb-3">L & A WATER REFILLING STATION</p>
+                            <p class="hero-text mb-4">Pure. Clean. Refreshing. Your trusted source for safe drinking water.</p>
+                            <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                                <a class="btn btn-primary btn-home" style="background: #4ac9b0;"
+                                   href="{{ route('login.form') }}">LOG IN</a>
+                                <a class="btn btn-primary btn-home" style="background: #4ac9b0;"
+                                   href="{{ route('signup.form') }}">CREATE ACCOUNT</a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Responsive image container -->
-                    <div class="col d-flex justify-content-center align-items-center mt-3">
-                        <img src="{{ asset('h2whoa_user/assets/img/elements/Homepage_h2whoa.png') }}" alt="Homepage Visual" class="img-fluid rounded" style="max-height: 644px;">
+                    <div class="col-12 col-md-6 order-1 order-md-2 text-center">
+                        <img src="{{ asset('h2whoa_user/assets/img/elements/Homepage_h2whoa.png') }}"
+                             alt="Homepage Visual"
+                             class="img-fluid rounded"
+                             style="max-height: 600px;">
                     </div>
                 </div>
-
-                <div class="btn-group" role="group">
-                    <a class="btn btn-primary" style="background: #4ac9b0; width: 120px; margin-left: 46px;" href="{{ route('login.form') }}">LOG IN</a>
-                    <a class="btn btn-primary" style="margin-left: 20px; background: #4ac9b0;" href="{{ route('signup.form') }}">CREATE ACCOUNT</a>
-                </div>
-            </div>
-
-            <div class="container">
-                <div class="block-content"></div>
             </div>
         </section>
     </main>
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
-</body>
 
+    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+</body>
 </html>
