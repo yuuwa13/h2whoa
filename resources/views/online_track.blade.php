@@ -34,7 +34,7 @@
     <div class="flex-grow-1"> {{-- This helps push footer down --}}
         <main class="page service-page">
             <section class="clean-block clean-services dark">
-                <div class="container" style="margin-top: 100px;">
+                <div class="container">
                     {{-- Centered Header --}}
                     <div class="block-heading text-center">
                         <h2 class="text-info">Delivery Status</h2>
