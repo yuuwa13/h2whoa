@@ -72,7 +72,7 @@
         </div>
     </nav>
 
-    <main class="page flex-grow-1" style="padding-top: 150px;">
+    <main class="page flex-grow-1" style="padding-top: 180px; background-color: #F8F9FA;">
         @yield('content')
     </main>
 

@@ -142,7 +142,6 @@
                         <div class="row border-b-2 brc-default-l2"></div>
                         <div class="row mt-3">
                             <div class="col-12 col-sm-7 text-grey-d2 text-95 mt-2 mt-lg-0">
-                                Thank you for choosing H2WHOA!
                             </div>
                             <div class="col-12 col-sm-5 text-grey text-90 order-first order-sm-last">
                                 @php
