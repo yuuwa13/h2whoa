@@ -44,12 +44,6 @@
                 <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
                     <div class="container-fluid">
                         <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                <button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button>
-                            </div>
-                        </form>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
@@ -73,39 +67,29 @@
                     <h3 class="text-dark mb-4">Sales</h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-md-end dataTables_filter" id="dataTable_filter">
-                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;" onclick="window.location='{{ route('sales.create') }}'">
-                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Sale</strong>
-                                        </button>
-                                        <label class="form-label">
-                                            <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
-                                        </label>
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-8 d-flex align-items-center flex-wrap">
+                                    <input type="text" id="searchInput" class="form-control me-3 mb-2 mb-md-0" placeholder="Search..." style="max-width:320px;">
+
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
+                                            <label class="form-check-label" for="searchsale_id">Sale ID</label>
+                                        </div>
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
+                                            <label class="form-check-label" for="searchorder_id">Order ID</label>
+                                        </div>
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchQuantity" value="3" checked>
+                                            <label class="form-check-label" for="searchsale_type">Sale Type</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
-                                        <label class="form-check-label" for="searchsale_id">Sale ID</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
-                                        <label class="form-check-label" for="searchorder_id">Order ID</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchQuantity" value="3" checked>
-                                        <label class="form-check-label" for="searchsale_type">Sale Type</label>
-                                    </div>
-                                    <!-- Add more checkboxes for other columns as needed -->
+                                <div class="col-md-4 text-md-end">
+                                    <button class="btn btn-primary" type="button" style="height: 31px;" onclick="window.location='{{ route('sales.create') }}'">
+                                        <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Sale</strong>
+                                    </button>
                                 </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
@@ -208,19 +192,59 @@
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
             const table = document.getElementById('dataTable');
-            const rows = table.querySelectorAll('tbody tr');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+            // Helper to determine whether a row is a detail row (follows a main sale row)
+            function isDetailRow(row) {
+                // detail rows in this table are the ones with a single td colspan (we render them after a parent row)
+                const tds = row.querySelectorAll('td');
+                return tds.length === 1 && tds[0].hasAttribute('colspan');
+            }
 
             // Search functionality for relevant columns (Sale ID, Order ID, Sale Type)
             searchInput.addEventListener('input', function () {
-                const query = searchInput.value.toLowerCase();
+                const query = searchInput.value.trim().toLowerCase();
 
-                rows.forEach(row => {
-                    const saleId = row.children[0]?.textContent.toLowerCase() || '';
-                    const orderId = row.children[1]?.textContent.toLowerCase() || '';
-                    const saleType = row.children[2]?.textContent.toLowerCase() || '';
+                // collect active column filters from checkboxes
+                const checkboxEls = Array.from(document.querySelectorAll('.search-column'));
+                let activeCols = checkboxEls.filter(cb => cb.checked).map(cb => parseInt(cb.value, 10));
 
-                    const matches = saleId.includes(query) || orderId.includes(query) || saleType.includes(query);
+                // If none checked, treat as all columns active
+                if (activeCols.length === 0) {
+                    activeCols = [1, 2, 3];
+                }
+
+                // convert to zero-based cell indexes (value 1 -> cell 0)
+                const cellIndexes = activeCols.map(v => v - 1);
+
+                // If empty query, show all rows
+                if (!query) {
+                    rows.forEach(r => r.style.display = '');
+                    return;
+                }
+
+                rows.forEach((row, idx) => {
+                    if (isDetailRow(row)) {
+                        // detail rows visibility is handled together with their parent; hide by default here
+                        row.style.display = 'none';
+                        return;
+                    }
+
+                    const cells = row.querySelectorAll('td');
+
+                    // check only the selected column indexes
+                    const matches = cellIndexes.some(ci => {
+                        const cell = cells[ci];
+                        return cell && cell.textContent.toLowerCase().includes(query);
+                    });
+
                     row.style.display = matches ? '' : 'none';
+
+                    // If this main row has a following detail row, toggle it the same way
+                    const nextRow = rows[idx + 1];
+                    if (nextRow && isDetailRow(nextRow)) {
+                        nextRow.style.display = matches ? '' : 'none';
+                    }
                 });
             });
 

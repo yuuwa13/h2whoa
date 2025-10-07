@@ -47,12 +47,6 @@
                 <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
                     <div class="container-fluid">
                         <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                <button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button>
-                            </div>
-                        </form>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
@@ -76,39 +70,29 @@
                     <h3 class="text-dark mb-4">Stocks</h3>
                     <div class="card shadow">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-md-end dataTables_filter" id="dataTable_filter">
-                                        <button class="btn btn-primary" type="button" style="margin-right: 43px;height: 31px;" onclick="window.location='{{ route('stocks.create') }}'">
-                                            <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Stocks</strong>
-                                        </button>
-                                        <label class="form-label">
-                                            <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search">
-                                        </label>
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-8 d-flex align-items-center flex-wrap">
+                                    <input type="text" id="searchInput" class="form-control me-3 mb-2 mb-md-0" placeholder="Search..." style="max-width:320px;">
+
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
+                                            <label class="form-check-label" for="searchItem">Item</label>
+                                        </div>
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
+                                            <label class="form-check-label" for="searchPrice">Price</label>
+                                        </div>
+                                        <div class="form-check form-check-inline me-2">
+                                            <input class="form-check-input search-column" type="checkbox" id="searchStock" value="3" checked>
+                                            <label class="form-check-label" for="searchStock">Stock Quantity</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchItem" value="1" checked>
-                                        <label class="form-check-label" for="searchItem">Item</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchPrice" value="2" checked>
-                                        <label class="form-check-label" for="searchPrice">Price</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input search-column" type="checkbox" id="searchStock" value="3" checked>
-                                        <label class="form-check-label" for="searchStock">Stock Quantity</label>
-                                    </div>
-                                    <!-- Add more checkboxes for other columns as needed -->
+                                <div class="col-md-4 text-md-end">
+                                    <button class="btn btn-primary" type="button" style="height: 31px;" onclick="window.location='{{ route('stocks.create') }}'">
+                                        <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Stocks</strong>
+                                    </button>
                                 </div>
                             </div>
                             <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
@@ -224,15 +208,32 @@
             const searchInput = document.getElementById('searchInput');
             const checkboxes = document.querySelectorAll('.search-column');
             const table = document.getElementById('dataTable');
-            const rows = table.querySelectorAll('tbody tr');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+            function isEmptyQuery(q) {
+                return !q || q.trim().length === 0;
+            }
 
             searchInput.addEventListener('input', function () {
                 const query = searchInput.value.toLowerCase();
                 const activeColumns = Array.from(checkboxes).filter(cb => cb.checked).map(cb => parseInt(cb.value));
 
+                // If query is empty, show all rows
+                if (isEmptyQuery(query)) {
+                    rows.forEach(r => r.style.display = '');
+                    return;
+                }
+
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
-                    const matches = activeColumns.some(index => cells[index] && cells[index].textContent.toLowerCase().includes(query));
+                    // map checkbox values to the expected cell indexes:
+                    // checkbox value 1 -> cell index 1 (Item)
+                    // checkbox value 2 -> cell index 2 (Price)
+                    // checkbox value 3 -> cell index 3 (Stock Quantity)
+                    const matches = activeColumns.some(index => {
+                        const cell = cells[index];
+                        return cell && cell.textContent.toLowerCase().includes(query);
+                    });
                     row.style.display = matches ? '' : 'none';
                 });
             });

@@ -66,11 +66,6 @@
                 <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
                             id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text"
-                                    placeholder="Search for ..."><button class="btn btn-primary py-0" type="button"><i
-                                        class="fas fa-search"></i></button></div>
-                        </form>
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
                                     aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
@@ -344,55 +339,6 @@
                                 </div>
                             </div>
                             <div class="card shadow mb-4"></div>
-                        </div>
-                        <div class="col">
-                            <div class="carousel slide" data-bs-ride="false" id="carousel-1">
-                                <div class="carousel-inner">
-                                    <div class="carousel-item active"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                    <div class="carousel-item"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                    <div class="carousel-item"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                </div>
-                                <div><a class="carousel-control-prev" href="#carousel-1" role="button"
-                                        data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span
-                                            class="visually-hidden">Previous</span></a><a class="carousel-control-next"
-                                        href="#carousel-1" role="button" data-bs-slide="next"><span
-                                            class="carousel-control-next-icon"></span><span
-                                            class="visually-hidden">Next</span></a></div>
-                                <div class="carousel-indicators"><button type="button" data-bs-target="#carousel-1"
-                                        data-bs-slide-to="0" class="active"></button> <button type="button"
-                                        data-bs-target="#carousel-1" data-bs-slide-to="1"></button> <button
-                                        type="button" data-bs-target="#carousel-1" data-bs-slide-to="2"></button></div>
-                            </div>
-                            <div class="carousel slide" data-bs-ride="false" id="carousel-2">
-                                <div class="carousel-inner">
-                                    <div class="carousel-item active"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                    <div class="carousel-item"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                    <div class="carousel-item"><img class="w-100 d-block"
-                                            src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"
-                                            alt="Slide Image"></div>
-                                </div>
-                                <div><a class="carousel-control-prev" href="#carousel-2" role="button"
-                                        data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span
-                                            class="visually-hidden">Previous</span></a><a class="carousel-control-next"
-                                        href="#carousel-2" role="button" data-bs-slide="next"><span
-                                            class="carousel-control-next-icon"></span><span
-                                            class="visually-hidden">Next</span></a></div>
-                                <div class="carousel-indicators"><button type="button" data-bs-target="#carousel-2"
-                                        data-bs-slide-to="0" class="active"></button> <button type="button"
-                                        data-bs-target="#carousel-2" data-bs-slide-to="1"></button> <button
-                                        type="button" data-bs-target="#carousel-2" data-bs-slide-to="2"></button></div>
-                            </div>
-                            <div></div>
                         </div>
                     </div>
                 </div>

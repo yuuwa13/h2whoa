@@ -25,8 +25,8 @@
                                 @endif
                             </p>
                         </div>
-                        <div class="col-md-6 d-flex align-items-center" style="height: 100%;">
-                            <a class="btn btn-primary btn-lg w-100 mt-4 mb-3" href="{{ route('locate.address') }}"
+                        <div class="col-md-6 d-flex align-items-center mt-4" style="height: 100%;">
+                            <a class="btn btn-primary btn-lg w-100 mt-5 mb-3" href="{{ route('locate.address') }}"
                                 style="background: #4ac9b0;">
                                 <i class="fas fa-map-marker" style="font-size: 24px; margin-right: 33px;"></i>Locate Address
                             </a>
@@ -324,12 +324,12 @@
                         const summaryItem = document.createElement('div');
                         summaryItem.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
                         summaryItem.innerHTML = `
-                                                                            <span>
-                                                                                <strong>${itemName}</strong><br>
-                                                                                Quantity: ${quantity}
-                                                                            </span>
-                                                                            <span>₱${itemTotal.toFixed(2)}</span>
-                                                                        `;
+                                                                                    <span>
+                                                                                        <strong>${itemName}</strong><br>
+                                                                                        Quantity: ${quantity}
+                                                                                    </span>
+                                                                                    <span>₱${itemTotal.toFixed(2)}</span>
+                                                                                `;
                         summaryItemsContainer.appendChild(summaryItem);
 
                         // Add to the subtotal
