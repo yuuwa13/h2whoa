@@ -69,14 +69,7 @@ class OrderController extends Controller
         // Store the order_id in the session for later use
         session(['order_id' => $order->order_id]);
 
-        // Debugging: Log the session data after setting order_id
-        Log::info('Session after setting order_id:', session()->all());
-
-        // Debugging: Log session write confirmation
-        Log::info('Session write check after setting order_id:', ['order_id' => session('order_id')]);
-
-        // Debugging: Log the order_id value immediately after setting it in the session
-        Log::info('Order ID set in session:', ['order_id' => session('order_id')]);
+        // Session data has been stored for checkout
 
         // Add order details and calculate total price
         foreach ($validated['items'] as $item) {
@@ -236,24 +229,19 @@ class OrderController extends Controller
             $cart = [];
             $subtotal = 0;
 
-            // Debugging: Log the entire products array to identify missing keys
-            Log::info('Products array:', $products); // Debugging log
-
-            // Debugging: Log the Stock data for each product
+            // Process each product in the order
             foreach ($products as $product) {
                 // Check if stock_id is present and valid
                 if (empty($product['stock_id'])) {
-                    Log::warning('Missing or invalid stock_id for product:', $product); // Debugging log
+                    Log::warning('Product validation failed: missing stock_id');
                     continue; // Skip this product
                 }
 
                 $stock = Stock::find($product['stock_id']);
                 if (!$stock) {
-                    Log::warning('Stock not found for stock_id:', ['stock_id' => $product['stock_id']]); // Debugging log
+                    Log::warning('Product validation failed: stock not found');
                     continue; // Skip this product
                 }
-
-                Log::info('Stock Data:', $stock->toArray()); // Debugging log
 
                 // Ensure required keys exist and provide default values if missing
                 $name = $stock->product_name ?? 'Unknown Product';
@@ -292,9 +280,13 @@ class OrderController extends Controller
                 'total' => $total,
             ]);
 
-            // Debugging: Log session data and redirection
-            Log::info('Session Data:', session()->all()); // Debugging log
-            Log::info('Redirecting to mode.payment'); // Debugging log
+            // Store order details in session for checkout
+            session([
+                'subtotal' => $subtotal,
+                'tax' => $tax,
+                'delivery_fee' => $deliveryFee,
+                'total' => $total,
+            ]);
 
             // Redirect to the mode-payment page
             return redirect()->route('mode.payment');
@@ -366,7 +358,6 @@ class OrderController extends Controller
 
     public function confirmOrder(Request $request)
     {
-        Log::info('Session Data:', $request->session()->all());
         try {
             // Retrieve the cart and customer details from the session
             $cart = $request->session()->get('cart', []);
@@ -376,32 +367,22 @@ class OrderController extends Controller
             $total = $subtotal + $tax + $deliveryFee;
             $customer = Auth::guard('customer')->user();
 
-            // Debugging logs
-            Log::info('Customer:', $customer ? (is_object($customer) ? (array) $customer : $customer) : []);
-            Log::info('Cart:', $cart);
-            Log::info('Subtotal:', ['value' => $subtotal]); // Wrap in an array
-            Log::info('Tax:', ['value' => $tax]); // Wrap in an array
-            Log::info('Delivery Fee:', ['value' => $deliveryFee]); // Wrap in an array
-            Log::info('Total:', ['value' => $total]); // Wrap in an array
-
             // Check if the customer is logged in
             if (!$customer) {
-                Log::warning('Customer not logged in.');
+                Log::warning('Order confirmation: customer not logged in');
                 return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to place an order.']);
             }
 
             // Check if the cart is empty
             if (empty($cart)) {
-                Log::warning('Cart is empty.');
-                // Use a flash message for easier display in the UI
+                Log::warning('Order confirmation: cart is empty');
                 return redirect()->route('mode.payment')->with('error', 'Your cart is empty.');
             }
 
             // Get the payment method from the request
             $paymentMethodId = $request->input('payment_method_id', 1); // Default to COD
             $paymentMethodExists = DB::table('payment_methods')->where('payment_method_id', $paymentMethodId)->exists();
-            Log::info('Payment Method ID:', ['value' => $paymentMethodId]); // Wrap in an array
-            Log::info('Payment Method Exists:', ['exists' => $paymentMethodExists]);
+            Log::info('Payment Method validation:', ['exists' => $paymentMethodExists]);
 
             if (!$paymentMethodExists) {
                 // If the payment methods table isn't seeded or the id is missing, don't abort the flow.

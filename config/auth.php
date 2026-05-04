@@ -44,6 +44,10 @@ return [
             'driver'   => 'session',
             'provider' => 'customers',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
     ],
 
     /*
@@ -71,7 +75,11 @@ return [
         'customers' => [
         'driver' => 'eloquent',
         'model'  => App\Models\Customer::class,
-        ],            
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -117,17 +125,7 @@ return [
     |
     */
 
-    'admin' => [
-        'email' => env('ADMIN_EMAIL', 'admin@gmail.com'),
-        'password' => env('ADMIN_PASSWORD'), // Replace with a securely hashed password
-    ],
-
-    //'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
-    // Add admin credentials for manual setup
-    //'admin' => [
-    //    'email' => env('ADMIN_EMAIL', 'admin@example.com'),
-    //    'password' => env('ADMIN_PASSWORD', bcrypt('admin123')), // Replace with a securely hashed password
-    //],
+    
+    'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
 ];

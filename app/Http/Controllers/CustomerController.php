@@ -24,7 +24,7 @@ class CustomerController extends Controller
             'address'         => 'required|string|max:255',
             'email'           => 'required|email|unique:customers,email',
             'phone'           => 'required|string|size:11|regex:/^\d{11}$/',
-            'password'        => 'required|confirmed|min:6',
+            'password'        => 'required|confirmed|min:8',
             'terms'           => 'accepted',
             'confirm_info'    => 'accepted',
             'human'           => 'accepted',
@@ -73,7 +73,7 @@ class CustomerController extends Controller
         // Add email and password validation only for profile updates
         if (!$id) {
             $rules['email'] = 'required|email|unique:customers,email,' . $customer->customer_id . ',customer_id';
-            $rules['password'] = 'nullable|min:6|confirmed';
+            $rules['password'] = 'nullable|min:8|confirmed';
         }
 
         // Validate the request
@@ -174,5 +174,33 @@ class CustomerController extends Controller
 
         // Redirect to the login page with a success message
         return redirect()->route('login.form')->with('status', 'You have been logged out successfully.');
+    }
+
+    public function index_admin()
+    {
+        $customers = Customer::all();
+        return view('admin.customers.index', compact('customers'));
+    }
+
+    public function edit_admin($id)
+    {
+        $customer = Customer::findOrFail($id);
+        return view('admin.customers.edit', compact('customer'));
+    }
+
+    public function update_admin(Request $request, $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:customers,email,' . $customer->customer_id . ',customer_id',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $customer->update($data);
+
+        return redirect()->route('admin.customers.index')->with('success', 'Customer updated successfully.');
     }
 }

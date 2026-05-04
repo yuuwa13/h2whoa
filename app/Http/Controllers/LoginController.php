@@ -6,6 +6,9 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -28,11 +31,24 @@ class LoginController extends Controller
             return back()->withErrors(['email' => 'This account has been deactivated.']);
         }
 
+        // Rate Limiting / Lockout Logic
+        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            throw ValidationException::withMessages([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ]);
+        }
+
         // Attempt to log in the customer
         if (Auth::guard('customer')->attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             return redirect()->intended('/orders');
         }
+
+        RateLimiter::hit($throttleKey, 60); // Lock for 60 seconds after 5 failed attempts
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
@@ -46,16 +62,13 @@ class LoginController extends Controller
 
     public function adminLogin(Request $request)
     {
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $adminEmail = config('auth.admin.email');
-        $adminPasswordHash = config('auth.admin.password'); // This should already be a Bcrypt hash
-
-        if ($request->email === $adminEmail && Hash::check($request->password, $adminPasswordHash)) {
-            session(['is_admin' => true]); // Store admin session
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
 
@@ -66,10 +79,9 @@ class LoginController extends Controller
 
     public function adminLogout(Request $request)
     {
-        // Remove admin flag from session
-        $request->session()->forget('is_admin');
-        // Optionally regenerate session to prevent fixation
-        $request->session()->regenerate();
+        Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect()->route('admin.login');
     }
 }

@@ -148,12 +148,38 @@
                             const signupForm = document.getElementById('signup-form');
                             const signupButton = document.getElementById('signup-btn');
                             const hoverTooltip = document.getElementById('hover-tooltip');
+                            const passwordField = document.getElementById('password');
+                            const passwordConfirmField = document.getElementById('password_confirmation');
                             const requiredFields = signupForm.querySelectorAll('input[required]');
-                            const checkboxes = signupForm.querySelectorAll('input[type="checkbox"]:not(#human)'); // Exclude the "human" checkbox
+                            const checkboxes = signupForm.querySelectorAll('input[type="checkbox"]:not(#human)');
 
-                            // Function to validate the form (excluding the "human" checkbox)
+                            // Function to validate password requirements
+                            function validatePassword() {
+                                const password = passwordField.value;
+                                const passwordConfirm = passwordConfirmField.value;
+
+                                // Check minimum length (8 characters)
+                                if (password.length < 8) {
+                                    return { valid: false, message: 'Password must be at least 8 characters' };
+                                }
+
+                                // Check if confirmation field is filled
+                                if (!passwordConfirm) {
+                                    return { valid: false, message: 'Please confirm your password' };
+                                }
+
+                                // Check password confirmation match
+                                if (password !== passwordConfirm) {
+                                    return { valid: false, message: 'Passwords do not match' };
+                                }
+
+                                return { valid: true, message: '' };
+                            }
+
+                            // Function to validate the form
                             function validateForm() {
                                 let allFieldsFilled = true;
+                                let passwordValid = true;
 
                                 requiredFields.forEach(field => {
                                     if (!field.value.trim()) {
@@ -161,8 +187,13 @@
                                     }
                                 });
 
-                                let allCheckboxesChecked = true;
+                                // Validate password specifically
+                                const passwordValidation = validatePassword();
+                                if (!passwordValidation.valid) {
+                                    passwordValid = false;
+                                }
 
+                                let allCheckboxesChecked = true;
                                 checkboxes.forEach(checkbox => {
                                     if (!checkbox.checked) {
                                         allCheckboxesChecked = false;
@@ -170,10 +201,16 @@
                                 });
 
                                 // Enable or disable the Sign Up button
-                                signupButton.disabled = !(allFieldsFilled && allCheckboxesChecked);
+                                signupButton.disabled = !(allFieldsFilled && passwordValid && allCheckboxesChecked);
 
-                                // Hide the tooltip if the button is enabled
-                                if (!signupButton.disabled) {
+                                // Update tooltip message
+                                if (signupButton.disabled) {
+                                    if (!allFieldsFilled) {
+                                        hoverTooltip.textContent = 'You are required to fill all forms and check all boxes';
+                                    } else if (!passwordValid) {
+                                        hoverTooltip.textContent = passwordValidation.message;
+                                    }
+                                } else {
                                     hoverTooltip.style.display = 'none';
                                 }
                             }
@@ -189,20 +226,36 @@
                                 hoverTooltip.style.display = 'none';
                             });
 
-                            // Add event listeners to required fields and checkboxes
+                            // Add event listeners to all required fields and checkboxes
                             requiredFields.forEach(field => {
                                 field.addEventListener('input', validateForm);
                             });
+
+                            // Specifically handle password confirmation field
+                            passwordConfirmField.addEventListener('input', validateForm);
 
                             checkboxes.forEach(checkbox => {
                                 checkbox.addEventListener('change', validateForm);
                             });
 
-                            // Initialize validation on page load
-                            validateForm();
-
                             // Handle modal confirmation
                             confirmHumanBtn.addEventListener('click', function () {
+                                // Final password validation before submission
+                                const passwordValidation = validatePassword();
+                                if (!passwordValidation.valid) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Password Error',
+                                        text: passwordValidation.message,
+                                        toast: true,
+                                        position: 'bottom-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                    });
+                                    return;
+                                }
+
                                 if (humanCheckbox.checked) {
                                     // Submit the form if the "human" checkbox is checked
                                     signupForm.submit();
@@ -219,6 +272,9 @@
                                     });
                                 }
                             });
+
+                            // Initialize validation on page load
+                            validateForm();
                         });
                     </script>
                 </form>

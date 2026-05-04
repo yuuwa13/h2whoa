@@ -14,19 +14,17 @@ class ImageUploadController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240|dimensions:min_width=100,min_height=100,max_width=4000,max_height=4000',
         ]);
 
         $file = $request->file('image');
         $path = $file->store('image_uploads', 'public');
-        Log::info('File stored at: ' . $path);
 
         UploadedImage::create([
             'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
         ]);
-        Log::info('Uploading file: ' . $file->getClientOriginalName());
-        Log::info('File path: ' . $path);
+
         return redirect()->back()->with('success', 'Image uploaded successfully!');
     }
 
@@ -35,11 +33,10 @@ class ImageUploadController extends Controller
     {
         $images = UploadedImage::all()->map(function ($image) {
             $url = asset('storage/' . str_replace('public/', '', $image->file_path));
-            Log::info('Corrected image URL: ' . $url);
             return [
                 'id' => $image->id,
                 'url' => $url,
-                'file_name' => $image->file_name, // Include file_name key
+                'file_name' => $image->file_name,
             ];
         });
 
