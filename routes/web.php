@@ -146,14 +146,63 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::get('/sales-data', function (Request $request) {
         $startDate = $request->query('start_date', now()->startOfMonth()->toDateString());
         $endDate   = $request->query('end_date',   now()->endOfMonth()->toDateString());
+        $groupBy   = $request->query('group_by', 'day'); // 'day' or 'month'
 
-        $salesData = DB::table('sales')
-            ->join('orders', 'sales.order_id', '=', 'orders.order_id')
-            ->whereBetween('sales.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->select(DB::raw('DATE(sales.created_at) as date'), DB::raw('SUM(orders.amount_paid) as total_sales'))
-            ->groupBy('date')->orderBy('date')->get();
+        // Keep in Manila time — matches how PHP/Eloquent writes datetimes to MySQL
+        $start = \Carbon\Carbon::parse($startDate, 'Asia/Manila')->startOfDay();
+        $end   = \Carbon\Carbon::parse($endDate,   'Asia/Manila')->endOfDay();
 
-        return response()->json($salesData);
+        if ($groupBy === 'month') {
+            // Group by month — query
+            $rows = DB::table('sales')
+                ->join('orders', 'sales.order_id', '=', 'orders.order_id')
+                ->whereBetween('sales.created_at', [$start, $end])
+                ->select(
+                    DB::raw("DATE_FORMAT(sales.created_at, '%Y-%m') as period"),
+                    DB::raw('SUM(orders.amount_paid) as total_sales')
+                )
+                ->groupBy('period')->orderBy('period')->get()
+                ->keyBy('period');
+
+            // Zero-fill every month in the range — cursor starts at startDate's month
+            $result = [];
+            $cursor = \Carbon\Carbon::parse($startDate, 'Asia/Manila')->startOfMonth();
+            $finish = \Carbon\Carbon::parse($endDate,   'Asia/Manila')->endOfMonth();
+            while ($cursor->lte($finish)) {
+                $key = $cursor->format('Y-m');
+                $result[] = [
+                    'date'        => $cursor->format('M Y'),
+                    'total_sales' => isset($rows[$key]) ? (float) $rows[$key]->total_sales : 0,
+                ];
+                $cursor->addMonth();
+            }
+        } else {
+            // Group by day — query
+            $rows = DB::table('sales')
+                ->join('orders', 'sales.order_id', '=', 'orders.order_id')
+                ->whereBetween('sales.created_at', [$start, $end])
+                ->select(
+                    DB::raw('DATE(sales.created_at) as period'),
+                    DB::raw('SUM(orders.amount_paid) as total_sales')
+                )
+                ->groupBy('period')->orderBy('period')->get()
+                ->keyBy('period');
+
+            // Zero-fill every day in the range — cursor starts at startDate exactly
+            $result = [];
+            $cursor = \Carbon\Carbon::parse($startDate, 'Asia/Manila')->startOfDay();
+            $finish = \Carbon\Carbon::parse($endDate,   'Asia/Manila')->endOfDay();
+            while ($cursor->lte($finish)) {
+                $key = $cursor->toDateString();
+                $result[] = [
+                    'date'        => $cursor->format('M d'),
+                    'total_sales' => isset($rows[$key]) ? (float) $rows[$key]->total_sales : 0,
+                ];
+                $cursor->addDay();
+            }
+        }
+
+        return response()->json($result);
     })->name('sales-data');
 
     Route::get('/item-sales-data', function (Request $request) {
@@ -161,9 +210,12 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
         $endDate   = $request->query('end_date',   now()->endOfMonth()->toDateString());
 
         // Aggregate sales for the period
+        $itemStart = \Carbon\Carbon::parse($startDate, 'Asia/Manila')->startOfDay();
+        $itemEnd   = \Carbon\Carbon::parse($endDate,   'Asia/Manila')->endOfDay();
+
         $salesMap = DB::table('sale_details')
             ->select('product_name', DB::raw('SUM(quantity) as total_quantity'), DB::raw('SUM(total_price) as total_sales'))
-            ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->whereBetween('created_at', [$itemStart, $itemEnd])
             ->groupBy('product_name')
             ->get()
             ->keyBy('product_name');

@@ -198,8 +198,8 @@
         });
     }
 
-    function fetchGraphData(startDate, endDate, rangeLabel = '') {
-        fetch(`/admin/sales-data?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`)
+    function fetchGraphData(startDate, endDate, rangeLabel = '', groupBy = 'day') {
+        fetch(`/admin/sales-data?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}&group_by=${groupBy}`)
             .then(r => r.json())
             .then(data => {
                 if (data.length === 0) {
@@ -295,7 +295,7 @@
         const today = new Date();
         const s = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
         const e = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-        fetchGraphData(s, e, 'Monthly');
+        fetchGraphData(s, e, 'Monthly', 'day');
         fetchItemSalesData(s, e, 'Monthly');
         updateDateTime();
 
@@ -303,8 +303,10 @@
         document.querySelectorAll('.earnings-range-btn').forEach(function (btn) {
             btn.addEventListener('click', function (ev) {
                 ev.preventDefault();
-                const { startDate, endDate, rangeLabel } = dateRangeDates(this.dataset.range);
-                fetchGraphData(startDate, endDate, rangeLabel);
+                const range = this.dataset.range;
+                const { startDate, endDate, rangeLabel } = dateRangeDates(range);
+                const groupBy = (range === 'year' || range === 'half-year') ? 'month' : 'day';
+                fetchGraphData(startDate, endDate, rangeLabel, groupBy);
             });
         });
 
@@ -319,7 +321,10 @@
             const startDate = document.getElementById('startDate').value;
             const endDate   = document.getElementById('endDate').value;
             if (startDate && endDate) {
-                fetchGraphData(startDate, endDate, 'Custom');
+                // Use month grouping if range spans more than 60 days
+                const diff = (new Date(endDate) - new Date(startDate)) / 86400000;
+                const groupBy = diff > 60 ? 'month' : 'day';
+                fetchGraphData(startDate, endDate, 'Custom', groupBy);
                 document.getElementById('customDatePicker').classList.add('d-none');
             } else {
                 alert('Please select both start and end dates.');

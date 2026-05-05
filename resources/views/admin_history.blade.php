@@ -63,9 +63,32 @@
                     @endforelse
                 </tbody>
             </table>
-            <div class="d-flex justify-content-center mt-3">
-                {{ $orders->links() }}
+            {{-- Pagination --}}
+            @if($orders->lastPage() > 1)
+            <div class="d-flex align-items-center justify-content-between mt-3 px-1">
+                <small class="text-muted">
+                    Showing {{ $orders->firstItem() }}–{{ $orders->lastItem() }} of {{ $orders->total() }} results
+                </small>
+                <ul class="pagination pagination-sm mb-0">
+                    {{-- Previous --}}
+                    <li class="page-item {{ $orders->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $orders->previousPageUrl() ?? '#' }}">&laquo; Prev</a>
+                    </li>
+
+                    {{-- Page numbers --}}
+                    @for($i = 1; $i <= $orders->lastPage(); $i++)
+                        <li class="page-item {{ $i === $orders->currentPage() ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $orders->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
+
+                    {{-- Next --}}
+                    <li class="page-item {{ $orders->currentPage() === $orders->lastPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $orders->nextPageUrl() ?? '#' }}">Next &raquo;</a>
+                    </li>
+                </ul>
             </div>
+            @endif
         </div>
     </div>
 </div>
