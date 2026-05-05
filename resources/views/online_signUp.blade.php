@@ -73,7 +73,7 @@
                         <input name="phone" value="{{ old('phone') }}"
                             class="form-control item @error('phone') is-invalid @enderror" type="text" id="phone"
                             maxlength="11" pattern="^\d{11}$" title="Phone number must be exactly 11 numeric digits!"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                            required>
                         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
@@ -176,8 +176,16 @@
                                 return { valid: true, message: '' };
                             }
 
+                            // Strip non-numeric chars from phone as user types
+                            document.getElementById('phone').addEventListener('input', function () {
+                                this.value = this.value.replace(/[^0-9]/g, '');
+                            });
+
                             // Function to validate the form
                             function validateForm() {
+                                // Always reset tooltip visibility on each validation run
+                                hoverTooltip.style.display = 'none';
+
                                 let allFieldsFilled = true;
                                 let passwordValid = true;
 
