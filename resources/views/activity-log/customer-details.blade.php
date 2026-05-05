@@ -19,7 +19,7 @@
                 <tr>
                     <td>{{ $order->order_id }}</td>
                     <td>{{ $order->order_datetime->format('F d, Y') }}</td>
-                    <td>₱{{ number_format($order->total_price, 2) }}</td>
+                    <td>₱{{ number_format($order->amount_paid, 2) }}</td>
                     <td>{{ $order->order_status }}</td>
                 </tr>
                 @endforeach

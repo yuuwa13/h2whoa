@@ -1,218 +1,288 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
-
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - H2whoa</title>
+    <title>@yield('title', 'Dashboard') — H2WHOA Admin</title>
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&display=swap">
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/fonts/fontawesome-all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('h2whoa_admin/assets/css/bs-theme-overrides.css') }}">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.bootstrap_4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style nonce="{{ csp_nonce() }}">
+        :root {
+            --sidebar-bg: #1a1a2e;
+            --sidebar-width: 224px;
+            --brand: #4ac9b0;
+            --brand-dark: #35b39a;
+            --topbar-h: 60px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* ── Sidebar ── */
+        #sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            transition: width .2s;
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 1.1rem 1.25rem;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+        .sidebar-brand span {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .04em;
+        }
+        .sidebar-nav {
+            list-style: none;
+            padding: .75rem 0;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            padding: .65rem 1.25rem;
+            color: rgba(255,255,255,.6);
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            transition: color .15s, background .15s;
+            border-radius: 6px;
+            margin: 1px .5rem;
+        }
+        .sidebar-nav li a i {
+            width: 18px;
+            text-align: center;
+            font-size: .85rem;
+            flex-shrink: 0;
+        }
+        .sidebar-nav li a:hover {
+            color: #fff;
+            background: rgba(255,255,255,.07);
+        }
+        .sidebar-nav li a.active {
+            color: var(--brand);
+            background: rgba(74,201,176,.12);
+        }
+        .sidebar-nav li a.active i { color: var(--brand); }
+
+        /* ── Topbar ── */
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--topbar-h);
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            z-index: 100;
+        }
+        .topbar-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .topbar-user .user-name {
+            font-size: .82rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .topbar-user .user-role {
+            font-size: .72rem;
+            color: #aaa;
+        }
+        .topbar-user i {
+            font-size: 1.3rem;
+            color: var(--brand);
+        }
+        .btn-logout {
+            font-size: .78rem;
+            font-weight: 600;
+            color: #666;
+            background: #f4f6f9;
+            border: 1px solid #e5e7eb;
+            padding: .35rem .9rem;
+            border-radius: 7px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .btn-logout:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+
+        /* ── Content area ── */
+        #content-wrapper {
+            margin-left: var(--sidebar-width);
+            padding-top: var(--topbar-h);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #main-content {
+            flex: 1;
+            padding: 1.75rem;
+        }
+
+        /* ── Card tweaks ── */
+        .card { border: none; border-radius: 10px; }
+        .card.shadow { box-shadow: 0 2px 12px rgba(0,0,0,.07) !important; }
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #f1f5f9;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .border-start-primary { border-left: 4px solid #4e73df !important; }
+        .border-start-success { border-left: 4px solid #1cc88a !important; }
+        .border-start-warning { border-left: 4px solid #f6c23e !important; }
+
+        /* ── Pagination — normalise Bootstrap 5 against tablesorter theme conflicts ── */
+        .pagination {
+            display: flex !important;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .25rem;
+            margin: 0;
+            padding: 0;
+        }
+        .pagination .page-item { display: inline-flex; }
+        .pagination .page-link {
+            font-size: .82rem !important;
+            line-height: 1.5 !important;
+            padding: .35rem .7rem !important;
+            border-radius: 6px !important;
+            min-width: 2rem;
+            text-align: center;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination .page-link svg { width: 14px !important; height: 14px !important; }
+
+        /* ── Responsive ── */
+        @media (max-width: 767px) {
+            #sidebar { width: 0; overflow: hidden; }
+            #sidebar.open { width: var(--sidebar-width); }
+            #topbar { left: 0; }
+            #content-wrapper { margin-left: 0; }
+        }
+    </style>
+    @stack('styles')
 </head>
+<body>
 
-<body id="page-top">
-    <div id="wrapper">
-        <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark"
-            style="background: rgba(255, 255, 255, 0.04);font-size: 22px;color: rgba(133,135,150,0.04);">
-            <div class="container-fluid d-flex flex-column p-0"><a
-                class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
-                href="{{ route('admin.dashboard') }}">
-                <picture><img class="img-fluid" width="80" height="60" style="width: 85px;height: 87px;"
-                    src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}"></picture>
-                <div class="sidebar-brand-icon rotate-n-15"></div>
-                <div class="sidebar-brand-text mx-3"><span
-                    style="color: var(--bs-primary-text-emphasis);">H2WHOA</span></div>
-            </a>
-            <hr class="sidebar-divider my-0">
-            <ul class="navbar-nav text-light" id="accordionSidebar">
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}"
-                    style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt"
-                    style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user"
-                    style="color: var(--bs-emphasis-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.sales.index') }}"><i class="fas fa-cash-register"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i
-                    class="fas fa-table"
-                    style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
-                <li class="nav-item"><a class="nav-link active" href="{{ route('admin.activity-log') }}"><i class="fas fa-list"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload"
-                    style="color: var(--bs-accordion-active-color);"></i><span
-                    style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
-            </ul>
-            <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
-                id="sidebarToggle" type="button"></button></div>
+    {{-- Sidebar --}}
+    <nav id="sidebar">
+        <a class="sidebar-brand" href="{{ route('admin.dashboard') }}">
+            <img src="{{ asset('h2whoa_admin/assets/img/elements/h2whoa_logo.png') }}" alt="H2WHOA" width="36" height="36">
+            <span>H2WHOA</span>
+        </a>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.stocks') }}" class="{{ request()->routeIs('admin.stocks*') ? 'active' : '' }}">
+                    <i class="fas fa-boxes"></i> Stocks
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.sales.index') }}" class="{{ request()->routeIs('admin.sales*') ? 'active' : '' }}">
+                    <i class="fas fa-cash-register"></i> Sales
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.orders') }}" class="{{ request()->routeIs('admin.orders') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i> Orders
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.history') }}" class="{{ request()->routeIs('admin.history') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i> History
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.activity-log') }}" class="{{ request()->routeIs('admin.activity-log*') ? 'active' : '' }}">
+                    <i class="fas fa-list-alt"></i> Activity Log
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.upload-image') }}" class="{{ request()->routeIs('admin.upload-image') ? 'active' : '' }}">
+                    <i class="fas fa-upload"></i> Upload Image
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {{-- Topbar --}}
+    <header id="topbar">
+        <div class="topbar-title">@yield('title', 'Dashboard')</div>
+        <div class="topbar-user">
+            <i class="far fa-user"></i>
+            <div>
+                <div class="user-name">Admin</div>
+                <div class="user-role">Administrator</div>
             </div>
-        </nav>
-        <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content">
-                <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
-                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
-                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <ul class="navbar-nav flex-nowrap ms-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
-                                    aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
-                                        class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in"
-                                    aria-labelledby="searchDropdown">
-                                    <form class="me-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small"
-                                                type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0"
-                                                    type="button"><i class="fas fa-search"></i></button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-primary icon-circle"><i
-                                                        class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-success icon-circle"><i
-                                                        class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="me-3">
-                                                <div class="bg-warning icon-circle"><i
-                                                        class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your
-                                                    account.</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
-                                            Alerts</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a
-                                            class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                                                    src="avatars/avatar4.jpeg">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="fw-bold">
-                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
-                                                        help me with a problem I've been having.</span></div>
-                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                                                    src="avatars/avatar2.jpeg">
-                                                <div class="status-indicator"></div>
-                                            </div>
-                                            <div class="fw-bold">
-                                                <div class="text-truncate"><span>I have the photos that you ordered last
-                                                        month!</span></div>
-                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                                                    src="avatars/avatar3.jpeg">
-                                                <div class="bg-warning status-indicator"></div>
-                                            </div>
-                                            <div class="fw-bold">
-                                                <div class="text-truncate"><span>Last month's report looks great, I am
-                                                        very happy with the progress so far, keep up the good
-                                                        work!</span></div>
-                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                                            </div>
-                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
-                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                                                    src="avatars/avatar5.jpeg">
-                                                <div class="bg-success status-indicator"></div>
-                                            </div>
-                                            <div class="fw-bold">
-                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is
-                                                        because someone told me that people say this to all dogs, even
-                                                        if they aren't good...</span></div>
-                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                                            </div>
-                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
-                                            Alerts</a>
-                                    </div>
-                                </div>
-                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-end"
-                                    aria-labelledby="alertsDropdown"></div>
-                            </li>
-                            <div class="d-none d-sm-block topbar-divider"></div>
-                            <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
-                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="far fa-user"
-                                            style="margin-right: 21px;font-size: 27px;"></i><span
-                                            class="d-none d-lg-inline me-2 text-gray-600 small">Admin</span></a>
-                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a
-                                            class="dropdown-item" href="#"><i
-                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity
-                                            log</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i
-                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-                <div class="container-fluid">
-                    @yield('content')
-                </div>
-            </div>
-            <footer class="bg-white sticky-footer">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"></div>
-                </div>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+            <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+    </header>
+
+    {{-- Content --}}
+    <div id="content-wrapper">
+        <div id="main-content">
+            @yield('content')
+        </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="{{ asset('h2whoa_admin/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_admin/assets/js/chart.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_admin/assets/js/bs-init.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</body>
 
+    <script nonce="{{ csp_nonce() }}" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_admin/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_admin/assets/js/bs-init.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @stack('scripts')
+</body>
 </html>

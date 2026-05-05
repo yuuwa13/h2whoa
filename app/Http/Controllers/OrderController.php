@@ -111,23 +111,27 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::with('orderDetails.stock')->findOrFail($id); // Fetch the order with its details
-        $stocks = Stock::all(); // Fetch all inventory items
-        $customers = \App\Models\Customer::all(); // Fetch all customers
-        return view('orders.edit', compact('order', 'stocks', 'customers'));
+        $customer = Auth::guard('customer')->user();
+        $order = Order::with('orderDetails.stock')
+            ->where('order_id', $id)
+            ->where('customer_id', $customer->customer_id)
+            ->firstOrFail();
+        $stocks = Stock::all();
+        return view('orders.edit', compact('order', 'stocks'));
     }
 
     public function update(Request $request, $id)
     {
+        $customer = Auth::guard('customer')->user();
+        $order = Order::where('order_id', $id)
+            ->where('customer_id', $customer->customer_id)
+            ->firstOrFail();
+
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,customer_id',
             'items' => 'required|array',
             'items.*.stock_id' => 'required|exists:stocks,stock_id',
             'items.*.quantity' => 'required|integer|min:1',
-            'amount_paid' => 'required|numeric|min:0',
         ]);
-
-        $order = Order::findOrFail($id);
 
         // Restore stock quantities for the current order details
         foreach ($order->orderDetails as $detail) {
@@ -139,10 +143,8 @@ class OrderController extends Controller
         // Delete existing order details
         $order->orderDetails()->delete();
 
-        // Update the order
+        // Update the order — customer_id and amount_paid are not user-editable
         $order->update([
-            'customer_id' => $validated['customer_id'],
-            'amount_paid' => $validated['amount_paid'],
             'order_datetime' => now(),
         ]);
 
@@ -446,11 +448,16 @@ class OrderController extends Controller
                     'total_price' => $item['total_price'],
                 ]);
 
-                // Optionally decrement now or later when Delivered; this project decrements on Delivered in updateStatus
+                // Temporarily decrement stock when order is created (Pending status)
+                $stock->decrement('quantity', $item['quantity']);
+                Log::info('Stock reserved for pending order', ['stock_id' => $stockId, 'quantity_reserved' => $item['quantity'], 'order_id' => $order->order_id]);
             }
 
             // Clear the session cart but keep delivery_fee so the user's selected location price persists
             $request->session()->forget(['cart', 'subtotal', 'tax', 'total', 'payment_method_id']);
+            
+            // Store the order_id in the session for payment processing
+            session(['order_id' => $order->order_id]);
 
             // Flash success message
             session()->flash('delivery_confirmed', 'Your delivery details have been confirmed successfully!');
@@ -474,15 +481,54 @@ class OrderController extends Controller
 
     public function cancelOrder(Request $request)
     {
-        // Clear the session data related to the order
-        // Keep the user's delivery_fee/session selection so they don't have to re-select location
-        $request->session()->forget(['cart', 'subtotal', 'tax', 'total', 'payment_method_id']);
+        try {
+            // Get the order_id from session
+            $orderId = session('order_id');
+            $customer = Auth::guard('customer')->user();
 
-        // Add a flash message to the session
-        session()->flash('order_canceled', 'The order has been successfully canceled.');
+            if (!$orderId || !$customer) {
+                return redirect()->route('orders.index')->with('error', 'No active order to cancel.');
+            }
 
-        // Redirect back to the orders page
-        return redirect()->route('orders.index')->with('success', 'Your order has been canceled.');
+            // Find the order
+            $order = Order::where('order_id', $orderId)
+                ->where('customer_id', $customer->customer_id)
+                ->first();
+
+            if (!$order) {
+                return redirect()->route('orders.index')->with('error', 'Order not found.');
+            }
+
+            // Only allow cancelling Pending orders
+            if ($order->order_status !== 'Pending') {
+                return redirect()->route('orders.index')->with('error', 'Only pending orders can be cancelled.');
+            }
+
+            // Restore stock for all items in this order
+            foreach ($order->orderDetails as $detail) {
+                $stock = Stock::find($detail->stock_id);
+                if ($stock) {
+                    $stock->increment('quantity', $detail->quantity);
+                    Log::info('Stock restored after order cancellation', ['stock_id' => $detail->stock_id, 'quantity_restored' => $detail->quantity, 'order_id' => $orderId]);
+                }
+            }
+
+            // Update order status to Cancelled
+            $order->update(['order_status' => 'Cancelled']);
+            Log::info('Order cancelled', ['order_id' => $orderId]);
+
+            // Clear the session data related to the order
+            $request->session()->forget(['cart', 'subtotal', 'tax', 'total', 'payment_method_id', 'order_id']);
+
+            // Add a flash message to the session
+            session()->flash('order_canceled', 'The order has been successfully canceled and stock has been restored.');
+
+            // Redirect back to the orders page
+            return redirect()->route('orders.index')->with('success', 'Your order has been canceled.');
+        } catch (\Exception $e) {
+            Log::error('Error cancelling order: ' . $e->getMessage());
+            return redirect()->route('orders.index')->with('error', 'An error occurred while cancelling the order.');
+        }
     }
     public function trackOrders()
     {
@@ -553,20 +599,29 @@ class OrderController extends Controller
             foreach ($order->orderDetails as $detail) {
                 $stock = $detail->stock;
 
-                // Decrement stock quantity only when status is 'Delivered'
-                if ($stock->is_quantifiable) {
-                    $stock->decrement('quantity', $detail->quantity);
-                    Log::info('Stock decremented', ['stock_id' => $stock->stock_id, 'quantity' => $detail->quantity]);
-                }
-
-                // Create SaleDetail for the web-based sale
+                // Stock has already been decremented when order was created as Pending
+                // Just create SaleDetail for the web-based sale
                 SaleDetail::create([
-                    'sale_id' => $sale->sale_id, // Link to the corresponding sale
+                    'sale_id' => $sale->sale_id,
                     'product_name' => $stock->product_name,
                     'quantity' => $detail->quantity,
                     'price_per_unit' => $stock->price_per_unit,
                     'total_price' => $detail->total_price,
                 ]);
+                Log::info('Sale detail created', ['stock_id' => $stock->stock_id, 'quantity' => $detail->quantity]);
+            }
+        }
+
+        // Handle order cancellation - restore stock
+        if ($validated['order_status'] === 'Cancelled' && $order->order_status !== 'Cancelled') {
+            Log::info('Order status set to Cancelled', ['order_id' => $orderId]);
+
+            foreach ($order->orderDetails as $detail) {
+                $stock = $detail->stock;
+
+                // Restore stock when order is cancelled
+                $stock->increment('quantity', $detail->quantity);
+                Log::info('Stock restored after order cancellation', ['stock_id' => $stock->stock_id, 'quantity_restored' => $detail->quantity]);
             }
         }
 
@@ -575,6 +630,93 @@ class OrderController extends Controller
         Log::info('Order status updated successfully', ['order_id' => $orderId, 'final_status' => $order->order_status]);
 
         return redirect()->route('admin.orders')->with('success', 'Order status updated successfully.');
+    }
+    public function gcashPayment(Request $request)
+    {
+        try {
+            // Retrieve the cart and customer details from the session
+            $cart = $request->session()->get('cart', []);
+            $subtotal = $request->session()->get('subtotal', 0);
+            $tax = $request->session()->get('tax', 0);
+            $deliveryFee = $request->session()->get('delivery_fee', 20);
+            $total = $subtotal + $tax + $deliveryFee;
+            $customer = Auth::guard('customer')->user();
+
+            // Check if customer is logged in
+            if (!$customer) {
+                return redirect()->route('login')->withErrors(['error' => 'You must be logged in.']);
+            }
+
+            // Check if cart is empty
+            if (empty($cart)) {
+                return redirect()->route('mode.payment')->with('error', 'Your cart is empty.');
+            }
+
+            // Validate selected address
+            if (!session('selected_address')) {
+                return redirect()->route('orders.index')->withErrors(['error' => 'Please select your delivery address.']);
+            }
+
+            // Create the order
+            $order = Order::create([
+                'customer_id'      => $customer->customer_id,
+                'amount_paid'      => $total,
+                'order_datetime'   => now(),
+                'order_status'     => 'Pending',
+                'payment_method_id' => 2, // GCash
+                'customer_name'    => $customer->name,
+                'customer_phone'   => $customer->phone,
+                'customer_address' => session('selected_address') ?? $customer->address,
+                'delivery_fee'     => $deliveryFee,
+            ]);
+
+            // Add order details
+            foreach ($cart as $item) {
+                $stockId = $item['stock_id'] ?? Stock::where('product_name', $item['name'])->value('stock_id');
+
+                if (!$stockId) {
+                    Log::warning("Stock not found for product: {$item['name']}");
+                    return redirect()->route('mode.payment')->with('error', "Stock not found for product: {$item['name']}");
+                }
+
+                $stock = Stock::find($stockId);
+                if (!$stock) {
+                    Log::warning("Stock entry disappeared for id: {$stockId}");
+                    return redirect()->route('mode.payment')->with('error', "Stock not found for product: {$item['name']}");
+                }
+
+                // Server-side validation: ensure quantity does not exceed available stock
+                if ($item['quantity'] > $stock->quantity) {
+                    Log::warning("Requested quantity exceeds stock for {$item['name']}", ['requested' => $item['quantity'], 'available' => $stock->quantity]);
+                    return redirect()->route('mode.payment')->with('error', "Not enough stock for {$item['name']}. Available: {$stock->quantity}, requested: {$item['quantity']}");
+                }
+
+                OrderDetail::create([
+                    'order_id' => $order->order_id,
+                    'stock_id' => $stockId,
+                    'quantity' => $item['quantity'],
+                    'price_per_unit' => $item['price'],
+                    'total_price' => $item['total_price'],
+                ]);
+
+                // Temporarily decrement stock when order is created (Pending status)
+                $stock->decrement('quantity', $item['quantity']);
+                Log::info('Stock reserved for pending order', ['stock_id' => $stockId, 'quantity_reserved' => $item['quantity'], 'order_id' => $order->order_id]);
+            }
+
+            // Store order_id in session for the GCash form
+            session(['order_id' => $order->order_id]);
+
+            // Prepare data for GCash form
+            $subtotal = session('subtotal', 0);
+            $deliveryFee = session('delivery_fee', 20);
+            $total = $subtotal + ($subtotal * 0.12) + $deliveryFee;
+
+            return view('gcash', compact('subtotal', 'deliveryFee', 'total'));
+        } catch (\Exception $e) {
+            Log::error('Error in GCash payment: ' . $e->getMessage());
+            return redirect()->route('mode.payment')->with('error', 'An error occurred. Please try again.');
+        }
     }
     public function deliveryDetails()
     {

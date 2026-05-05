@@ -15,7 +15,7 @@
 
 @section('content')
     @if(session('delivery_confirmed'))
-        <script>
+        <script nonce="{{ csp_nonce() }}">
             document.addEventListener('DOMContentLoaded', function () {
                 Swal.fire({
                     icon: 'success',
@@ -109,7 +109,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
 @endpush

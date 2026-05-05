@@ -12,6 +12,10 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next)
     {
+        // Generate a fresh nonce for this request and make it available to views
+        $nonce = base64_encode(random_bytes(16));
+        app()->instance('csp-nonce', $nonce);
+
         $response = $next($request);
 
         // Clickjacking protection - prevents iframe embedding
@@ -34,16 +38,11 @@ class SecurityHeaders
             $response->header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
-        // CSP — Content Security Policy (IMPROVED: removed unsafe-eval, documented unsafe-inline for future nonce migration)
-        // FUTURE: Implement nonce-based CSP by:
-        // 1. Add nonce="{{ csp_nonce() }}" to all inline <script>/<style> tags in Blade templates
-        // 2. Update SecurityHeaders to generate and validate CSP nonce
-        // 3. Replace unsafe-inline with: 'nonce-{{ csp_nonce() }}'
-        // Current approach maintains security while awaiting template refactoring
+        // Nonce-based CSP — inline scripts/styles require the matching nonce attribute
         $response->header('Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://maps.googleapis.com; " .
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+            "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://maps.googleapis.com; " .
+            "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; " .
             "img-src 'self' data: https:; " .
             "frame-src https://maps.google.com https://maps.googleapis.com; " .

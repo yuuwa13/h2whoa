@@ -66,6 +66,7 @@ class ActivityLogController extends Controller
     public function saleActions($saleId)
     {
         $logs = DB::table('sale_logs')
+            ->where('sale_logs.sale_id', $saleId)
             ->join('sales', 'sale_logs.sale_id', '=', 'sales.sale_id')
             ->select('sale_logs.action', 'sale_logs.old_value', 'sale_logs.new_value', 'sale_logs.created_at')
             ->orderBy('sale_logs.created_at', 'desc')

@@ -10,7 +10,7 @@
         href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&amp;display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
+    <style nonce="{{ csp_nonce() }}">
         body {
             background: #f8f9fa;
         }
@@ -180,21 +180,21 @@
         </div>
     </div>
 
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
-    <script
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/baguetteBox.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/vanilla-zoom.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/theme.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}"
         src="{{ asset('h2whoa_user/assets/js/Billing-Table-with-Add-Row--Fixed-Header-Feature-Billing-Table-with-Add-Row--Fixed-Header.js') }}"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/Contact-Form-v2-Modal--Full-with-Google-Map-scripts.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+    <script nonce="{{ csp_nonce() }}"
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script
+    <script nonce="{{ csp_nonce() }}"
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/js/Map-Location-5-script.min.js') }}"></script>
 </body>
 
 </html>

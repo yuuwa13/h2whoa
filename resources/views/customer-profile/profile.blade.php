@@ -7,7 +7,7 @@
 
     {{-- SweetAlert for Success Message --}}
     @if(session('status'))
-      <script>
+      <script nonce="{{ csp_nonce() }}">
         document.addEventListener('DOMContentLoaded', function () {
           Swal.fire({
             icon: 'success',
@@ -233,7 +233,7 @@
 
   {{-- JS to enable Save only when form is dirty & human is checked --}}
   @push('scripts')
-    <style>
+    <style nonce="{{ csp_nonce() }}">
       input,
       button,
       select,
@@ -252,7 +252,7 @@
         }
       }
     </style>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       document.addEventListener('DOMContentLoaded', () => {
         const editBtn = document.getElementById('editProfileBtn');
         const action = document.getElementById('actionArea');
@@ -286,7 +286,7 @@
       });
     </script>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       document.addEventListener('DOMContentLoaded', () => {
         const pass = document.getElementById('del-password');
         const confirmCh = document.getElementById('confirm-delete');
@@ -317,7 +317,7 @@
         confirm.addEventListener('click', () => form.submit());
       });
     </script>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       document.addEventListener('DOMContentLoaded', function () {
         const addressInput = document.getElementById('address');
 
@@ -342,7 +342,7 @@
         });
       });
     </script>
-    <script
+    <script nonce="{{ csp_nonce() }}"
       src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places"></script>
 
 

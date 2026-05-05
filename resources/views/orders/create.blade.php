@@ -39,7 +39,7 @@
     </form>
 </div>
 
-<script>
+<script nonce="{{ csp_nonce() }}">
     let itemIndex = 1;
     document.getElementById('add-item').addEventListener('click', function() {
         const itemsDiv = document.getElementById('items');

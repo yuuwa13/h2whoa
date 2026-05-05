@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="{{ asset('h2whoa_user/assets/css/bs-theme-overrides.css') }}">
-    <style>
+    <style nonce="{{ csp_nonce() }}">
         body {
             display: flex;
             flex-direction: column;
@@ -134,12 +134,12 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script nonce="{{ csp_nonce() }}" src="{{ asset('h2whoa_user/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- SweetAlert for flash messages --}}
     @if(session('success'))
-        <script>
+        <script nonce="{{ csp_nonce() }}">
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
@@ -152,7 +152,7 @@
         </script>
     @endif
     @if(session('status'))
-        <script>
+        <script nonce="{{ csp_nonce() }}">
             Swal.fire({
                 icon: 'success',
                 title: 'Logged Out',
@@ -166,7 +166,7 @@
     @endif
 
     <!-- Enable submit button only if all fields are valid -->
-    <script>
+    <script nonce="{{ csp_nonce() }}">
         const email = document.getElementById('email');
         const password = document.getElementById('password');
         const human = document.getElementById('humanCheckbox');
@@ -185,7 +185,7 @@
             input.addEventListener('input', validateForm)
         );
     </script>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
         const lockout = @json(session('lockout'));
         let seconds = @json(session('seconds'));
 

@@ -44,7 +44,7 @@ class GcashController extends Controller
         session(['payment_method_id' => 2]);
         session()->flash('payment_confirmed', 'Details are confirmed, and payment is processed.');
 
-        return redirect()->route('delivery.details')
-            ->with('success', 'GCash details saved successfully! Please confirm your delivery details.');
+        return redirect()->route('track.orders')
+            ->with('success', 'GCash details saved successfully! Your order is now being processed.');
     }
 }

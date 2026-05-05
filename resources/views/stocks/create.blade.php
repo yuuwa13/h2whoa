@@ -117,8 +117,8 @@
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+<script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script nonce="{{ csp_nonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const successMessage = '{{ session('success') }}';
         const errorMessage = '{{ session('error') }}';
@@ -148,7 +148,7 @@
         }
     });
 </script>
-<script>
+<script nonce="{{ csp_nonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const isQuantifiableCheckbox = document.getElementById('is_quantifiable');
         const quantityField = document.getElementById('quantity');
@@ -170,7 +170,7 @@
         toggleFields(); // Initialize on page load
     });
 </script>
-<script>
+<script nonce="{{ csp_nonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const imageSelect = document.getElementById('uploaded_image_id');
         const imagePreview = document.getElementById('image_preview');

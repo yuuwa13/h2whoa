@@ -58,78 +58,54 @@ class CustomerController extends Controller
     }
 
     /** Handle profile updates */
-    public function update(Request $request, $id = null)
+    public function update(Request $request)
     {
-        // Determine the customer to update
-        $customer = $id ? Customer::findOrFail($id) : Auth::guard('customer')->user();
+        $customer = Auth::guard('customer')->user();
 
-        // Validation rules
         $rules = [
-            'name'     => 'required|string|max:255',
-            'phone'    => 'required|string|max:20',
-            'address'  => 'required|string|max:255',
+            'name'    => 'required|string|max:255',
+            'phone'   => 'required|string|max:20',
+            'address' => 'required|string|max:255',
         ];
 
-        // Add email and password validation only for profile updates
-        if (!$id) {
-            $rules['email'] = 'required|email|unique:customers,email,' . $customer->customer_id . ',customer_id';
+        // Email and password only validated when present (full profile form vs delivery details form)
+        if ($request->has('email')) {
+            $rules['email']    = 'required|email|unique:customers,email,' . $customer->customer_id . ',customer_id';
             $rules['password'] = 'nullable|min:8|confirmed';
         }
 
-        // Validate the request
         $data = $request->validate($rules);
 
-        // Track changes
+        // Track and apply changes
         $changes = [];
         foreach (['name', 'email', 'phone', 'address'] as $field) {
             if (isset($data[$field]) && $data[$field] !== $customer->$field) {
-                $changes[$field] = [
-                    'old' => $customer->$field,
-                    'new' => $data[$field],
-                ];
+                $changes[$field] = ['old' => $customer->$field, 'new' => $data[$field]];
                 $customer->$field = $data[$field];
             }
         }
 
-        // Update password if provided (only for profile updates)
-        if (!$id && !empty($data['password'])) {
-            $changes['password'] = [
-                'old' => '••••••••',
-                'new' => '••••••••',
-            ];
+        if (!empty($data['password'])) {
+            $changes['password'] = ['old' => '••••••••', 'new' => '••••••••'];
             $customer->password = Hash::make($data['password']);
         }
 
-        // Save changes if any
         if (!empty($changes)) {
             $customer->save();
 
-            // Log changes (only for profile updates)
-            if (!$id) {
-                foreach ($changes as $field => $vals) {
-                    CustomerEditLog::create([
-                        'customer_id' => $customer->customer_id,
-                        'field'       => $field,
-                        'old_value'   => $vals['old'],
-                        'new_value'   => $vals['new'],
-                    ]);
-                }
+            foreach ($changes as $field => $vals) {
+                CustomerEditLog::create([
+                    'customer_id' => $customer->customer_id,
+                    'field'       => $field,
+                    'old_value'   => $vals['old'],
+                    'new_value'   => $vals['new'],
+                ]);
             }
 
-            // Redirect based on context
-            if ($id) {
-                return redirect()->route('delivery.details')->with('success', 'Delivery details updated successfully!');
-            } else {
-                return back()->with('status', 'Profile updated successfully!');
-            }
+            return back()->with('status', 'Details updated successfully!');
         }
 
-        // No changes detected
-        if ($id) {
-            return redirect()->route('delivery.details')->with('status', 'No changes detected.');
-        } else {
-            return back()->with('status', 'No changes detected.');
-        }
+        return back()->with('status', 'No changes detected.');
     }
     public function destroy(Request $request)
     {

@@ -141,7 +141,7 @@
                     </div>
 
 
-                    <script>
+                    <script nonce="{{ csp_nonce() }}">
                         document.addEventListener('DOMContentLoaded', function () {
                             const confirmHumanBtn = document.getElementById('confirmHumanBtn');
                             const humanCheckbox = document.getElementById('human');
@@ -281,9 +281,9 @@
             </div>
         </section>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+<script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

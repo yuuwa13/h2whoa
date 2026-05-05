@@ -14,5 +14,6 @@ class GcashDetail extends Model
         'name',
         'reference_number',
         'image',
+        'order_id',
     ];
 }

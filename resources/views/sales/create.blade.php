@@ -71,8 +71,8 @@
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+<script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script nonce="{{ csp_nonce() }}">
     function addRow() {
         const table = document.getElementById('saleDetailsTable').getElementsByTagName('tbody')[0];
         const rowCount = table.rows.length;

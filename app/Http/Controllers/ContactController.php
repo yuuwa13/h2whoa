@@ -23,11 +23,11 @@ class ContactController extends Controller
             'userMessage' => $request->message, // Rename 'message' to 'userMessage'
         ];
 
-        // Send the email
+        // Send the email — use replyTo so user input never touches the From header
         Mail::send('emails.contact', $data, function ($mail) use ($data) {
-            $mail->to('abassibrahim333@gmail.com') // Replace with your assigned email
+            $mail->to('abassibrahim333@gmail.com')
                 ->subject('New Contact Us Message')
-                ->from($data['email'], $data['name']); // Use the sender's email and name
+                ->replyTo($data['email'], $data['name']);
         });
 
         // Redirect back with a success message
