@@ -25,7 +25,7 @@
     @endif
 
 
-    <form action="{{ route('stocks.store') }}" method="POST">
+    <form action="{{ route('admin.stocks.store') }}" method="POST">
         @csrf
 
 

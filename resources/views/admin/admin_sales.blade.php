@@ -31,7 +31,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}" style="color: var(--bs-emphasis-color);"><i class="fas fa-tachometer-alt" style="--bs-primary: rgb(33,33,33);--bs-primary-rgb: 33,33,33;color: var(--bs-accordion-active-color);"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user" style="color: var(--bs-emphasis-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table" style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.sales.index') }}"><i class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i class="fas fa-history" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">History</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.activity-log') }}"><i class="fas fa-list" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Activity Log</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.upload-image') }}"><i class="fas fa-upload" style="color: var(--bs-accordion-active-color);"></i><span style="color: var(--bs-secondary-text-emphasis);">Upload Image</span></a></li>
@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 text-md-end">
-                                    <button class="btn btn-primary" type="button" style="height: 31px;" onclick="window.location='{{ route('sales.create') }}'">
+                                    <button class="btn btn-primary" type="button" style="height: 31px;" onclick="window.location='{{ route('admin.sales.create') }}'">
                                         <i class="far fa-plus-square" style="margin-right: 8px;"></i><strong>Add Sale</strong>
                                     </button>
                                 </div>
@@ -111,10 +111,10 @@
                                             <td>{{ ucfirst($sale->sale_type) }}</td>
                                             <td>{{ $sale->created_at ? $sale->created_at->timezone('Asia/Manila')->format('F d, Y; H:i:s e') : 'N/A' }}</td>
                                             <td>
-                                                <a href="{{ route('sales.edit', $sale->sale_id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Edit">
+                                                <a href="{{ route('admin.sales.edit', $sale->sale_id) }}" class="btn btn-sm btn-outline-secondary me-2" title="Edit">
                                                     <i class="far fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('sales.destroy', $sale->sale_id) }}" method="POST" style="display:inline;">
+                                                <form action="{{ route('admin.sales.destroy', $sale->sale_id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this sale?');">

@@ -58,6 +58,10 @@
                             <span class="price1 text-end">₱{{ number_format($subtotal, 2) }}</span>
                         </div>
                         <div class="item d-flex justify-content-between">
+                            <p class="item-name1">Tax (12%)</p>
+                            <span class="price1 text-end">₱{{ number_format($subtotal * 0.12, 2) }}</span>
+                        </div>
+                        <div class="item d-flex justify-content-between">
                             <p class="item-name1">Delivery Fee</p>
                             <span class="price1 text-end">₱{{ number_format($deliveryFee, 2) }}</span>
                         </div>

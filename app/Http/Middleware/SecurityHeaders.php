@@ -34,8 +34,18 @@ class SecurityHeaders
             $response->header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
-        // Basic CSP - Content Security Policy
-        $response->header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'");
+        // CSP — unsafe-inline kept until Blade templates are updated with nonces
+        // TODO: add nonce="{{ session('csp_nonce') }}" to all <script>/<style> tags
+        // then switch to nonce-based policy to remove unsafe-inline
+        $response->header('Content-Security-Policy',
+            "default-src 'self'; " .
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://maps.googleapis.com; " .
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; " .
+            "img-src 'self' data: https:; " .
+            "frame-src https://maps.google.com https://maps.googleapis.com; " .
+            "connect-src 'self' https://maps.googleapis.com;"
+        );
 
         return $response;
     }

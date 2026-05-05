@@ -20,7 +20,7 @@
     <h3 class="mb-4">Edit Stock</h3>
 
 
-    <form action="{{ route('stocks.update', $stock->stock_id) }}" method="POST">
+    <form action="{{ route('admin.stocks.update', $stock->stock_id) }}" method="POST">
         @csrf
         @method('PUT')
 

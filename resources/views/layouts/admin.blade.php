@@ -39,7 +39,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.stocks') }}"><i class="fas fa-user"
                     style="color: var(--bs-emphasis-color);"></i><span
                     style="color: var(--bs-secondary-text-emphasis);">Stocks</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i class="fas fa-cash-register"
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.sales.index') }}"><i class="fas fa-cash-register"
                     style="color: var(--bs-accordion-active-color);"></i><span
                     style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders') }}" style="color: var(--bs-secondary-text-emphasis);"><i

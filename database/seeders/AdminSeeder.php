@@ -13,10 +13,21 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::create([
-            'name' => 'Admin',
-            'email' => 'admin@h2whoa.com',
-            'password' => Hash::make('password'), // Change this in production
-        ]);
+        $email    = env('ADMIN_EMAIL');
+        $password = env('ADMIN_PASSWORD');
+
+        if (!$email || !$password) {
+            $this->command->error('ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env before seeding.');
+            return;
+        }
+
+        Admin::updateOrCreate(
+            ['email' => $email],
+            [
+                'name'     => 'Admin',
+                'email'    => $email,
+                'password' => Hash::make($password),
+            ]
+        );
     }
 }

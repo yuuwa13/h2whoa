@@ -86,7 +86,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
-                        <form action="{{ route('customer.update', $customer->customer_id) }}" method="POST"
+                        <form action="{{ route('profile.update') }}" method="POST"
                             id="edit-details-form">
                             @csrf
                             @method('PUT')

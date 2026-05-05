@@ -90,8 +90,9 @@
                                                 @foreach($order->orderDetails as $detail)
                                                     {{ $detail->quantity }} x {{ $detail->stock->product_name }}<br>
                                                 @endforeach
-                                                <strong>Subtotal:</strong>
-                                                ₱{{ number_format($order->orderDetails->sum('total_price'), 2) }}<br>
+                                                @php $subtotal = $order->orderDetails->sum('total_price'); @endphp
+                                                <strong>Subtotal:</strong> ₱{{ number_format($subtotal, 2) }}<br>
+                                                <strong>Tax (12%):</strong> ₱{{ number_format($subtotal * 0.12, 2) }}<br>
                                                 <strong>Delivery Fee:</strong> ₱{{ number_format($order->delivery_fee ?? 20, 2) }}<br>
                                                 <strong>Total Amount:</strong> ₱{{ number_format($order->amount_paid, 2) }}<br>
                                             </p>

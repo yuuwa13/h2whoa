@@ -48,7 +48,7 @@
                             style="color: var(--bs-secondary-text-emphasis);"><i class="fas fa-table"
                                 style="padding-left: -24px;color: var(--bs-accordion-active-color);"></i><span>Orders</span></a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('sales.index') }}"><i
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.sales.index') }}"><i
                                 class="fas fa-cash-register" style="color: var(--bs-accordion-active-color);"></i><span
                                 style="color: var(--bs-secondary-text-emphasis);">Sales</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.history') }}"><i

@@ -19,7 +19,7 @@
 <div class="container">
     <h3 class="mb-4">Add Sale</h3>
 
-    <form action="{{ route('sales.store') }}" method="POST">
+    <form action="{{ route('admin.sales.store') }}" method="POST">
         @csrf
 
         <div class="mb-3">
@@ -66,7 +66,7 @@
             <button type="button" class="btn btn-secondary" onclick="addRow()">Add Row</button>
         </div>
 
-        <a href="{{ route('sales.index') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ route('admin.sales.index') }}" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">Save Sale</button>
     </form>
 </div>

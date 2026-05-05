@@ -93,7 +93,10 @@ class OrderController extends Controller
     // Delete an order
     public function destroy($id)
     {
-        $order = Order::findOrFail($id);
+        $customer = Auth::guard('customer')->user();
+        $order = Order::where('order_id', $id)
+            ->where('customer_id', $customer->customer_id)
+            ->firstOrFail();
 
         // Restore stock quantities
         foreach ($order->orderDetails as $detail) {
@@ -306,25 +309,32 @@ class OrderController extends Controller
             $subtotal = 0;
 
             foreach ($products as $product) {
-                // Check if the 'price' key exists, and provide a default value if it doesn't
-                $price = $product['price'] ?? ($product['total_price'] / $product['quantity'] ?? 0);
+                // Require a valid stock_id — never trust client-supplied price
+                if (empty($product['stock_id'])) {
+                    continue;
+                }
+                $stock = Stock::find($product['stock_id']);
+                if (!$stock) {
+                    continue;
+                }
 
+                $price    = $stock->price_per_unit; // Always use DB price
                 $quantity = isset($product['quantity']) ? intval($product['quantity']) : 0;
 
-                // If stock_id was provided, validate against DB
-                if (isset($product['stock_id'])) {
-                    $stock = Stock::find($product['stock_id']);
-                    if ($stock && $quantity > $stock->quantity) {
-                        return response()->json(['success' => false, 'message' => "Not enough stock for {$stock->product_name}. Available: {$stock->quantity}, requested: {$quantity}"], 422);
-                    }
+                if ($quantity > $stock->quantity) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Not enough stock for {$stock->product_name}. Available: {$stock->quantity}, requested: {$quantity}",
+                    ], 422);
                 }
 
                 if ($quantity > 0) {
                     $itemTotal = $quantity * $price;
                     $cart[] = [
-                        'name' => $product['name'],
-                        'quantity' => $quantity,
-                        'price' => $price, // Include the price in the cart
+                        'name'        => $stock->product_name,
+                        'stock_id'    => $stock->stock_id,
+                        'quantity'    => $quantity,
+                        'price'       => $price,
                         'total_price' => $itemTotal,
                     ];
                     $subtotal += $itemTotal;
@@ -577,8 +587,11 @@ class OrderController extends Controller
         return view('delivery_details', compact('customer'));
     }
     public function invoice(Order $order)
-{
-    // Optionally, check if the user is allowed to view this invoice
-    return view('invoice', compact('order'));
-}
+    {
+        $customer = Auth::guard('customer')->user();
+        if ($order->customer_id !== $customer->customer_id) {
+            abort(403);
+        }
+        return view('invoice', compact('order'));
+    }
 }

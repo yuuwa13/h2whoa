@@ -21,7 +21,7 @@ class ImageUploadController extends Controller
         $path = $file->store('image_uploads', 'public');
 
         UploadedImage::create([
-            'file_name' => $file->getClientOriginalName(),
+            'file_name' => basename($file->getClientOriginalName()),
             'file_path' => $path,
         ]);
 
