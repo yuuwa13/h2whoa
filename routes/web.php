@@ -37,10 +37,10 @@ Route::delete('/profile', [CustomerController::class, 'destroy'])
 
 //For Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])
-     ->name('login.form')->middleware('guest:customer');
+     ->name('login')->middleware('guest:customer');
 // handle login
 Route::post('/login', [LoginController::class, 'login'])
-     ->name('login.submit')->middleware('throttle:5,1');
+     ->name('login.submit');
 // forgot-password part: TBA(?)
 Route::get('/forgot-password', fn() => 'Forgot Password — Coming Soon')
      ->name('password.request');
@@ -139,7 +139,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
 // Admin Login Routes
 Route::get('/admin-login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login')->middleware('guest:admin');
-Route::post('/admin-login', [LoginController::class, 'adminLogin'])->name('admin.login.submit')->middleware('throttle:5,1');
+Route::post('/admin-login', [LoginController::class, 'adminLogin'])->name('admin.login.submit');
 // Admin logout
 Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
 

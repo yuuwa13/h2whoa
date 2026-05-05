@@ -77,7 +77,7 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
-
+                            <div id="lockoutMessage" class="alert alert-danger d-none"></div>
                             <!-- Submit -->
                             <button id="loginBtn" type="submit" class="btn btn-primary w-100"
                                 style="background: #4ac9b0;" disabled>
@@ -173,12 +173,43 @@
         const loginBtn = document.getElementById('loginBtn');
 
         function validateForm() {
+            if (lockout && seconds > 0) {
+                loginBtn.disabled = true;
+                return;
+            }
+
             loginBtn.disabled = !(email.value.trim() && password.value.trim() && human.checked);
         }
 
         [email, password, human].forEach(input =>
             input.addEventListener('input', validateForm)
         );
+    </script>
+    <script>
+        const lockout = @json(session('lockout'));
+        let seconds = @json(session('seconds'));
+
+        const lockoutMessage = document.getElementById('lockoutMessage');
+
+        if (lockout && seconds > 0) {
+            loginBtn.disabled = true;
+            lockoutMessage.classList.remove('d-none');
+
+            const countdown = setInterval(() => {
+                lockoutMessage.innerText =
+                    `Too many login attempts. Try again in ${seconds}s`;
+
+                seconds--;
+
+                if (seconds < 0) {
+                    clearInterval(countdown);
+                    lockoutMessage.classList.add('d-none');
+
+                    // Re-enable button only if form is valid
+                    validateForm();
+                }
+            }, 1000);
+        }
     </script>
 </body>
 </html>

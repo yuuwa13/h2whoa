@@ -370,7 +370,7 @@ class OrderController extends Controller
             // Check if the customer is logged in
             if (!$customer) {
                 Log::warning('Order confirmation: customer not logged in');
-                return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to place an order.']);
+                return redirect()->route('login')->withErrors(['error' => 'You must be logged in to place an order.']);
             }
 
             // Check if the cart is empty
@@ -571,7 +571,7 @@ class OrderController extends Controller
         $customer = Auth::guard('customer')->user();
 
         if (!$customer) {
-            return redirect()->route('login.form')->withErrors(['error' => 'You must be logged in to view delivery details.']);
+            return redirect()->route('login')->withErrors(['error' => 'You must be logged in to view delivery details.']);
         }
 
         return view('delivery_details', compact('customer'));

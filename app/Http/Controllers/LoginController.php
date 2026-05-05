@@ -36,9 +36,11 @@ class LoginController extends Controller
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            throw ValidationException::withMessages([
-                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
-            ]);
+
+            return back()
+                ->with('lockout', true)
+                ->with('seconds', $seconds)
+                ->withInput();
         }
 
         // Attempt to log in the customer
@@ -67,10 +69,25 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
+        // Rate Limiting / Lockout Logic
+        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            return back()
+                ->with('lockout', true)
+                ->with('seconds', $seconds)
+                ->withInput();
+        }
+
         if (Auth::guard('admin')->attempt($credentials)) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
+
+        RateLimiter::hit($throttleKey, 60); // Lock for 60 seconds after 5 failed attempts
 
         return back()->withErrors([
             'email' => 'Invalid credentials.',

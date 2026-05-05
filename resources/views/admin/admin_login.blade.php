@@ -48,14 +48,57 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <div id="lockoutMessage" class="alert alert-danger d-none"></div>
+                    <button id="loginBtn" type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
             </div>
         </section>
     </main>
 
     <script src="{{ asset('h2whoa_admin/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const lockoutMessage = document.getElementById('lockoutMessage');
+
+        const lockout = @json(session('lockout'));
+        let seconds = @json(session('seconds'));
+
+        function validateForm() {
+            if (lockout && seconds > 0) {
+                loginBtn.disabled = true;
+                return;
+            }
+
+            loginBtn.disabled = !(email.value.trim() && password.value.trim());
+        }
+
+        email.addEventListener('input', validateForm);
+        password.addEventListener('input', validateForm);
+
+        // Initial validation
+        validateForm();
+
+        // Lockout countdown
+        if (lockout && seconds > 0) {
+            loginBtn.disabled = true;
+            lockoutMessage.classList.remove('d-none');
+
+            const countdown = setInterval(() => {
+                lockoutMessage.innerText =
+                    `Too many login attempts. Try again in ${seconds}s`;
+
+                seconds--;
+
+                if (seconds < 0) {
+                    clearInterval(countdown);
+                    lockoutMessage.classList.add('d-none');
+                    validateForm(); // re-enable if valid
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 
 </html>

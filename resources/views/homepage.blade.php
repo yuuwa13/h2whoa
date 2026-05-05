@@ -37,12 +37,12 @@
                 <div class="row align-items-center">
                     <div class="col-12 col-md-6 order-2 order-md-1 px-3 px-md-0">
                         <div class="text-center text-md-start">
-                            <h4 class="hero-title mb-3 text-dark">HW2WHOA</h4>
+                            <h4 class="hero-title mb-3 text-dark">H2WHOA</h4>
                             <p class="hero-subtitle mb-3">L & A WATER REFILLING STATION</p>
                             <p class="hero-text mb-4">Pure. Clean. Refreshing. Your trusted source for safe drinking water.</p>
                             <div class="d-flex justify-content-center justify-content-md-start gap-3">
                                 <a class="btn btn-primary btn-home" style="background: #4ac9b0;"
-                                   href="{{ route('login.form') }}">LOG IN</a>
+                                   href="{{ route('login') }}">LOG IN</a>
                                 <a class="btn btn-primary btn-home" style="background: #4ac9b0;"
                                    href="{{ route('signup.form') }}">CREATE ACCOUNT</a>
                             </div>

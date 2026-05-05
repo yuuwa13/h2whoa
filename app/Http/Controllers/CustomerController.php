@@ -41,7 +41,7 @@ class CustomerController extends Controller
         ]);
 
         // Redirect to the login page with a success message
-        return redirect()->route('login.form')->with('success', 'Account created successfully! You can now log in.');
+        return redirect()->route('login')->with('success', 'Account created successfully! You can now log in.');
     }
     /** Display profile */
     public function show()
@@ -160,7 +160,7 @@ class CustomerController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect to login page with a success message
-        return redirect()->route('login.form')
+        return redirect()->route('login')
             ->with('status1', 'Your account has been successfully deleted.');
     }
     public function logout(Request $request)
@@ -173,7 +173,7 @@ class CustomerController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect to the login page with a success message
-        return redirect()->route('login.form')->with('status', 'You have been logged out successfully.');
+        return redirect()->route('login')->with('status', 'You have been logged out successfully.');
     }
 
     public function index_admin()
