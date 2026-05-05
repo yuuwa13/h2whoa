@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\LoginLockout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\LoginLockoutAlert;
 
 class LoginController extends Controller
 {
@@ -36,6 +39,14 @@ class LoginController extends Controller
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
+
+            $log = LoginLockout::create([
+                'ip_address' => $request->ip(),
+                'attempts' => RateLimiter::attempts($throttleKey), // optional: real count
+            ]);
+
+            Mail::to(config('mail.admin_alert_email'))
+                ->send(new LoginLockoutAlert($log));
 
             return back()
                 ->with('lockout', true)

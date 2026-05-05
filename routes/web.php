@@ -267,8 +267,10 @@ Route::get('/admin/activity-log/customers/{customer}/actions', [ActivityLogContr
 Route::get('/admin/activity-log/orders', [ActivityLogController::class, 'orders'])->name('admin.activity-log.orders');
 Route::get('/admin/activity-log/stocks', [ActivityLogController::class, 'stocks'])->name('admin.activity-log.stocks');
 Route::get('/admin/activity-log/sales', [ActivityLogController::class, 'sales'])->name('admin.activity-log.sales');
+Route::get('/admin/activity-log/lockout', [ActivityLogController::class, 'lockoutLogs'])->name('admin.activity-log.lockout');
 Route::get('/admin/activity-log/stocks/{stock}/actions', [ActivityLogController::class, 'stockActions'])->name('admin.activity-log.stocks.actions');
 Route::get('/admin/activity-log/sales/{sale}/actions', [ActivityLogController::class, 'saleActions'])->name('admin.activity-log.sales.actions');
+
 
 // Image Upload Routes
 Route::get('/admin/upload-image', [ImageUploadController::class, 'index'])->name('admin.upload-image');

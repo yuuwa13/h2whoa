@@ -13,7 +13,7 @@ return [
     | "mailers" array. Examples of each type of mailer are provided.
     |
     */
-
+    'admin_alert_email' => env('ADMIN_ALERT_EMAIL'),
     'default' => env('MAIL_MAILER', 'log'),
 
     /*

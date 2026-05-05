@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Stock;
 use App\Models\Sale;
+use App\Models\LoginLockout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -71,5 +72,11 @@ class ActivityLogController extends Controller
             ->paginate(10);
 
         return view('activity-log.sale-actions', compact('logs'));
+    }
+
+    public function lockoutLogs()
+    {
+        $logs = LoginLockout::latest()->paginate(10);
+        return view('activity-log.lockout', compact('logs'));
     }
 }

@@ -10,6 +10,7 @@
                 <a href="{{ route('admin.activity-log.orders') }}" class="list-group-item list-group-item-action">Orders</a>
                 <a href="{{ route('admin.activity-log.stocks') }}" class="list-group-item list-group-item-action">Stocks</a>
                 <a href="{{ route('admin.activity-log.sales') }}" class="list-group-item list-group-item-action">Sales</a>
+                <a href="{{ route('admin.activity-log.lockout') }}" class="list-group-item list-group-item-action">Lockout Attempts</a>
             </div>
         </div>
         <div class="col-lg-9">
