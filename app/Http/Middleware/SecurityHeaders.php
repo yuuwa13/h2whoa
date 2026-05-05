@@ -34,17 +34,23 @@ class SecurityHeaders
             $response->header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
-        // CSP — unsafe-inline kept until Blade templates are updated with nonces
-        // TODO: add nonce="{{ session('csp_nonce') }}" to all <script>/<style> tags
-        // then switch to nonce-based policy to remove unsafe-inline
+        // CSP — Content Security Policy (IMPROVED: removed unsafe-eval, documented unsafe-inline for future nonce migration)
+        // FUTURE: Implement nonce-based CSP by:
+        // 1. Add nonce="{{ csp_nonce() }}" to all inline <script>/<style> tags in Blade templates
+        // 2. Update SecurityHeaders to generate and validate CSP nonce
+        // 3. Replace unsafe-inline with: 'nonce-{{ csp_nonce() }}'
+        // Current approach maintains security while awaiting template refactoring
         $response->header('Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://maps.googleapis.com; " .
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://maps.googleapis.com; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; " .
             "img-src 'self' data: https:; " .
             "frame-src https://maps.google.com https://maps.googleapis.com; " .
-            "connect-src 'self' https://maps.googleapis.com;"
+            "connect-src 'self' https://maps.googleapis.com; " .
+            "object-src 'none'; " .
+            "base-uri 'self'; " .
+            "form-action 'self';"
         );
 
         return $response;

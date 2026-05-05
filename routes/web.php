@@ -348,5 +348,3 @@ Route::get('/privacy-policy', fn() => 'Privacy Policy — Coming Soon')
 
 
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
-=======
->>>>>>> Stashed changes
