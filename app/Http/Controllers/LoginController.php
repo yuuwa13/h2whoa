@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Customer;
 use App\Models\LoginLockout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminMfaCode;
 use App\Mail\LoginLockoutAlert;
 
 class LoginController extends Controller
@@ -92,10 +95,24 @@ class LoginController extends Controller
                 ->withInput();
         }
 
-        if (Auth::guard('admin')->attempt($credentials)) {
+        if (Auth::guard('admin')->validate($credentials)) {
             RateLimiter::clear($throttleKey);
-            $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
+
+            $admin = Admin::where('email', $request->email)->first();
+
+            // Generate 6-digit OTP and cache it for 10 minutes
+            $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            Cache::put('admin_mfa:' . $admin->id, $otp, now()->addMinutes(10));
+
+            // Store pending MFA state in session
+            $request->session()->put('mfa_pending', true);
+            $request->session()->put('mfa_admin_id', $admin->id);
+            $request->session()->put('mfa_attempts', 0);
+
+            // Send OTP to the configured security email
+            Mail::to(config('auth.admin_mfa_email'))->send(new AdminMfaCode($otp));
+
+            return redirect()->route('admin.mfa');
         }
 
         RateLimiter::hit($throttleKey, 60); // Lock for 60 seconds after 5 failed attempts

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\GcashController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AdminMfaController;
 
 // ─── Public routes ────────────────────────────────────────────────────────────
 
@@ -95,9 +96,14 @@ Route::middleware('guest:admin')->group(function () {
 
 Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
 
+// ─── Admin MFA (session-gated, not guard-gated) ───────────────────────────────
+
+Route::get('/admin/mfa', [AdminMfaController::class, 'show'])->name('admin.mfa');
+Route::post('/admin/mfa', [AdminMfaController::class, 'verify'])->middleware('throttle:10,1')->name('admin.mfa.verify');
+
 // ─── Admin authenticated routes ───────────────────────────────────────────────
 
-Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth:admin', 'ensure.admin.mfa'])->prefix('admin')->name('admin.')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {
