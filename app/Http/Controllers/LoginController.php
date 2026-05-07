@@ -89,6 +89,14 @@ class LoginController extends Controller
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
 
+            $log = LoginLockout::create([
+                'ip_address' => $request->ip(),
+                'attempts' => RateLimiter::attempts($throttleKey), // optional: real count
+            ]);
+
+            Mail::to(config('mail.admin_alert_email'))
+                ->send(new LoginLockoutAlert($log));
+                
             return back()
                 ->with('lockout', true)
                 ->with('seconds', $seconds)
